@@ -24,10 +24,14 @@ function Hero() {
           src={logo}
           alt="MotoGT logo"
         />
-        <div className="visual-caption">
-         <span>CAR ACCESSORIES</span>
-         <span>DENT &amp; PAINT</span>
-        </div>
+        
+      
+<div className="visual-caption">
+  <span>CAR ACCESSORIES</span>
+  <span className="caption-dot">•</span>
+  <span>DENT &amp; PAINT</span>
+</div>
+
       </div>
     </section>
   )

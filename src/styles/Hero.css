@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap');
+
 .hero {
   display: grid;
   grid-template-columns: 1fr 0.88fr;
@@ -93,22 +95,22 @@
     width: 100%;
     padding: 0 24px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
     z-index: 2;
     box-sizing: border-box;
   }
   
   .hero-visual .visual-caption span {
-    width: 50%;
+    width: auto;
     min-width: 0;
     margin: 0;
     color: #111;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 7px;
-    font-weight: 700;
-    letter-spacing: 0;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px !important;
+    font-weight: 600;
+    letter-spacing: 0.8px;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -155,4 +157,21 @@
   .hero-visual::before,
 .hero-visual::after {
   display: none !important;
+}
+.hero-visual .visual-caption .caption-dot {
+  width: auto;
+  color: black;
+  font-size: 14px;
+  margin: 0 8px;
+  font-weight: 700;
+}
+.hero-visual .visual-caption {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.hero-visual .visual-caption span {
+  width: auto !important;
+  flex: 0 0 auto !important;
 }
