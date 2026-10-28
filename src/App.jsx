@@ -2,6 +2,8 @@ import './styles/Services.css';
 import './styles/Hero.css';
 import './styles/Navbar.css';
 import "./styles/style.css";
+import './styles/Contact.css';
+import './styles/Footer.css';
 import './App.css'
 
 import Navbar from './components/Navbar'

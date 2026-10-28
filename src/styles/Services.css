@@ -145,7 +145,7 @@
     }
   
     .intro-strip p {
-      font-size: 12px;
+      font-size: 16px;
     }
   
     .services {
@@ -186,3 +186,24 @@
   color: #ffffff !important;
 }
   
+
+@keyframes motogtSymbolGlow {
+  0%, 100% {
+    color: #daa520;
+  }
+
+  50% {
+    color: #ffffff;
+  }
+}
+/* Background image for What We Do section */
+.services {
+  position: relative;
+  isolation: isolate;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.68)),
+    url('../assets/BGMGT.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

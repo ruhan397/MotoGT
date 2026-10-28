@@ -14,12 +14,12 @@ function Contact() {
         </p>
   
         <a
-          className="primary-btn"
+          className="primary-btn nav-cta"
           href="https://wa.me/"
           target="_blank"
           rel="noreferrer"
         >
-          Get in Touch ↗
+          Get in Touch ⟫
         </a>
       </section>
     )

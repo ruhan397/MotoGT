@@ -9,7 +9,7 @@ function Navbar() {
         </div>
   
         <a className="nav-cta" href="#contact">
-          Contact Us ↗
+          Contact Us ⟫
         </a>
       </nav>
     )

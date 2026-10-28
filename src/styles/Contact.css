@@ -1,0 +1,27 @@
+
+.contact-section {
+    padding: 75px 7% 90px;
+    text-align: center;
+    background: #1a1b17;
+    border-top: 1px solid #ffffff12;
+  }
+  
+  .contact-section h2 {
+    font-size: clamp(44px, 6vw, 65px);
+  }
+  
+  .contact-section > p:not(.eyebrow) {
+    color: #aaa79f;
+    font-size: 12px;
+    margin: 0 auto 25px;
+    line-height: 1.8;
+  }
+  
+
+@media (max-width: 760px) {
+    .contact-section {
+      padding: 65px 5%;
+    }
+  }
+  
+  
