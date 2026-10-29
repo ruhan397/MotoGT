@@ -20,7 +20,7 @@
   .intro-strip p {
     margin: 0;
     color: #c0c0c0;
-    font-size: 13px;
+    font-size: 11px;
     line-height: 1.7;
   }
   
@@ -145,7 +145,7 @@
     }
   
     .intro-strip p {
-      font-size: 16px;
+      font-size: 11px;
     }
   
     .services {
@@ -206,4 +206,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+.intro-strip p {
+  font-size: 14px !important;
 }

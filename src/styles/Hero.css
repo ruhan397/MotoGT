@@ -9,24 +9,25 @@
   gap: 30px;
   align-items: center;
 
-  background-image:
-  linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)),
-  url('../assets/BGMGT.jpeg');
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
+  position: relative;
+  isolation: isolate;
+  background: #111;
+
+  
 }
 
 .hero-content {
   max-width: 570px;
   text-align: center;
+  transform: translateY(10px);
 }
 
 .eyebrow {
   font-size: 10px;
   letter-spacing: 2.7px;
   font-weight: 700;
-  color: goldenrod;
+  color: #f5d58a;
+  text-shadow: 0 0 8px rgba(240, 195, 90, 0.25);
 }
 
 .hero h1 {
@@ -156,4 +157,28 @@ background-repeat: no-repeat;
   font-style: italic;
   font-size: 10px;
 }
+.hero {
+  position: relative;
+  isolation: isolate;
+}
 
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.65),
+      rgba(0, 0, 0, 0.65)
+    ),
+    url('../assets/BGMGT2.jpeg');
+
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+ 

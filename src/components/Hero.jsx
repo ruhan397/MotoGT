@@ -12,10 +12,6 @@ function Hero() {
           drive <em>distinct.</em>
         </h1>
 
-        <p className="hero-copy">
-          “Driven by faith, guided by honesty. Quality service and care for
-          every journey.”
-        </p>
       </div>
 
       <div className="hero-visual">

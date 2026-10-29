@@ -4,7 +4,7 @@ function Services() {
       <>
         <section className="intro-strip" id="about">
           <span>BUILT AROUND YOUR CAR</span>
-          <p>From the details you add to the finish you restore.</p>
+          <p>Driven by faith, guided by honesty. Quality service and care for every journey.</p>
         </section>
   
         <section className="services" id="accessories">
