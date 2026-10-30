@@ -1,0 +1,797 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+.admin-dashboard {
+    --admin-bg: #111210;
+    --admin-card: #191a17;
+    --admin-border: #ffffff14;
+    --admin-text: #f4f0e8;
+    --admin-muted: #999991;
+    --admin-gold: #d9b875;
+  
+    display: flex;
+    min-height: 100vh;
+    background: var(--admin-bg);
+    color: var(--admin-text);
+    font-family: 'DM Sans', sans-serif;
+  }
+  
+  .admin-dashboard * {
+    box-sizing: border-box;
+  }
+  
+  .admin-sidebar {
+    width: 245px;
+    min-height: 100vh;
+    padding: 34px 22px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--admin-border);
+    
+    background:
+  radial-gradient(
+    ellipse at 20% 5%,
+    rgba(217, 184, 117, 0.045),
+    transparent 42%
+  ),
+  linear-gradient(
+    160deg,
+    #1d201d 0%,
+    #171a17 48%,
+    #101210 100%
+  );
+    flex-shrink: 0;
+  }
+  
+  .admin-logo {
+    width: 100%;
+    height: 92px;
+    margin: 0 0 38px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 15px;
+  }
+  
+  .admin-logo img {
+    display: block;
+    width: 100%;
+    max-width: 155px;
+    height: 100%;
+    object-fit: contain;
+    object-position: left center;
+  }
+  
+  .admin-label,
+  .admin-eyebrow {
+    color: var(--admin-gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  
+  .admin-label {
+    margin: 0 0 16px 10px;
+  }
+  
+  .admin-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  
+/* Premium Admin Navigation */
+
+.admin-menu-item {
+    position: relative;
+    width: 100%;
+    padding: 14px 14px 14px 18px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--admin-muted);
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  
+  .admin-menu-item:hover {
+    color: var(--admin-text);
+    background: rgba(255, 255, 255, 0.035);
+  }
+  
+  .admin-menu-item.active {
+    color: var(--admin-gold);
+    background: linear-gradient(
+      90deg,
+      rgba(217, 184, 117, 0.13),
+      rgba(217, 184, 117, 0.025)
+    );
+    border-color: rgba(217, 184, 117, 0.16);
+  }
+  
+  .admin-menu-item.active::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--admin-gold);
+  }
+  
+  
+  
+  
+  .admin-sidebar-footer {
+    margin-top: auto;
+    padding: 20px 8px 0;
+    border-top: 1px solid var(--admin-border);
+    color: var(--admin-muted);
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+  
+  .admin-main {
+    flex: 1;
+    min-width: 0;
+    padding: 34px 4%;
+  }
+  
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 27px;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  
+  .admin-eyebrow {
+    margin: 0 0 9px;
+    margin-left: 4px;
+  }
+  
+  .admin-header h1 {
+    margin: 0;
+    font-size: clamp(25px, 3vw, 34px);
+    font-weight: 500;
+    letter-spacing: -1px;
+  }
+  
+  .admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .admin-avatar {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d9b87560;
+    border-radius: 50%;
+    color: var(--admin-gold);
+    background: #d9b87510;
+  }
+  
+  .admin-profile strong {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .admin-profile p {
+    margin: 4px 0 0;
+    color: var(--admin-muted);
+    font-size: 10px;
+  }
+  
+  .admin-welcome {
+    margin-top: 32px;
+    padding: 30px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background:
+      radial-gradient(ellipse at top right, #d9b87512, transparent 60%),
+      var(--admin-card);
+  }
+  
+  .admin-welcome > p {
+    margin: 0 0 12px;
+    color: var(--admin-gold);
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  
+  .admin-welcome h2 {
+    font-family: 'Manrope', sans-serif;
+    margin: 0 0 10px;
+    font-size: clamp(20px, 2.3vw, 25px);
+    margin-left: -3px;
+    font-weight: 500;
+    letter-spacing: -0.8px;
+  }
+  
+  .admin-welcome > span {
+    color: var(--admin-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  
+  .admin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+  }
+  
+  .admin-stat-card {
+    padding: 23px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-card);
+    transition: border-color 0.2s ease;
+  }
+  
+  .admin-stat-card:hover {
+    border-color: #d9b87555;
+  }
+  
+  .admin-stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--admin-muted);
+    font-size: 12px;
+  }
+  
+  .admin-stat-icon {
+    color: var(--admin-gold);
+    font-size: 20px;
+  }
+  
+  .admin-stat-card h3 {
+    margin: 23px 0 8px;
+    font-size: 34px;
+    font-weight: 500;
+  }
+  
+  .admin-stat-card > p {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 10px;
+  }
+  
+  .admin-content-card {
+    margin-top: 32px;
+    padding: 26px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-card);
+  }
+  
+  .admin-content-card h2 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .admin-content-card > p {
+    margin: 0 0 24px;
+    color: var(--admin-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  
+  .admin-table-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 17px 0;
+    border-top: 1px solid var(--admin-border);
+    color: var(--admin-muted);
+    font-size: 12px;
+  }
+  
+  .admin-table-row strong {
+    color: var(--admin-text);
+    font-weight: 500;
+  }
+  
+  .admin-status {
+    color: var(--admin-gold);
+  }
+  
+  .admin-action-button {
+    margin-top: 22px;
+    padding: 12px 17px;
+    border: 1px solid var(--admin-gold);
+    border-radius: 4px;
+    background: var(--admin-gold);
+    color: #111210;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  
+  .admin-action-button:hover {
+    background: transparent;
+    color: var(--admin-gold);
+  }
+  
+  .admin-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--admin-border);
+    color: var(--admin-muted);
+    font-size: 10px;
+    text-align: center;
+  }
+  
+  @media (max-width: 760px) {
+    .admin-sidebar {
+      width: 175px;
+      padding: 26px 12px;
+    }
+  
+    .admin-main {
+      padding: 25px 18px;
+    }
+  
+    .admin-stats {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  
+    .admin-header {
+      align-items: flex-start;
+    }
+  
+    .admin-profile {
+      gap: 7px;
+    }
+  
+    .admin-profile strong {
+      font-size: 10px;
+    }
+  
+    .admin-profile p {
+      font-size: 9px;
+    }
+  
+    .admin-welcome {
+      padding: 22px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .admin-dashboard {
+      flex-direction: column;
+    }
+  
+    .admin-sidebar {
+      width: 100%;
+      min-height: auto;
+      padding: 18px;
+      border-right: 0;
+      border-bottom: 1px solid var(--admin-border);
+    }
+  
+    .admin-logo {
+      margin-bottom: 20px;
+    }
+  
+    .admin-label,
+    .admin-sidebar-footer {
+      display: none;
+    }
+  
+    .admin-sidebar nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+  
+    .admin-menu-item {
+      width: auto;
+      padding: 9px 11px;
+      font-size: 11px;
+    }
+  
+    .admin-main {
+      padding: 22px 16px;
+    }
+  
+    .admin-header {
+      flex-wrap: wrap;
+    }
+  
+    .admin-welcome {
+      margin-top: 22px;
+    }
+  }
+  
+/* MotoGT custom dashboard refinements */
+
+
+/* MotoGT custom overview layout */
+
+.admin-welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 220px;
+    margin-top: 32px;
+    padding: 38px 36px;
+    border: 1px solid #d9b87535;
+    border-left: 3px solid #d9b875;
+    border-radius: 3px;
+    background:
+      linear-gradient(110deg, #20211d 0%, #171815 65%, #211e17 100%);
+  }
+  
+  .admin-welcome h2 {
+    max-width: 100%;
+    font-size: clamp(28px, 3.5vw, 42px);
+    line-height: 1.15;
+    letter-spacing: -1.5px;
+  }
+  
+  .admin-welcome > span {
+    max-width: 440px;
+    font-size: 13px;
+  }
+  
+  .admin-stats {
+    gap: 14px;
+    margin-top: 18px;
+  }
+  
+  .admin-stat-card {
+    position: relative;
+    min-height: 145px;
+    padding: 22px;
+    border-radius: 3px;
+    background: #191a17;
+  }
+  
+  .admin-stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 22px;
+    width: 32px;
+    height: 2px;
+    background: #d9b875;
+  }
+  
+  .admin-stat-card h3 {
+    margin-top: 27px;
+    font-size: 38px;
+  }
+  
+  .admin-stat-icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #d9b87535;
+    border-radius: 3px;
+    background: #d9b8750b;
+  }
+  
+  @media (max-width: 760px) {
+    .admin-welcome {
+      min-height: 190px;
+      padding: 26px 22px;
+    }
+  }
+  
+/* MotoGT Overview — custom split layout */
+
+
+.admin-lower-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 26px;
+  }
+  
+  
+  
+  .admin-activity-panel,
+  .admin-focus-panel {
+    min-width: 0;
+    padding: 25px;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    background: #191a17;
+  }
+  
+  .admin-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  
+  .admin-panel-heading .admin-eyebrow {
+    margin: 0 0 9px;
+  }
+  
+  .admin-panel-heading h2,
+  .admin-focus-panel h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .admin-live-dot {
+    padding: 6px 8px;
+    border: 1px solid #d9b87540;
+    color: var(--admin-gold);
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  
+  .admin-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 17px 0;
+    border-top: 1px solid var(--admin-border);
+  }
+  
+  .admin-activity-mark {
+    color: var(--admin-gold);
+    font-size: 11px;
+  }
+  
+  .admin-activity-item > div {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .admin-activity-item strong {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .admin-activity-item p {
+    margin: 5px 0 0;
+    color: var(--admin-muted);
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  
+  .admin-activity-arrow {
+    color: var(--admin-gold);
+  }
+  
+  .admin-focus-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background:
+      radial-gradient(ellipse at 100% 0%, #d9b87516, transparent 55%),
+      #171815;
+  }
+  
+  .admin-focus-panel .admin-eyebrow {
+    margin: 0;
+  }
+  
+  .admin-focus-symbol {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin: 28px 0 22px;
+    border: 1px solid #d9b87565;
+    color: var(--admin-gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+  }
+  
+  .admin-focus-panel h2 {
+    font-family: 'Playfair Display', serif;
+    line-height: 1.45;
+  }
+  
+  .admin-focus-panel > p {
+    color: var(--admin-muted);
+    font-size: 11px;
+    line-height: 1.8;
+  }
+  
+  .admin-focus-line {
+    width: 42px;
+    height: 2px;
+    margin-top: auto;
+    background: var(--admin-gold);
+  }
+  
+  .admin-focus-caption {
+    margin-top: 13px;
+    color: var(--admin-muted);
+    font-size: 8px;
+    letter-spacing: 1.2px;
+  }
+  
+  @media (max-width: 900px) {
+    .admin-lower-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .admin-focus-panel {
+      min-height: 260px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .admin-activity-panel,
+    .admin-focus-panel {
+      padding: 20px;
+    }
+  }
+  /* Test: Admin navigation style */
+
+.admin-dashboard .admin-sidebar nav .admin-menu-item {
+    padding: 14px 14px 14px 18px !important;
+    border-radius: 4px !important;
+  }
+  
+  .admin-dashboard .admin-sidebar nav .admin-menu-item.active {
+    color: #d9b875 !important;
+    background: #30291c !important;
+    border-left: 3px solid #d9b875 !important;
+  }
+  
+/* MotoGT Premium Automotive Dashboard Background */
+
+/* MotoGT Modern Graphite Dashboard Background */
+
+.admin-dashboard {
+  background:
+    radial-gradient(
+      ellipse at 78% 8%,
+      rgba(104, 112, 105, 0.16),
+      transparent 42%
+    ),
+    linear-gradient(135deg, #1b1e1d 0%, #111413 48%, #191b19 100%);
+}
+
+.admin-dashboard .admin-main {
+  background:
+    radial-gradient(
+      ellipse at 95% 5%,
+      rgba(170, 174, 160, 0.09),
+      transparent 38%
+    );
+}
+
+.admin-dashboard .admin-welcome {
+  background:
+    linear-gradient(
+      115deg,
+      rgba(55, 61, 57, 0.92),
+      rgba(29, 32, 29, 0.96) 55%,
+      rgba(47, 43, 34, 0.94)
+    );
+  border-color: rgba(217, 184, 117, 0.28);
+}
+
+.admin-dashboard .admin-stat-card {
+  background:
+    linear-gradient(145deg, #252a27 0%, #191d1b 100%);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+.admin-dashboard .admin-activity-panel {
+  background:
+    linear-gradient(145deg, #252925 0%, #191d1b 65%, #22231e 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.admin-stat-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d9b875;
+  background: rgba(217, 184, 117, 0.08);
+  border: 1px solid rgba(217, 184, 117, 0.22);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.admin-stat-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+
+/* MotoGT Stats Cards - Reference Image Style */
+
+.admin-dashboard .admin-stat-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(145deg, #252a27 0%, #191d1b 100%);
+  border-color: rgba(217, 184, 117, 0.35);
+}
+
+/* Image layer on the right side */
+.admin-dashboard .admin-stat-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 58%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  opacity: 0.48;
+
+  -webkit-mask-image: linear-gradient(
+    to left,
+    #000 0%,
+    #000 48%,
+    transparent 100%
+  );
+
+  mask-image: linear-gradient(
+    to left,
+    #000 0%,
+    #000 48%,
+    transparent 100%
+  );
+}
+
+/* Products */
+.admin-dashboard .admin-stat-card:nth-child(1)::after {
+  background-image:
+    linear-gradient(rgba(15, 17, 15, 0.48), rgba(15, 17, 15, 0.48)),
+    url("../assets/product.jpg");
+}
+
+/* Orders */
+.admin-dashboard .admin-stat-card:nth-child(2)::after {
+  background-image:
+    linear-gradient(rgba(15, 17, 15, 0.48), rgba(15, 17, 15, 0.48)),
+    url("../assets/order-boxes.jpg");
+}
+
+/* Enquiries */
+.admin-dashboard .admin-stat-card:nth-child(3)::after {
+  background-image:
+    linear-gradient(rgba(15, 17, 15, 0.48), rgba(15, 17, 15, 0.48)),
+    url("../assets/chat.jpg");
+}
+
+/* Keep card content and gold accent above images */
+.admin-dashboard .admin-stat-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.admin-dashboard .admin-stat-card::before {
+  z-index: 2;
+  pointer-events: none;
+}
