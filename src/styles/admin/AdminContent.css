@@ -1,0 +1,81 @@
+/* =================================
+   MotoGT Admin Dashboard - Content
+================================= */
+
+/* Products, Orders & Enquiries */
+
+.admin-content-card {
+    margin-top: 32px;
+    padding: 26px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-card);
+  }
+  
+  .admin-content-card h2 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .admin-content-card > p {
+    margin: 0 0 24px;
+    color: var(--admin-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  
+  /* Content Table Rows */
+  
+  .admin-table-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 17px 0;
+    border-top: 1px solid var(--admin-border);
+    color: var(--admin-muted);
+    font-size: 12px;
+  }
+  
+  .admin-table-row strong {
+    color: var(--admin-text);
+    font-weight: 500;
+  }
+  
+  /* Status Labels */
+  
+  .admin-status {
+    color: var(--admin-gold);
+  }
+  
+  /* Action Button */
+  
+  .admin-action-button {
+    margin-top: 22px;
+    padding: 12px 17px;
+    border: 1px solid var(--admin-gold);
+    border-radius: 4px;
+    background: var(--admin-gold);
+    color: #111210;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  
+  .admin-action-button:hover {
+    background: transparent;
+    color: var(--admin-gold);
+  }
+  
+  /* Dashboard Footer */
+  
+  .admin-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--admin-border);
+    color: var(--admin-muted);
+    font-size: 10px;
+    text-align: center;
+  }

@@ -1,0 +1,23 @@
+/* =================================
+   MotoGT Admin Dashboard - Responsive
+================================= */
+
+/* Tablet Layout */
+
+@media (max-width: 760px) {
+    .admin-main {
+      padding: 25px 18px;
+    }
+  }
+  
+  /* Mobile Layout */
+  
+  @media (max-width: 480px) {
+    .admin-dashboard {
+      flex-direction: column;
+    }
+  
+    .admin-main {
+      padding: 22px 16px;
+    }
+  }

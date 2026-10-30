@@ -1,6 +1,11 @@
 import motoLogo from '../assets/MotoGT-logo-clean.png';
 import React, { useState } from 'react';
 import '../styles/AdminDashboard.css';
+import '../styles/admin/AdminSidebar.css';
+import '../styles/admin/AdminHeader.css';
+import '../styles/admin/AdminOverview.css';
+import '../styles/admin/AdminContent.css';
+import '../styles/admin/AdminResponsive.css';
 
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('Overview');

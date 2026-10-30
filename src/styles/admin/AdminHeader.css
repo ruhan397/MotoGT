@@ -1,0 +1,85 @@
+/* =================================
+   MotoGT Admin Dashboard - Header
+================================= */
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 27px;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  
+  .admin-eyebrow {
+    color: var(--admin-gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  
+  .admin-header .admin-eyebrow {
+    margin: 0 0 9px;
+    margin-left: 4px;
+  }
+  
+  .admin-header h1 {
+    margin: 0;
+    font-size: clamp(25px, 3vw, 34px);
+    font-weight: 500;
+    letter-spacing: -1px;
+  }
+  
+  .admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .admin-avatar {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d9b87560;
+    border-radius: 50%;
+    color: var(--admin-gold);
+    background: #d9b87510;
+  }
+  
+  .admin-profile strong {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .admin-profile p {
+    margin: 4px 0 0;
+    color: var(--admin-muted);
+    font-size: 10px;
+  }
+  
+  /* Header Responsive Design */
+  
+  @media (max-width: 760px) {
+    .admin-header {
+      align-items: flex-start;
+    }
+  
+    .admin-profile {
+      gap: 7px;
+    }
+  
+    .admin-profile strong {
+      font-size: 10px;
+    }
+  
+    .admin-profile p {
+      font-size: 9px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .admin-header {
+      flex-wrap: wrap;
+    }
+  }

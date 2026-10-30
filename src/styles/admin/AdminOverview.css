@@ -1,0 +1,367 @@
+/* =================================
+   MotoGT Admin Dashboard - Overview
+================================= */
+
+/* Welcome Section */
+
+.admin-welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 220px;
+    margin-top: 32px;
+    padding: 38px 36px;
+    border: 1px solid #d9b87535;
+    border-left: 3px solid #d9b875;
+    border-radius: 3px;
+    background:
+      linear-gradient(
+        110deg,
+        #20211d 0%,
+        #171815 65%,
+        #211e17 100%
+      );
+  }
+  
+  .admin-welcome > p {
+    margin: 0 0 12px;
+    color: var(--admin-gold);
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  
+  .admin-welcome h2 {
+    font-family: 'Playfair Display', serif;
+    margin: 0 0 10px;
+    max-width: 100%;
+    margin-left: -3px;
+    font-size: clamp(28px, 3.5vw, 42px);
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -1.5px;
+  }
+  
+  .admin-welcome > span {
+    max-width: 440px;
+    color: var(--admin-muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  
+  /* Statistics Cards */
+  
+  .admin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+  }
+  
+  .admin-stat-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 145px;
+    padding: 22px;
+    border: 1px solid rgba(217, 184, 117, 0.35);
+    border-radius: 3px;
+    background: linear-gradient(
+      145deg,
+      #252a27 0%,
+      #191d1b 100%
+    );
+    transition: border-color 0.2s ease;
+  }
+  
+  .admin-stat-card:hover {
+    border-color: #d9b87555;
+  }
+  
+  .admin-stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 22px;
+    width: 32px;
+    height: 2px;
+    background: #d9b875;
+    z-index: 2;
+    pointer-events: none;
+  }
+  
+  .admin-stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--admin-muted);
+    font-size: 12px;
+  }
+  
+  .admin-stat-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d9b875;
+    background: rgba(217, 184, 117, 0.08);
+    border: 1px solid rgba(217, 184, 117, 0.22);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  
+  .admin-stat-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .admin-stat-card h3 {
+    margin: 27px 0 8px;
+    font-size: 38px;
+    font-weight: 500;
+  }
+  
+  .admin-stat-card > p {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 10px;
+  }
+  
+  /* Statistics Card Background Images */
+  
+  .admin-dashboard .admin-stat-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 58%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  
+    opacity: 0.48;
+  
+    -webkit-mask-image: linear-gradient(
+      to left,
+      #000 0%,
+      #000 48%,
+      transparent 100%
+    );
+  
+    mask-image: linear-gradient(
+      to left,
+      #000 0%,
+      #000 48%,
+      transparent 100%
+    );
+  }
+  
+  /* Products */
+  
+  .admin-dashboard .admin-stat-card.products-card::after {
+    background-image:
+      linear-gradient(rgba(15, 17, 15, 0.48), rgba(15, 17, 15, 0.48)),
+      url("../../assets/product.jpg");
+  }
+  
+  /* Orders */
+  
+  .admin-dashboard .admin-stat-card.orders-card::after {
+    background-image:
+      linear-gradient(rgba(15, 17, 15, 0.48), rgba(15, 17, 15, 0.48)),
+      url("../../assets/order-boxes.jpg");
+  }
+  
+  /* Enquiries */
+  
+  .admin-dashboard .admin-stat-card.enquiries-card::after {
+    background-image:
+      linear-gradient(rgba(15, 17, 15, 0.48), rgba(15, 17, 15, 0.48)),
+      url("../../assets/chat.jpg");
+  }
+  
+  /* Keep Card Content Above Images */
+  
+  .admin-dashboard .admin-stat-card > * {
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* Business Activity Section */
+  
+  .admin-lower-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 26px;
+  }
+  
+  .admin-activity-panel,
+  .admin-focus-panel {
+    min-width: 0;
+    padding: 25px;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    background: #191a17;
+  }
+  
+  .admin-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  
+  .admin-panel-heading .admin-eyebrow {
+    margin: 0 0 9px;
+  }
+  
+  .admin-panel-heading h2,
+  .admin-focus-panel h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .admin-live-dot {
+    padding: 6px 8px;
+    border: 1px solid #d9b87540;
+    color: var(--admin-gold);
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  
+  .admin-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 17px 0;
+    border-top: 1px solid var(--admin-border);
+  }
+  
+  .admin-activity-mark {
+    color: var(--admin-gold);
+    font-size: 11px;
+  }
+  
+  .admin-activity-item > div {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .admin-activity-item strong {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .admin-activity-item p {
+    margin: 5px 0 0;
+    color: var(--admin-muted);
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  
+  .admin-activity-arrow {
+    color: var(--admin-gold);
+  }
+  
+  /* Focus Panel */
+  
+  .admin-focus-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background:
+      radial-gradient(
+        ellipse at 100% 0%,
+        #d9b87516,
+        transparent 55%
+      ),
+      #171815;
+  }
+  
+  .admin-focus-panel .admin-eyebrow {
+    margin: 0;
+  }
+  
+  .admin-focus-symbol {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin: 28px 0 22px;
+    border: 1px solid #d9b87565;
+    color: var(--admin-gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+  }
+  
+  .admin-focus-panel h2 {
+    font-family: 'Playfair Display', serif;
+    line-height: 1.45;
+  }
+  
+  .admin-focus-panel > p {
+    color: var(--admin-muted);
+    font-size: 11px;
+    line-height: 1.8;
+  }
+  
+  .admin-focus-line {
+    width: 42px;
+    height: 2px;
+    margin-top: auto;
+    background: var(--admin-gold);
+  }
+  
+  .admin-focus-caption {
+    margin-top: 13px;
+    color: var(--admin-muted);
+    font-size: 8px;
+    letter-spacing: 1.2px;
+  }
+  
+  /* Overview Responsive Design */
+  
+  @media (max-width: 760px) {
+    .admin-stats {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  
+    .admin-welcome {
+      min-height: 190px;
+      padding: 26px 22px;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .admin-lower-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .admin-focus-panel {
+      min-height: 260px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .admin-welcome {
+      margin-top: 22px;
+    }
+  
+    .admin-activity-panel,
+    .admin-focus-panel {
+      padding: 20px;
+    }
+  }
