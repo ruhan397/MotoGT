@@ -19,7 +19,7 @@
 .hero-content {
   max-width: 570px;
   text-align: center;
-  transform: translateY(0px);
+  transform: translateY(5px);
 }
 
 .eyebrow {
@@ -28,6 +28,7 @@
   font-weight: 700;
   color: #f5d58a;
   text-shadow: 0 0 8px rgba(240, 195, 90, 0.25);
+  transform: translateY(10px);
 }
 
 .hero h1 {
