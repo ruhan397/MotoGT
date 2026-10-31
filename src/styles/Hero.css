@@ -19,7 +19,7 @@
 .hero-content {
   max-width: 570px;
   text-align: center;
-  transform: translateY(10px);
+  transform: translateY(0px);
 }
 
 .eyebrow {
@@ -31,11 +31,12 @@
 }
 
 .hero h1 {
-  font-size: clamp(48px, 6.2vw, 79px);
-  letter-spacing: -3px;
+  font-size: clamp(46px, 5.2vw, 72px);
+  letter-spacing: -0px;
   line-height: 1.04;
   margin: 24px 0;
-  font-weight: 500;
+  font-weight: 400;
+  font-family: 'Playfair Display', serif;
 }
 
 .hero h1 em {
@@ -139,7 +140,7 @@
   }
 
   .hero h1 {
-    font-size: clamp(53px, 13vw, 75px);
+    font-size: clamp(40px, 10vw, 58px);
   }
 
   .hero .hero-visual {
@@ -174,7 +175,7 @@
       rgba(0, 0, 0, 0.65),
       rgba(0, 0, 0, 0.65)
     ),
-    url('../assets/BGMGT2.jpeg');
+    url('../assets/BMGTL2.jpeg');
 
   background-size: cover;
   background-position: left center;

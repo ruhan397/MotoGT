@@ -117,7 +117,7 @@ button, a {
   color: goldenrod;
 }
 
-.hero h1,
+
 .section-heading h2,
 .contact-section h2 {
   font-size: clamp(48px, 6.2vw, 79px);
@@ -393,9 +393,6 @@ footer p {
     gap: 38px;
   }
 
-  .hero h1 {
-    font-size: clamp(53px, 13vw, 75px);
-  }
 
   .hero-visual {
     min-height: 300px;

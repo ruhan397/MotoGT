@@ -8,6 +8,8 @@
   
   .contact-section h2 {
     font-size: clamp(44px, 6vw, 65px);
+    font-family: "Playfair Display", serif;
+    font-weight: 400;
   }
   
   .contact-section > p:not(.eyebrow) {
