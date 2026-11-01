@@ -224,8 +224,8 @@
 
 .intro-strip .intro-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   margin-right: 9px;
   background: #C9A45C;
   border-radius: 50%;
@@ -240,7 +240,7 @@
   font-weight: 400;
   position: relative;
   top: 2px;
-  margin-right: 0.7em;
+  margin-right: 0.5em;
   opacity: 0;
   animation-duration: 6s;
   animation-timing-function: linear;
@@ -289,4 +289,21 @@
   46.67% { opacity: 1; transform: translateX(0); }
   88.33% { opacity: 1; transform: translateX(0); }
   100% { opacity: 0; transform: translateX(0); }
+}
+
+
+
+.intro-strip .intro-dot {
+  transform: scale(0.7);
+  position: relative;
+top: 2px;
+}
+
+
+.intro-strip .intro-label .intro-dot {
+  width: 5px !important;
+  height: 5px !important;
+  min-width: 5px !important;
+  min-height: 5px !important;
+  flex: none !important;
 }
