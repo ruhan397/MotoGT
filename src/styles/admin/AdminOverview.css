@@ -362,3 +362,19 @@
       padding: 20px;
     }
   }
+  
+/* MotoGT Admin Stats - Smooth Hover Effect */
+
+.admin-dashboard .admin-stat-card {
+  transform: translateY(0) scale(1);
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.admin-dashboard .admin-stat-card:hover {
+  transform: translateY(-4px) scale(1.025);
+  border-color: #d9b875;
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.24);
+}

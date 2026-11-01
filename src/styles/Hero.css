@@ -19,7 +19,7 @@
 .hero-content {
   max-width: 570px;
   text-align: center;
-  transform: translateY(5px);
+  transform: translateY(-10px);
 }
 
 .eyebrow {
@@ -38,6 +38,7 @@
   margin: 24px 0;
   font-weight: 400;
   font-family: 'Playfair Display', serif;
+  transform: scaleX(1.10);
 }
 
 .hero h1 em {
@@ -182,5 +183,11 @@
   background-position: left center;
   background-repeat: no-repeat;
 }
+.nav-cta {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
+.nav-cta:hover {
+  transform: scale(1.12);
+}
  

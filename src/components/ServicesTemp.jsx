@@ -3,7 +3,10 @@ function Services() {
     return (
       <>
         <section className="intro-strip" id="about">
-          <span>BUILT AROUND YOUR CAR</span>
+        <p className="intro-label">
+  <span className="intro-dot"></span>
+  BUILT AROUND YOUR CAR
+</p>
           <p>Driven by faith, guided by honesty. Quality service and care for every journey.</p>
         </section>
   

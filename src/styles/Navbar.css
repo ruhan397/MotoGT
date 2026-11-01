@@ -38,16 +38,52 @@
     object-position: left center;
   }
   
-  .nav-links {
-    display: flex;
-    gap: 32px;
-    color: white;
-    font-size: 12px;
-  }
   
-  .nav-links a:hover {
-    color: white;
-  }
+.nav-links {
+  display: flex;
+  gap: 32px;
+  color: white;
+  font-size: 12px;
+}
+
+.nav-links a {
+  display: inline-block;
+  position: relative;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 1px;
+  background: #C9A45C;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.nav-links a {
+  display: inline-block;
+  position: relative;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  transform: scale(1);
+}
+
+.nav-links a:hover {
+  color: white;
+  transform: scale(1.25);
+}
+
+.nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+  
   
   
 .nav-cta {
