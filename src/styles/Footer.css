@@ -29,4 +29,8 @@ footer > p {
   }
 }
   
-  
+footer .brand img {
+  width: 100px;
+  height: auto;
+  object-fit: contain;
+}

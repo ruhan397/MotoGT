@@ -1,5 +1,5 @@
 
-import logo from '../assets/GTM.jpeg'
+import logo from '../assets/MotoGT-logo-clean.png'
 
 function Footer() {
   return (

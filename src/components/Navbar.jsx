@@ -8,9 +8,15 @@ function Navbar() {
           <a href="#about">About Us</a>
         </div>
   
-        <a className="nav-cta" href="#contact">
-          Contact Us ⟫
-        </a>
+        <div className="nav-actions">
+          <a className="nav-login" href="/login">
+            Login
+          </a>
+
+          <a className="nav-cta" href="#contact">
+            Contact Us ⟫
+          </a>
+        </div>
       </nav>
     )
   }
