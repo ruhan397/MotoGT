@@ -19,15 +19,18 @@
 .hero-content {
   max-width: 570px;
   text-align: center;
+  position: relative;
+  left: 25px;
   transform: translateY(-10px);
 }
+
 
 .eyebrow {
   font-size: 10px;
   letter-spacing: 2.7px;
   font-weight: 700;
-  color: #f5d58a;
-  text-shadow: 0 0 8px rgba(240, 195, 90, 0.25);
+  color: #ffffff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
   transform: translateY(10px);
 }
 
@@ -190,4 +193,6 @@
 .nav-cta:hover {
   transform: scale(1.12);
 }
- 
+.hero .hero-content {
+  transform: translate(15px, -10px);
+}

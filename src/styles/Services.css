@@ -1,204 +1,57 @@
 
 /* Intro strip */
 .intro-strip {
-    padding: 24px 7%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    border-top: 1px solid #ffffff12;
-    border-bottom: 1px solid #ffffff12;
-  }
-  
-  .intro-strip span {
-    color: goldenrod;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-  }
-  
-  .intro-strip p {
-    margin: 0;
-    color: #c0c0c0;
-    font-size: 11px;
-    line-height: 1.7;
-  }
-  
-  /* Services section */
-  .services {
-    padding: 100px 7%;
-  }
-  
-  .section-heading {
-    margin-bottom: 42px;
-    text-align: center;
-  }
-  
-  .section-heading .eyebrow {
-    margin-bottom: 18px;
-  }
-  
-  .section-heading h2 {
-    margin: 0;
-    font-size: clamp(38px, 5vw, 62px);
-    font-weight: 500;
-    font-family: "Playfair Display", serif;
-    letter-spacing: -2px;
-    line-height: 1.12;
-  }
-  
-  .section-heading h2 em {
-    color: red;
-    font-family: "Playfair Display", serif;
-    font-weight: 500;
-  }
-  
-  /* Service cards */
-  .service-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
-  }
-  
-  .service-card {
-    position: relative;
-    min-height: 300px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    border: 1px solid #ffffff18;
-    background: #171815;
-    transition:
-      transform 0.25s ease,
-      border-color 0.25s ease,
-      background 0.25s ease;
-  }
-  
-  .service-card:hover {
-    transform: translateY(-5px);
-    border-color: #d4a75b80;
-    background: #1b1c18;
-  }
-  
-  .accessories-card {
-    background:
-      radial-gradient(ellipse at top right, #d4a75b12, transparent 60%),
-      #171815;
-  }
-  
-  .paint-card {
-    background:
-      radial-gradient(ellipse at top right, #ffffff0b, transparent 60%),
-      #171815;
-  }
-  
-  .card-number {
-    color: #a9a9a2;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-  }
-  
-  .service-card .service-symbol {
-    margin: 28px 0 18px;
-    color: goldenrod;
-    font-size: 30px;
-    line-height: 1;
-    animation: motogtSymbolGlow 2s ease-in-out infinite;
-  }
-  
-  .service-card h3 {
-    margin: 0 0 12px;
-    color: #f4f0e8;
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-  }
-  
-  .service-card p {
-    max-width: 390px;
-    margin: 0 0 24px;
-    color: #b9b9b2;
-    font-size: 13px;
-    line-height: 1.8;
-  }
-  
-  .service-card a {
-    margin-top: auto;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    transition: color 0.2s ease;
-  }
-  
-  .service-card a:hover {
-    color: #d4a75b;
-  }
-  
-  /* Mobile responsive */
-  @media (max-width: 760px) {
-    .intro-strip {
-      padding: 22px 5%;
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 10px;
-    }
-  
-    .intro-strip p {
-      font-size: 11px;
-    }
-  
-    .services {
-      padding: 70px 5%;
-    }
-  
-    .section-heading {
-      margin-bottom: 30px;
-    }
-  
-    .section-heading h2 {
-      font-size: clamp(38px, 9vw, 52px);
-      letter-spacing: -1.5px;
-    }
-  
-    .service-grid {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-  
-    .service-card {
-      min-height: 280px;
-      padding: 25px;
-    }
-  }
-  
-  @media (prefers-reduced-motion: reduce) {
-    .service-card,
-    .service-card a {
-      transition: none;
-    }
-  }
-  .service-card a,
-.service-card a:link,
-.service-card a:visited,
-.service-card a:hover,
-.service-card a:active {
-  color: #ffffff !important;
+  padding: 24px 7%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  border-top: 1px solid #ffffff12;
+  border-bottom: 1px solid #ffffff12;
 }
-  
 
-@keyframes motogtSymbolGlow {
-  0%, 100% {
-    color: #daa520;
-  }
-
-  50% {
-    color: #ffffff;
-  }
+.intro-strip span {
+  color: goldenrod;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
 }
-/* Background image for What We Do section */
+
+.intro-strip p {
+  margin: 0;
+  color: #c0c0c0;
+  font-size: 14px !important;
+  line-height: 1.7;
+}
+
+/* Alternating intro text */
+.intro-strip .intro-label {
+  display: block;
+  width: 100%;
+  margin: 0;
+  opacity: 0;
+  color: goldenrod;
+  font-size: 13px !important;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  font-family: 'Barlow Condensed', sans-serif;
+  text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
+  line-height: 1.7;
+  text-align: center;
+  transition: opacity 1.2s ease-in-out;
+}
+
+.intro-strip .intro-label.is-hidden {
+  opacity: 0;
+}
+
+.intro-strip .intro-label.is-visible {
+  opacity: 1;
+}
+
+/* Services section */
 .services {
+  padding: 100px 7%;
   position: relative;
   isolation: isolate;
   background-image:
@@ -208,102 +61,169 @@
   background-position: center;
   background-repeat: no-repeat;
 }
-.intro-strip p {
-  font-size: 14px !important;
+
+.section-heading {
+  margin-bottom: 42px;
+  text-align: center;
 }
-.intro-strip .intro-label {
-  display: block;
+
+.section-heading .eyebrow {
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
   margin: 0;
-  color: goldenrod;
-  font-size: 13px !important;
+  font-size: clamp(38px, 5vw, 62px);
   font-weight: 500;
+  font-family: "Playfair Display", serif;
+  letter-spacing: -2px;
+  line-height: 1.12;
+}
+
+.section-heading h2 em {
+  color: red;
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+}
+
+/* Service cards */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.service-card {
+  position: relative;
+  min-height: 300px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #ffffff18;
+  background: #171815;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  border-color: #d4a75b80;
+  background: #1b1c18;
+}
+
+.accessories-card {
+  background:
+    radial-gradient(ellipse at top right, #d4a75b12, transparent 60%),
+    #171815;
+}
+
+.paint-card {
+  background:
+    radial-gradient(ellipse at top right, #ffffff0b, transparent 60%),
+    #171815;
+}
+
+.card-number {
+  color: #a9a9a2;
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: 1.5px;
-  line-height: 1.7;
-  margin-left: 35px;
 }
 
-.intro-strip .intro-dot {
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  margin-right: 9px;
-  background: #C9A45C;
-  border-radius: 50%;
-  vertical-align: middle;
-  
+.service-card .service-symbol {
+  margin: 28px 0 18px;
+  color: goldenrod;
+  font-size: 30px;
+  line-height: 1;
+  animation: motogtSymbolGlow 2s ease-in-out infinite;
 }
 
-.intro-strip .word-reveal {
-  display: inline-block;
-  font-size: inherit;
-  letter-spacing: inherit;
-  font-weight: 400;
-  position: relative;
-  top: 2px;
-  margin-right: 0.5em;
-  opacity: 0;
-  animation-duration: 6s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+.service-card h3 {
+  margin: 0 0 12px;
+  color: #f4f0e8;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
-.intro-strip .word-1 {
-  animation-name: revealWord1;
+.service-card p {
+  max-width: 390px;
+  margin: 0 0 24px;
+  color: #b9b9b2;
+  font-size: 13px;
+  line-height: 1.8;
 }
 
-.intro-strip .word-2 {
-  animation-name: revealWord2;
+.service-card a {
+  margin-top: auto;
+  color: #ffffff !important;
+  font-size: 12px;
+  font-weight: 700;
+  transition: color 0.2s ease;
 }
 
-.intro-strip .word-3 {
-  animation-name: revealWord3;
+.service-card a:link,
+.service-card a:visited,
+.service-card a:hover,
+.service-card a:active {
+  color: #ffffff !important;
 }
 
-.intro-strip .word-4 {
-  animation-name: revealWord4;
+/* Symbol animation */
+@keyframes motogtSymbolGlow {
+  0%, 100% {
+    color: #daa520;
+  }
+
+  50% {
+    color: #ffffff;
+  }
 }
 
-@keyframes revealWord1 {
-  0% { opacity: 0; transform: translateX(-12px); }
-  11.67% { opacity: 1; transform: translateX(0); }
-  88.33% { opacity: 1; transform: translateX(0); }
-  100% { opacity: 0; transform: translateX(0); }
+/* Mobile responsive */
+@media (max-width: 760px) {
+  .intro-strip {
+    padding: 22px 5%;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .intro-strip p {
+    font-size: 11px;
+  }
+
+  .services {
+    padding: 70px 5%;
+  }
+
+  .section-heading {
+    margin-bottom: 30px;
+  }
+
+  .section-heading h2 {
+    font-size: clamp(38px, 9vw, 52px);
+    letter-spacing: -1.5px;
+  }
+
+  .service-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .service-card {
+    min-height: 280px;
+    padding: 25px;
+  }
 }
 
-@keyframes revealWord2 {
-  0%, 11.67% { opacity: 0; transform: translateX(-12px); }
-  23.33% { opacity: 1; transform: translateX(0); }
-  88.33% { opacity: 1; transform: translateX(0); }
-  100% { opacity: 0; transform: translateX(0); }
-}
-
-@keyframes revealWord3 {
-  0%, 23.33% { opacity: 0; transform: translateX(-12px); }
-  35% { opacity: 1; transform: translateX(0); }
-  88.33% { opacity: 1; transform: translateX(0); }
-  100% { opacity: 0; transform: translateX(0); }
-}
-
-@keyframes revealWord4 {
-  0%, 35% { opacity: 0; transform: translateX(-12px); }
-  46.67% { opacity: 1; transform: translateX(0); }
-  88.33% { opacity: 1; transform: translateX(0); }
-  100% { opacity: 0; transform: translateX(0); }
-}
-
-
-
-.intro-strip .intro-dot {
-  transform: scale(0.7);
-  position: relative;
-top: 2px;
-}
-
-
-.intro-strip .intro-label .intro-dot {
-  width: 5px !important;
-  height: 5px !important;
-  min-width: 5px !important;
-  min-height: 5px !important;
-  flex: none !important;
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .service-card,
+  .service-card a {
+    transition: none;
+  }
 }

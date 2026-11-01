@@ -19,6 +19,8 @@ function Register() {
 
           <label>Email Address</label>
           <input type="email" placeholder="Enter your email" />
+          <label>Phone Number</label>
+<input type="tel" placeholder="Enter your phone number" />
 
           <label>Password</label>
           <input type="password" placeholder="Create a password" />
