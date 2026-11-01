@@ -212,24 +212,81 @@
   font-size: 14px !important;
 }
 .intro-strip .intro-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: block;
   margin: 0;
   color: goldenrod;
-  font-size: 10px !important;
-  font-weight: 700;
-  letter-spacing: 2px;
+  font-size: 13px !important;
+  font-weight: 500;
+  letter-spacing: 1.5px;
   line-height: 1.7;
+  margin-left: 35px;
 }
 
 .intro-strip .intro-dot {
   display: inline-block;
-  width: 7px;
-  height: 7px;
-  flex: 0 0 7px;
+  width: 8px;
+  height: 8px;
+  margin-right: 9px;
   background: #C9A45C;
   border-radius: 50%;
-  font-size: 0;
-  letter-spacing: 0;
+  vertical-align: middle;
+  
+}
+
+.intro-strip .word-reveal {
+  display: inline-block;
+  font-size: inherit;
+  letter-spacing: inherit;
+  font-weight: 400;
+  position: relative;
+  top: 2px;
+  margin-right: 0.7em;
+  opacity: 0;
+  animation-duration: 6s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.intro-strip .word-1 {
+  animation-name: revealWord1;
+}
+
+.intro-strip .word-2 {
+  animation-name: revealWord2;
+}
+
+.intro-strip .word-3 {
+  animation-name: revealWord3;
+}
+
+.intro-strip .word-4 {
+  animation-name: revealWord4;
+}
+
+@keyframes revealWord1 {
+  0% { opacity: 0; transform: translateX(-12px); }
+  11.67% { opacity: 1; transform: translateX(0); }
+  88.33% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes revealWord2 {
+  0%, 11.67% { opacity: 0; transform: translateX(-12px); }
+  23.33% { opacity: 1; transform: translateX(0); }
+  88.33% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes revealWord3 {
+  0%, 23.33% { opacity: 0; transform: translateX(-12px); }
+  35% { opacity: 1; transform: translateX(0); }
+  88.33% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes revealWord4 {
+  0%, 35% { opacity: 0; transform: translateX(-12px); }
+  46.67% { opacity: 1; transform: translateX(0); }
+  88.33% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(0); }
 }

@@ -5,7 +5,14 @@ function Services() {
         <section className="intro-strip" id="about">
         <p className="intro-label">
   <span className="intro-dot"></span>
-  BUILT AROUND YOUR CAR
+  {"BUILT AROUND YOUR CAR".split(" ").map((word, index) => (
+    <span
+      className={`word-reveal word-${index + 1}`}
+      key={index}
+    >
+      {word}
+    </span>
+  ))}
 </p>
           <p>Driven by faith, guided by honesty. Quality service and care for every journey.</p>
         </section>
