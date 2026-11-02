@@ -1,15 +1,17 @@
 
 import { useEffect, useState } from "react";
 import "../styles/Services.css";
+import accessoriesImage from "../assets/CPARTS.jpeg";
+import paintImage from "../assets/DPAINT2.jpeg";
 
 const sentences = [
-  "DRIVEN BY FAITH, GUIDED BY HONESTY",
-  "QUALITY SERVICE AND CARE FOR EVERY JOURNEY."
+  "“WE BELIEVE EVERY DETAIL DESERVES PERFECTION”",
+  "“MADE TO KEEP YOUR CAR LOOKING ITS BEST.”"
 ];
 
 function Services() {
   const [sentenceIndex, setSentenceIndex] = useState(0);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     let hideTimer;
@@ -28,7 +30,7 @@ function Services() {
       }, 5200);
     };
   
-    const firstTimer = setTimeout(showSentence, 2500);
+    const firstTimer = setTimeout(showSentence, 0);
   
     return () => {
       clearTimeout(firstTimer);
@@ -40,9 +42,11 @@ function Services() {
   return (
     <>
       <section className="intro-strip" id="about">
-      <p className={`intro-label ${visible ? "is-visible" : "is-hidden"}`}>
-  {sentences[sentenceIndex]}
-</p>
+      <div className="intro-quote-frame">
+  <p className={`intro-label ${visible ? "is-visible" : "is-hidden"}`}>
+    {sentences[sentenceIndex]}
+  </p>
+</div>
       </section>
 
       <section className="services" id="accessories">
@@ -56,8 +60,14 @@ function Services() {
 
         <div className="service-grid">
           <article className="service-card accessories-card">
-            <span className="card-number">01 / ACCESSORIES</span>
-            <div className="service-symbol">✳</div>
+          <span className="card-number">
+   <span className="number-dot"></span> ACCESSORIES
+</span>
+            <img
+  src={accessoriesImage}
+  alt="Car accessories at MotoGT"
+  className="service-image"
+/>
             <h3>Car Accessories</h3>
             <p>
               Find the finishing touches that make your car feel like yours.
@@ -66,8 +76,14 @@ function Services() {
           </article>
 
           <article className="service-card paint-card" id="dent-paint">
-            <span className="card-number">02 / BODYWORK</span>
-            <div className="service-symbol">◈</div>
+          <span className="card-number">
+  <span className="number-dot"></span> BODYWORK
+</span>
+            <img
+  src={paintImage}
+  alt="Car spray painting service at MotoGT"
+  className="service-image"
+/>
             <h3>Dent &amp; Paint</h3>
             <p>
               Bring back a cleaner look with careful dent repair and paintwork.
