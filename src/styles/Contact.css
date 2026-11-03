@@ -10,6 +10,7 @@
     font-size: clamp(44px, 6vw, 65px);
     font-family: "Playfair Display", serif;
     font-weight: 400;
+    transform: translateX(-5px);
   }
   
   .contact-section > p:not(.eyebrow) {

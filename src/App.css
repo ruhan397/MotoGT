@@ -275,7 +275,7 @@ h2 em {
 }
 
 .service-card {
-  min-height: 300px;
+  min-height: 270px;
   padding: 30px;
   border: 1px solid #ffffff19;
   display: flex;

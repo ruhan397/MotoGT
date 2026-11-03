@@ -112,7 +112,7 @@
 
 .service-card {
   position: relative;
-  min-height: 300px;
+  min-height: 270px;
   padding: 30px;
   display: flex;
   flex-direction: column;
