@@ -289,13 +289,6 @@ h2 em {
   transform: translateY(-3px);
 }
 
-.accessories-card {
-  background: linear-gradient(135deg, #22231e, #191a17);
-}
-
-.paint-card {
-  background: linear-gradient(135deg, #28251e, #191a17);
-}
 
 .card-number {
   font-size: 9px;
