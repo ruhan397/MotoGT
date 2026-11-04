@@ -95,7 +95,7 @@ button, a {
 .hero {
   display: grid;
   grid-template-columns: 1fr 0.88fr;
-  min-height: 550px;
+  min-height: 580px;
   padding: 45px 7% 45px;
   gap: 30px;
   align-items: center;

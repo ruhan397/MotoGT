@@ -6,11 +6,13 @@ function VisitStore() {
     <section className="visit-store" id="visit-store">
       <div className="visit-store-card">
 
-        <div className="visit-store-heading">
-          <h2>
-            VISIT OUR <em>STORE.</em>
-          </h2>
-        </div>
+      <div className="visit-store-heading">
+  <h2>
+    <span className="word-visit">VISIT</span>{" "}
+    <span className="word-our">OUR</span>{" "}
+    <em className="word-store">STORE.</em>
+  </h2>
+</div>
 
         <div className="visit-store-image">
           <img src={shopImage} alt="MotoGT Shop Front" />

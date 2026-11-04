@@ -1,8 +1,8 @@
 .visit-store {
-    padding: 90px 7%;
-    background: #111210;
-    color: #f4f0e8;
-  }
+  padding: 90px 7%;
+  background: #111210;
+  color: #f4f0e8;
+}
   
   .visit-store-heading {
     text-align: center;
@@ -42,7 +42,7 @@
   }
   
   .visit-store-address {
-    margin: 35px auto 0;
+    margin: 45px auto 0;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -97,7 +97,42 @@
     max-width: 1050px;
     margin: 0 auto;
     padding: 45px 50px;
-    background: #20211d;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78)),
+      url('../assets/BGMGT2.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border: 1px solid #ffffff18;
     border-radius: 8px;
   }
+  
+  /* Word-by-Word Animation */
+
+.word-visit,
+.word-our,
+.word-store {
+  display: inline-block;
+  animation: wordFloat 1.5s ease-in-out infinite;
+}
+
+.word-our {
+  animation-delay: 0.10s;
+}
+
+.word-store {
+  animation-delay: 0.2s;
+}
+
+@keyframes wordFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+  
+ 
+  
