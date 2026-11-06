@@ -1,5 +1,5 @@
 import motoLogo from '../assets/MotoGT-logo-clean.png';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/AdminDashboard.css';
 import '../styles/admin/AdminSidebar.css';
 import '../styles/admin/AdminHeader.css';
@@ -9,6 +9,84 @@ import '../styles/admin/AdminResponsive.css';
 
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('Overview');
+
+  const [products, setProducts] = useState([]);
+const [productsLoading, setProductsLoading] = useState(true);
+const [productsError, setProductsError] = useState('');
+const [showAddProduct, setShowAddProduct] = useState(false);
+
+const [newProduct, setNewProduct] = useState({
+  name: "",
+  brand: "",
+  category: "",
+  price: "",
+  description: "",
+  image: "",
+  stock: "",
+});
+
+const [savingProduct, setSavingProduct] = useState(false);
+const [productMessage, setProductMessage] = useState("");
+
+useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:5001/api/products'
+      );
+
+      if (!response.ok) {
+        throw new Error('Could not load products');
+      }
+
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      setProductsError(error.message);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, []);
+
+const handleAddProduct = async (e) => {
+  e.preventDefault();
+  setSavingProduct(true);
+  setProductMessage("");
+
+  try {
+    const token = localStorage.getItem("motogtToken");
+
+    const response = await fetch("http://localhost:5001/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ...newProduct,
+        price: Number(newProduct.price),
+        stock: Number(newProduct.stock),
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add product");
+    }
+
+    setProducts((prev) => [...prev, data]);
+    setProductMessage("Product added successfully!");
+    setShowAddProduct(false);
+  } catch (error) {
+    setProductMessage(error.message);
+  } finally {
+    setSavingProduct(false);
+  }
+};
 
   const menuItems = [
     'Overview',
@@ -178,21 +256,131 @@ function AdminDashboard() {
 )}
 
 
-        {activeTab === 'Products' && (
-          <section className="admin-content-card">
-            <h2>Product Management</h2>
-            <p>Manage car accessories and product listings.</p>
-            <div className="admin-table-row">
-              <strong>Car Accessories</strong>
-              <span>Demo category</span>
-              <span>Available</span>
-            </div>
-            <button className="admin-action-button">
-              + Add Product
-            </button>
-          </section>
-        )}
+{activeTab === 'Products' && (
+  <section className="admin-content-card">
+    <h2>Product Management</h2>
 
+    <button
+  className="admin-action-button"
+  onClick={() => setShowAddProduct(true)}
+>
+  + Add Product
+</button>
+
+{showAddProduct && (
+  <div className="admin-content-card">
+    <h2>Add New Product</h2>
+    <p>Enter the details of your new product.</p>
+
+    <form onSubmit={handleAddProduct}>
+      <input
+        type="text"
+        placeholder="Product Name"
+        value={newProduct.name}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, name: e.target.value })
+        }
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Brand"
+        value={newProduct.brand}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, brand: e.target.value })
+        }
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Category"
+        value={newProduct.category}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, category: e.target.value })
+        }
+        required
+      />
+
+      <input
+        type="number"
+        placeholder="Price"
+        min="0"
+        value={newProduct.price}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, price: e.target.value })
+        }
+        required
+      />
+
+      <textarea
+        placeholder="Product Description"
+        value={newProduct.description}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, description: e.target.value })
+        }
+      />
+
+      <input
+        type="text"
+        placeholder="Image URL"
+        value={newProduct.image}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, image: e.target.value })
+        }
+      />
+
+      <input
+        type="number"
+        placeholder="Stock Quantity"
+        min="0"
+        value={newProduct.stock}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, stock: e.target.value })
+        }
+      />
+
+      <button
+        type="submit"
+        className="admin-action-button"
+        disabled={savingProduct}
+      >
+        {savingProduct ? "Saving..." : "Save Product"}
+      </button>
+
+      <button
+        type="button"
+        className="admin-action-button"
+        onClick={() => setShowAddProduct(false)}
+      >
+        Close Form
+      </button>
+    </form>
+  </div>
+)}
+
+{productMessage && <p>{productMessage}</p>}
+
+    <p>Manage car accessories and product listings.</p>
+
+    {productsLoading && <p>Loading products...</p>}
+
+    {productsError && <p>{productsError}</p>}
+
+    {!productsLoading && !productsError && products.length === 0 && (
+      <p>No products found.</p>
+    )}
+
+    {!productsLoading && !productsError && products.map((product) => (
+      <div className="admin-table-row" key={product._id}>
+        <strong>{product.name}</strong>
+        <span>{product.brand}</span>
+        <span>৳{product.price.toLocaleString('en-BD')}</span>
+      </div>
+    ))}
+  </section>
+)}
         {activeTab === 'Orders' && (
           <section className="admin-content-card">
             <h2>Order Management</h2>

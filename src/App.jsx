@@ -15,9 +15,11 @@ import Services from './components/ServicesTemp';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import VisitStore from './components/VisitStore';
+import MembershipCard from './components/MembershipCard';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Accessories from './pages/Accessories';
 
 function App() {
   const currentPath = window.location.pathname;
@@ -30,10 +32,18 @@ function App() {
         <Login />
       ) : currentPath === '/register' ? (
         <Register />
+      ) : currentPath === '/accessories' ? (
+        <>
+          <Accessories />
+          <Footer />
+        </>
       ) : (
         <>
           <Hero />
           <Services />
+
+          {localStorage.getItem('motogtToken') && <MembershipCard />}
+
           <Contact />
           <VisitStore />
           <Footer />

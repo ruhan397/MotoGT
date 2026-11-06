@@ -72,7 +72,7 @@ function Services() {
             <p>
               Find the finishing touches that make your car feel like yours.
             </p>
-            <a href="#contact">Explore accessories ↗</a>
+            <a href="/accessories">Explore accessories ↗</a>
           </article>
 
           <article className="service-card paint-card" id="dent-paint">
