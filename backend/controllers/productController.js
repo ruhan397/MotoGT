@@ -128,6 +128,7 @@ const bulkImportProducts = async (req, res) => {
         category: product.category,
         price: Number(product.price),
         description: product.description || '',
+        specifications: product.specifications || [],
         image: product.image || '',
         stock: Number(product.stock ?? 0)
       }));

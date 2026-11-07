@@ -1,5 +1,6 @@
 import { useState } from "react";
 import logo from "../assets/MotoGT-logo-clean.png";
+import { apiFetch } from "../utils/api";
 import "../styles/Auth.css";
 
 function Login() {
@@ -24,18 +25,15 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5001/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await apiFetch("/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed.");
@@ -45,7 +43,6 @@ function Login() {
       localStorage.setItem("motogtUser", JSON.stringify(data.user));
 
       setMessage("Login successful!");
-
       window.location.href = "/";
     } catch (error) {
       setMessage(error.message || "Something went wrong.");

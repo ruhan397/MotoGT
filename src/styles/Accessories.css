@@ -1,13 +1,23 @@
 .accessories-page {
   min-height: 75vh;
   padding: 90px 8%;
-  background: #111210;
+  background-image:
+  linear-gradient(
+    rgba(0, 0, 0, 0.78),
+    rgba(0, 0, 0, 0.78)
+  ),
+  url("../assets/BGMGT2.jpeg");
+
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
   color: #f4f0e8;
 }
 
 .accessories-heading {
   text-align: center;
   margin-bottom: 55px;
+  transform: translateY(-40px);
 }
 
 .accessories-heading .eyebrow {
@@ -15,6 +25,7 @@
   font-size: 12px;
   letter-spacing: 4px;
   margin-bottom: 15px;
+  margin-top: 30px;
 }
 
 .accessories-heading h1 {
@@ -72,7 +83,7 @@
   width: 100%;
   height: 220px;
   object-fit: contain;
-  background: #151613;
+  background: transparent;
   border-radius: 8px;
   transition: transform 0.55s ease;
 }
@@ -240,4 +251,282 @@
   .accessories-category-filter button {
     transition: none;
   }
+}
+/* Accessories heading position test */
+.accessories-heading .eyebrow {
+  margin-top: 40px !important;
+}
+
+/* Move title and description upward */
+.accessories-heading h1 {
+  transform: translateY(-15px) !important;
+}
+
+.accessories-heading p:not(.eyebrow) {
+  transform: translateY(-15px) !important;
+}
+
+/* =================================
+   MOTOGT 3D PRODUCT CAROUSEL
+================================= */
+
+.accessories-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 490px;
+  margin: 35px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+.accessories-carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.carousel-card {
+  position: absolute;
+  width: 34%;
+  max-width: 360px;
+  min-height: 410px;
+  padding: 20px;
+  box-sizing: border-box;
+  background: linear-gradient(145deg, #20211d, #151612);
+  border: 1px solid rgba(198, 167, 106, 0.25);
+  border-radius: 16px;
+  text-align: left;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.55s ease,
+    opacity 0.55s ease,
+    filter 0.55s ease,
+    border-color 0.55s ease,
+    box-shadow 0.55s ease;
+}
+
+.carousel-card img {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: contain;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.carousel-card h3 {
+  color: #f4f0e8;
+  font-size: 17px;
+  margin: 18px 0 8px;
+}
+
+.carousel-card p {
+  color: #aaa79f;
+  font-size: 14px;
+  margin: 7px 0;
+}
+
+.carousel-card p:last-child {
+  color: #d9b875;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Center Product */
+
+.carousel-card--center {
+  z-index: 3;
+  opacity: 1;
+  filter: none;
+  cursor: grab;
+  transform: translateX(0) scale(1);
+  border-color: #c6a76a;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
+}
+
+.carousel-card--center:active {
+  cursor: grabbing;
+}
+
+/* Left Product */
+
+.carousel-card--left {
+  z-index: 2;
+  opacity: 0.65;
+  filter: brightness(0.7);
+  transform: translateX(-75%) scale(0.78) rotateY(12deg);
+}
+
+/* Right Product */
+
+.carousel-card--right {
+  z-index: 2;
+  opacity: 0.65;
+  filter: brightness(0.7);
+  transform: translateX(75%) scale(0.78) rotateY(-12deg);
+}
+
+/* Navigation Arrows */
+
+.carousel-arrow {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(198, 167, 106, 0.5);
+  border-radius: 50%;
+  background: #1a1b18;
+  color: #d9b875;
+  font-size: 19px;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.carousel-arrow:hover:not(:disabled) {
+  background: #d9b875;
+  color: #111210;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel-arrow-left {
+  left: 0;
+}
+
+.carousel-arrow-right {
+  right: 0;
+}
+
+/* Product Counter */
+
+.carousel-counter {
+  text-align: center;
+  color: #c6a76a;
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin-top: 8px;
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .accessories-carousel {
+    height: 430px;
+  }
+
+  .carousel-card {
+    width: 42%;
+    min-height: 370px;
+  }
+
+  .carousel-card img {
+    height: 200px;
+  }
+
+  .carousel-card--left {
+    transform: translateX(-65%) scale(0.76) rotateY(10deg);
+  }
+
+  .carousel-card--right {
+    transform: translateX(65%) scale(0.76) rotateY(-10deg);
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .accessories-carousel {
+    height: 390px;
+    margin-top: 20px;
+  }
+
+  .carousel-card {
+    width: 76%;
+    min-height: 330px;
+    padding: 15px;
+  }
+
+  .carousel-card img {
+    height: 175px;
+  }
+
+  .carousel-card h3 {
+    font-size: 15px;
+  }
+
+  .carousel-card--left {
+    transform: translateX(-42%) scale(0.72) rotateY(8deg);
+  }
+
+  .carousel-card--right {
+    transform: translateX(42%) scale(0.72) rotateY(-8deg);
+  }
+
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+}
+
+/* Reduced Motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-card,
+  .carousel-arrow {
+    transition: none;
+  }
+}
+
+/* MotoGT Premium Glass Product Cards */
+
+.accessories-carousel .carousel-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.11),
+    rgba(255, 255, 255, 0.025)
+  );
+
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+
+  border: 1px solid rgba(198, 167, 106, 0.38);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Center Glass Card */
+.accessories-carousel .carousel-card--center {
+  background: linear-gradient(
+    145deg,
+    rgba(198, 167, 106, 0.16),
+    rgba(25, 26, 22, 0.72)
+  );
+
+  border-color: rgba(217, 184, 117, 0.75);
+
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.15),
+    0 20px 55px rgba(0, 0, 0, 0.45),
+    0 0 22px rgba(198, 167, 106, 0.09);
 }

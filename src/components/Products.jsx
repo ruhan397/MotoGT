@@ -1,20 +1,34 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../utils/api";
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadProducts = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await apiFetch("/products");
+
+      if (!response.ok) {
+        throw new Error(`Unable to load products (${response.status}).`);
+      }
+
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setError(error.message || "Unable to load products.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/products")
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-        setLoading(false);
-      });
+    loadProducts();
   }, []);
 
   return (
@@ -23,6 +37,11 @@ function Products() {
 
       {loading ? (
         <p>Loading products...</p>
+      ) : error ? (
+        <div>
+          <p>{error}</p>
+          <button onClick={loadProducts}>Try Again</button>
+        </div>
       ) : products.length === 0 ? (
         <p>No products available.</p>
       ) : (

@@ -1,4 +1,5 @@
 import motoLogo from '../assets/MotoGT-logo-clean.png';
+import { apiFetch } from '../utils/api';
 import React, { useState, useEffect } from 'react';
 import '../styles/AdminDashboard.css';
 import '../styles/admin/AdminSidebar.css';
@@ -13,7 +14,13 @@ function AdminDashboard() {
   const [products, setProducts] = useState([]);
 const [productsLoading, setProductsLoading] = useState(true);
 const [productsError, setProductsError] = useState('');
+const [productsRetry, setProductsRetry] = useState(0);
 const [showAddProduct, setShowAddProduct] = useState(false);
+
+const [editingProduct, setEditingProduct] = useState(null);
+const [updatingProduct, setUpdatingProduct] = useState(false);
+
+const [deletingProductId, setDeletingProductId] = useState(null);
 
 const [newProduct, setNewProduct] = useState({
   name: "",
@@ -30,16 +37,17 @@ const [productMessage, setProductMessage] = useState("");
 
 useEffect(() => {
   const fetchProducts = async () => {
+    setProductsLoading(true);
+    setProductsError('');
+
     try {
-      const response = await fetch(
-        'http://localhost:5001/api/products'
-      );
+      const response = await apiFetch("/products");
 
       if (!response.ok) {
         throw new Error('Could not load products');
       }
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       setProducts(data);
     } catch (error) {
       setProductsError(error.message);
@@ -49,7 +57,7 @@ useEffect(() => {
   };
 
   fetchProducts();
-}, []);
+}, [productsRetry]);
 
 const handleAddProduct = async (e) => {
   e.preventDefault();
@@ -59,7 +67,7 @@ const handleAddProduct = async (e) => {
   try {
     const token = localStorage.getItem("motogtToken");
 
-    const response = await fetch("http://localhost:5001/api/products", {
+    const response = await apiFetch("/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +80,7 @@ const handleAddProduct = async (e) => {
       }),
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
       throw new Error(data.message || "Failed to add product");
@@ -88,6 +96,92 @@ const handleAddProduct = async (e) => {
   }
 };
 
+const handleUpdateProduct = async (e) => {
+  e.preventDefault();
+  setUpdatingProduct(true);
+  setProductMessage("");
+
+  try {
+    const token = localStorage.getItem("motogtToken");
+
+    const response = await apiFetch(
+      `/products/${editingProduct._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...editingProduct,
+          price: Number(editingProduct.price),
+          stock: Number(editingProduct.stock),
+        }),
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update product");
+    }
+
+    setProducts((prev) =>
+      prev.map((product) =>
+        product._id === editingProduct._id ? data : product
+      )
+    );
+
+    setProductMessage("Product updated successfully!");
+    setEditingProduct(null);
+  } catch (error) {
+    setProductMessage(error.message);
+  } finally {
+    setUpdatingProduct(false);
+  }
+};
+
+const handleDeleteProduct = async (productId) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this product?"
+  );
+
+  if (!confirmed) return;
+
+  setDeletingProductId(productId);
+  setProductMessage("");
+
+  try {
+    const token = localStorage.getItem("motogtToken");
+
+    const response = await apiFetch(
+      `/products/${productId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete product");
+    }
+
+    setProducts((prev) =>
+      prev.filter((product) => product._id !== productId)
+    );
+
+    setProductMessage("Product deleted successfully!");
+  } catch (error) {
+    setProductMessage(error.message);
+  } finally {
+    setDeletingProductId(null);
+  }
+};
+
   const menuItems = [
     'Overview',
     'Products',
@@ -95,10 +189,15 @@ const handleAddProduct = async (e) => {
     'Enquiries',
   ];
 
+  const totalStock = products.reduce(
+    (total, product) => total + Number(product.stock || 0),
+    0
+  );
+
   const stats = [
     {
       label: 'Total Products',
-      value: '24',
+value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
       icon: (
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M3 7L12 3L21 7L12 11L3 7Z" />
@@ -208,7 +307,11 @@ const handleAddProduct = async (e) => {
 </span>
           </div>
           <h3>{stat.value}</h3>
-          <p>Demo data</p>
+          <p>
+  {stat.label === 'Total Products'
+    ? 'Total units in stock'
+    : 'Demo data'}
+</p>
         </article>
       ))}
     </section>
@@ -366,19 +469,138 @@ const handleAddProduct = async (e) => {
 
     {productsLoading && <p>Loading products...</p>}
 
-    {productsError && <p>{productsError}</p>}
+    {productsError && (
+      <div>
+        <p>{productsError}</p>
+        <button
+          className="admin-action-button"
+          onClick={() => setProductsRetry((count) => count + 1)}
+        >
+          Try Again
+        </button>
+      </div>
+    )}
 
     {!productsLoading && !productsError && products.length === 0 && (
       <p>No products found.</p>
     )}
 
-    {!productsLoading && !productsError && products.map((product) => (
-      <div className="admin-table-row" key={product._id}>
-        <strong>{product.name}</strong>
-        <span>{product.brand}</span>
-        <span>৳{product.price.toLocaleString('en-BD')}</span>
-      </div>
-    ))}
+{editingProduct && (
+  <div className="admin-content-card">
+    <h2>Edit Product</h2>
+
+    <form onSubmit={handleUpdateProduct}>
+      <input
+        type="text"
+        placeholder="Product Name"
+        value={editingProduct.name}
+        onChange={(e) =>
+          setEditingProduct({ ...editingProduct, name: e.target.value })
+        }
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Brand"
+        value={editingProduct.brand}
+        onChange={(e) =>
+          setEditingProduct({ ...editingProduct, brand: e.target.value })
+        }
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Category"
+        value={editingProduct.category}
+        onChange={(e) =>
+          setEditingProduct({ ...editingProduct, category: e.target.value })
+        }
+        required
+      />
+
+      <input
+        type="number"
+        placeholder="Price"
+        min="0"
+        value={editingProduct.price}
+        onChange={(e) =>
+          setEditingProduct({ ...editingProduct, price: e.target.value })
+        }
+        required
+      />
+
+      <textarea
+        placeholder="Product Description"
+        value={editingProduct.description || ""}
+        onChange={(e) =>
+          setEditingProduct({ ...editingProduct, description: e.target.value })
+        }
+      />
+
+      <input
+        type="text"
+        placeholder="Image URL"
+        value={editingProduct.image || ""}
+        onChange={(e) =>
+          setEditingProduct({ ...editingProduct, image: e.target.value })
+        }
+      />
+
+      <input
+        type="number"
+        placeholder="Stock Quantity"
+        min="0"
+        value={editingProduct.stock ?? 0}
+        onChange={(e) =>
+          setEditingProduct({ ...editingProduct, stock: e.target.value })
+        }
+      />
+
+      <button
+        type="submit"
+        className="admin-action-button"
+        disabled={updatingProduct}
+      >
+        {updatingProduct ? "Updating..." : "Update Product"}
+      </button>
+
+      <button
+        type="button"
+        className="admin-action-button"
+        onClick={() => setEditingProduct(null)}
+      >
+        Cancel
+      </button>
+    </form>
+  </div>
+)}
+
+{!productsLoading && !productsError && products.map((product) => (
+  <div className="admin-table-row" key={product._id}>
+    <strong>{product.name}</strong>
+    <span>{product.brand}</span>
+    <span>৳{product.price.toLocaleString('en-BD')}</span>
+
+    <button
+      className="admin-action-button"
+      onClick={() => {
+        setEditingProduct({ ...product });
+        setShowAddProduct(false);
+      }}
+    >
+      Edit
+    </button>
+    <button
+      className="admin-action-button"
+      onClick={() => handleDeleteProduct(product._id)}
+      disabled={deletingProductId === product._id}
+    >
+      {deletingProductId === product._id ? "Deleting..." : "Delete"}
+    </button>
+  </div>
+))}
   </section>
 )}
         {activeTab === 'Orders' && (

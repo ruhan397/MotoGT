@@ -1,13 +1,18 @@
 
 .membership-section {
     padding: 65px 8%;
-    background: #111210;
-  }
+    background: linear-gradient(
+  135deg,
+    #111416 0%,
+    #1A1E21 50%,
+    #0D1012 100%
+  );
+}
   
   .membership-card {
-    max-width: 1100px;
+    max-width: 580px;
     margin: 0 auto;
-    padding: 38px 42px;
+    padding: 16px 20px;
     border: 1px solid rgba(198, 167, 106, 0.35);
     border-radius: 12px;
     background: linear-gradient(135deg, #1c1d19, #111210);
@@ -116,3 +121,154 @@
     }
   }
   
+
+/* NORMAL MEMBERSHIP - Premium Deep Navy */
+.membership-card--normal {
+  background: linear-gradient(135deg, #263344, #151D28);
+  border-color: rgba(170, 190, 210, 0.5);
+}
+
+.membership-card--normal .membership-label,
+.membership-card--normal .membership-detail strong,
+.membership-card--normal .membership-progress strong {
+  color: #C5D3E2;
+}
+
+.membership-card--normal .membership-level {
+  border-color: #AAB8C8;
+  color: #DCE5EF;
+}
+
+/* SILVER MEMBERSHIP */
+.membership-card--silver {
+  background: linear-gradient(135deg, #777D84, #30343A);
+  border-color: #C7CBD0;
+}
+
+.membership-card--silver .membership-label,
+.membership-card--silver .membership-detail strong,
+.membership-card--silver .membership-progress strong {
+  color: #E1E4E8;
+}
+
+.membership-card--silver .membership-level {
+  border-color: #D5D8DC;
+  color: #F0F1F3;
+}
+
+/* GOLD MEMBERSHIP */
+.membership-card--gold {
+  background: linear-gradient(135deg, #B89552, #493817);
+  border-color: #E7CE91;
+}
+
+.membership-card--gold .membership-label,
+.membership-card--gold .membership-detail strong,
+.membership-card--gold .membership-progress strong {
+  color: #F3D99B;
+}
+
+.membership-card--gold .membership-level {
+  border-color: #F0D58E;
+  color: #FFE8B0;
+}
+
+/* VIP / LOYALTY MEMBERSHIP */
+.membership-card--vip {
+  background: linear-gradient(135deg, #24241D, #10100E);
+  border-color: #D9B875;
+}
+
+.membership-card--vip .membership-label,
+.membership-card--vip .membership-detail strong,
+.membership-card--vip .membership-progress strong {
+  color: #E8C978;
+}
+
+.membership-card--vip .membership-level {
+  border-color: #D9B875;
+  color: #E8C978;
+}
+/* CLASSIC MEMBERSHIP - Forest Green */
+.membership-card--normal {
+  background: linear-gradient(135deg, #354B3D, #17251D);
+  border-color: #829889;
+}
+
+.membership-card--normal .membership-label,
+.membership-card--normal .membership-detail strong,
+.membership-card--normal .membership-progress strong {
+  color: #C4D9C9;
+}
+
+.membership-card--normal .membership-level {
+  border-color: #A5BDAA;
+  color: #DCE9DF;
+}
+/* Membership Card - Compact Layout */
+.membership-card {
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  padding: 20px 26px;
+  margin: 0 auto;
+}
+
+.membership-top {
+  margin-bottom: 14px;
+}
+
+.membership-details {
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.membership-detail {
+  padding: 12px;
+}
+
+.membership-detail strong {
+  font-size: 24px;
+}
+
+.membership-progress {
+  padding-top: 10px;
+}
+
+/* Membership Heading */
+.membership-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.membership-top h2 {
+  font-size: clamp(20px, 2.5vw, 27px);
+  margin: 0;
+}
+
+/* MotoGT Logo - Fixed Size */
+.membership-card .membership-brand {
+  display: flex;
+  align-items: center;
+  padding-top: 14px;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.membership-card .membership-brand img {
+  display: block;
+  width: 85px;
+  max-width: 85px;
+  height: 55px;
+  object-fit: contain;
+  flex: 0 0 85px;
+}
+.membership-card .membership-brand .membership-label {
+  position: relative;
+  top: 8px;
+}
+/* Move membership header slightly upward */
+.membership-card .membership-brand,
+.membership-card .membership-heading h2 {
+  transform: translateY(-12px);
+}

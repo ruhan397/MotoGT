@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { apiFetch } from "../utils/api";
 import "../styles/Auth.css";
 
 function Register() {
@@ -32,23 +33,20 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5001/api/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fullName: formData.fullName,
-            email: formData.email,
-            phone: formData.phone,
-            password: formData.password,
-          }),
-        }
-      );
+      const response = await apiFetch("/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+        }),
+      });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         throw new Error(data.message || "Registration failed.");
