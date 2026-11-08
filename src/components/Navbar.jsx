@@ -22,7 +22,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="nav-links">
         <a href="#accessories">Accessories</a>
-        <a href="#dent-paint">Dent &amp; Paint</a>
+        <a href="/dent-paint">Dent &amp; Paint</a>
         <a href="#about">About Us</a>
       </div>
 

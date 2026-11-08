@@ -94,19 +94,22 @@ text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
 .section-heading {
   margin-bottom: 42px;
   text-align: center;
+  transform: translateY(-10px);
 }
 
 .section-heading .eyebrow {
   margin-bottom: 18px;
+  transform: translateY(0px);
 }
 
 .section-heading h2 {
   margin: 0;
-  font-size: clamp(38px, 5vw, 62px);
+  font-size: clamp(36px, 4.5vw, 54px);
   font-weight: 500;
   font-family: "Playfair Display", serif;
   letter-spacing: -2px;
   line-height: 1.12;
+  transform: translateY(-7px);
 }
 
 .section-heading h2 em {
@@ -120,12 +123,13 @@ text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 22px;
+  margin-top: 50px;
 }
 
 .service-card {
   position: relative;
-  min-height: 270px;
-  padding: 30px;
+  min-height: 245px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -181,18 +185,17 @@ text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
 }
 
 .service-card h3 {
-  margin: 0 0 12px;
-  color: #f4f0e8;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
+  margin: 15px 0 8px;
+  font-family: 'Playfair Display', serif;
+  font-weight: 500;
+  font-size: 27px;
 }
 
 .service-card p {
-  max-width: 390px;
+  max-width: 330px;
   margin: 0 0 24px;
-  color: #b9b9b2;
-  font-size: 13px;
+  color: #aaa79f;
+  font-size: 12px;
   line-height: 1.8;
 }
 
@@ -244,7 +247,7 @@ text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
   }
 
   .section-heading h2 {
-    font-size: clamp(38px, 9vw, 52px);
+    font-size: clamp(26px, 6vw, 36px);
     letter-spacing: -1.5px;
   }
 

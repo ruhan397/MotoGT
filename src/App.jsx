@@ -20,6 +20,7 @@ import MembershipCard from './components/MembershipCard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Accessories from './pages/Accessories';
+import DentPaint from './pages/DentPaint';
 
 function App() {
   const currentPath = window.location.pathname;
@@ -35,6 +36,11 @@ function App() {
       ) : currentPath === '/accessories' ? (
         <>
           <Accessories />
+          <Footer />
+        </>
+      ) : currentPath === '/dent-paint' ? (
+        <>
+          <DentPaint />
           <Footer />
         </>
       ) : (

@@ -1,0 +1,263 @@
+
+.dent-paint-page {
+    background: #111210;
+    color: #f4f0e8;
+    min-height: 100vh;
+  }
+  
+  /* Hero */
+  .dp-hero {
+    padding: 75px 7%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 55px;
+  }
+  
+  .dp-eyebrow {
+    color: #c6a76a;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  
+  .dp-hero h1,
+  .dp-section-heading h2,
+  .dp-booking-heading h2 {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(35px, 4.5vw, 58px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -1.5px;
+  }
+  
+  .dp-hero h1 em,
+  .dp-section-heading h2 em,
+  .dp-booking-heading h2 em {
+    color: #c6a76a;
+    font-weight: 500;
+  }
+  
+  .dp-hero-description {
+    color: #aaa79f;
+    font-size: 13px;
+    line-height: 1.9;
+    max-width: 430px;
+    margin: 22px 0 30px;
+  }
+  
+  .dp-hero-image {
+    height: 390px;
+    overflow: hidden;
+    border: 1px solid #ffffff20;
+  }
+  
+  .dp-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  /* Buttons */
+  .dp-button {
+    display: inline-block;
+    padding: 14px 23px;
+    border: 1px solid #c6a76a;
+    border-radius: 3px;
+    background: transparent;
+    color: #f4f0e8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  
+  .dp-button:hover {
+    background: #c6a76a;
+    color: #111210;
+    transform: translateY(-3px);
+  }
+  
+  /* Services */
+  .dp-services {
+    padding: 85px 7%;
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.82)),
+      url("../assets/BGMGT2.jpeg") center / cover no-repeat;
+  }
+  
+  .dp-section-heading {
+    text-align: center;
+    margin-bottom: 45px;
+  }
+  
+  .dp-section-heading h2,
+  .dp-booking-heading h2 {
+    margin: 0 0 16px;
+  }
+  
+  .dp-section-heading > p:last-child,
+  .dp-booking-heading > p:last-child {
+    color: #aaa79f;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  
+  .dp-service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+  
+  .dp-service-card {
+    padding: 28px;
+    min-height: 225px;
+    background: rgba(50, 51, 45, 0.8);
+    border: 1px solid #ffffff20;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  
+  .dp-service-card:hover {
+    transform: translateY(-5px);
+    border-color: #c6a76a;
+  }
+  
+  .dp-number {
+    color: #c6a76a;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  
+  .dp-service-card h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 23px;
+    font-weight: 500;
+    margin: 35px 0 12px;
+  }
+  
+  .dp-service-card p {
+    color: #aaa79f;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  
+  .dp-price {
+    display: inline-block;
+    margin-top: 12px;
+    color: #c6a76a;
+    font-size: 11px;
+  }
+  
+  /* Booking */
+  .dp-booking {
+    padding: 85px 7%;
+  }
+  
+  .dp-booking-heading {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .dp-booking-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 35px;
+    border: 1px solid #ffffff20;
+    background: #1b1c19;
+  }
+  
+  .dp-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 23px;
+    margin-bottom: 28px;
+  }
+  
+  .dp-form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #d8d4ca;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  
+  .dp-form-grid input,
+  .dp-form-grid select,
+  .dp-form-grid textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px;
+    border: 1px solid #ffffff25;
+    border-radius: 2px;
+    outline: none;
+    background: #111210;
+    color: #f4f0e8;
+    font: inherit;
+    font-size: 12px;
+  }
+  
+  .dp-form-grid input:focus,
+  .dp-form-grid select:focus,
+  .dp-form-grid textarea:focus {
+    border-color: #c6a76a;
+  }
+  
+  .dp-full-width {
+    grid-column: 1 / -1;
+  }
+  
+  .dp-form-grid textarea {
+    resize: vertical;
+  }
+  
+  .dp-form-note,
+  .dp-preview-message {
+    font-size: 11px;
+    line-height: 1.7;
+    color: #aaa79f;
+    margin-top: 18px;
+  }
+  
+  .dp-preview-message {
+    color: #c6a76a;
+  }
+  
+  /* Mobile */
+  @media (max-width: 760px) {
+    .dp-hero {
+      grid-template-columns: 1fr;
+      padding: 55px 5%;
+      gap: 30px;
+    }
+  
+    .dp-hero-image {
+      height: 260px;
+    }
+  
+    .dp-services,
+    .dp-booking {
+      padding: 65px 5%;
+    }
+  
+    .dp-service-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .dp-booking-form {
+      padding: 22px;
+    }
+  
+    .dp-form-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .dp-full-width {
+      grid-column: auto;
+    }
+  }
+  

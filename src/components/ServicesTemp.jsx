@@ -88,7 +88,7 @@ function Services() {
             <p>
               Bring back a cleaner look with careful dent repair and paintwork.
             </p>
-            <a href="#contact">Discuss your car ↗</a>
+            <a href="/dent-paint">Discuss your car ↗</a>
           </article>
         </div>
       </section>

@@ -113,7 +113,7 @@ button, a {
 
 
 
-.section-heading h2,
+
 .contact-section h2 {
   font-size: clamp(48px, 6.2vw, 79px);
   letter-spacing: -3px;
@@ -233,96 +233,6 @@ h2 em {
   text-shadow: 0 12px 55px #0008;
 }
 
-
-
-.intro-strip {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 25px;
-  padding: 24px 7%;
-  background: black;
-  color: goldenrod;
-}
-
-.intro-strip span {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.7px;
-}
-
-.intro-strip p {
-  font-family: 'Playfair Display', serif;
-  font-size: 17px;
-  margin: 0;
-}
-
-.services {
-  padding: 100px 7%;
-}
-
-.section-heading h2 {
-  font-size: clamp(39px, 5vw, 58px);
-  letter-spacing: -2px;
-  margin-top: 18px;
-}
-
-.service-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-top: 45px;
-}
-
-.service-card {
-  min-height: 270px;
-  padding: 30px;
-  border: 1px solid #ffffff19;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  transition: border-color .25s, transform .25s;
-}
-
-.service-card:hover {
-  border-color: #d4a75b88;
-  transform: translateY(-3px);
-}
-
-
-.card-number {
-  font-size: 9px;
-  letter-spacing: 1.8px;
-  color: #b2ada2;
-}
-
-.service-symbol {
-  margin-top: 25px;
-  color: white;
-  font-size: 35px;
-}
-
-.service-card h3 {
-  margin: 15px 0 8px;
-  font-family: 'Playfair Display', serif;
-  font-weight: 500;
-  font-size: 27px;
-}
-
-.service-card p {
-  max-width: 330px;
-  color: #aaa79f;
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-.service-card a {
-  margin-top: auto;
-  padding-top: 22px;
-  font-size: 11px;
-  color: goldenrod;
-}
-
 .contact-section {
   padding: 75px 7% 90px;
   text-align: center;
@@ -398,7 +308,11 @@ footer p {
   }
 
   .intro-strip p {
-    font-size: 16px;
+    font-size: 11px !important;
+  }
+  .intro-strip .intro-label {
+    font-size: 9px !important;
+    letter-spacing: 0.3px !important;
   }
 
   .services {
@@ -586,33 +500,4 @@ footer p {
 .hero-visual .visual-caption span:last-child {
   text-align: right;
 }
-
-@keyframes motogtSymbolGlow {
-  0%, 100% {
-    color: #d4a75b;
-  }
-
-  50% {
-    color: #ffffff;
-  }
-}
-
-.service-card .service-symbol {
-  animation: motogtSymbolGlow 2s ease-in-out infinite;
-}
-
-@keyframes motogtSymbolGlow {
-  0%, 100% {
-    color: #daa520;
-  }
-  50% {
-    color: #ffffff;
-  }
-}
-
-
-
-
-
-
 
