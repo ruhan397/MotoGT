@@ -7,11 +7,21 @@
   
   /* Hero */
   .dp-hero {
+    min-height: 520px;
     padding: 75px 7%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
     align-items: center;
-    gap: 55px;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .dp-hero-content {
+    max-width: 750px;
+    margin: 0 auto;
+  }
+  
+  .dp-hero-description {
+    margin: 22px auto 30px;
   }
   
   .dp-eyebrow {
@@ -31,6 +41,10 @@
     line-height: 1.15;
     letter-spacing: -1.5px;
   }
+
+  .dp-hero h1 {
+    font-size: clamp(42px, 5.5vw, 70px);
+  }
   
   .dp-hero h1 em,
   .dp-section-heading h2 em,
@@ -44,13 +58,11 @@
     font-size: 13px;
     line-height: 1.9;
     max-width: 430px;
-    margin: 22px 0 30px;
+    margin: 22px auto 30px;
   }
   
   .dp-hero-image {
-    height: 390px;
-    overflow: hidden;
-    border: 1px solid #ffffff20;
+    display: none;
   }
   
   .dp-hero-image img {
@@ -166,8 +178,10 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 35px;
-    border: 1px solid #ffffff20;
-    background: #1b1c19;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   
   .dp-form-grid {
@@ -226,13 +240,19 @@
   .dp-preview-message {
     color: #c6a76a;
   }
-  
+  .dp-hero-content > .dp-eyebrow {
+    transform: translateY(8px);
+  }
+
+  .dp-hero-content h1,
+.dp-hero-description,
+.dp-hero-content .dp-button {
+  transform: translateY(-25px);
+}
   /* Mobile */
   @media (max-width: 760px) {
     .dp-hero {
-      grid-template-columns: 1fr;
       padding: 55px 5%;
-      gap: 30px;
     }
   
     .dp-hero-image {
@@ -260,4 +280,543 @@
       grid-column: auto;
     }
   }
-  
+  .dp-section-heading h2,
+.dp-booking-heading h2 {
+  transform: translateY(-12px);
+}
+.dp-hero {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.62),
+      rgba(0, 0, 0, 0.72)
+    ),
+    url("../assets/DentPaintHero.jpeg") center / cover no-repeat;
+}
+  /* Explore Services - Navbar Glass Button Style */
+.dp-hero-content .dp-button {
+  background: rgba(255, 255, 255, 0.10);
+  color: #F4F0E8;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 30px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
+  transition: all 0.25s ease;
+}
+
+.dp-hero-content .dp-button:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #F4F0E8;
+  border-color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(220, 220, 220, 0.4),
+              0 0 26px rgba(220, 220, 220, 0.2);
+  transform: translateY(-25px) scale(1.04);
+}
+.dp-hero-content > .dp-eyebrow {
+  color: #E3C98F;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+  font-weight: 800;
+  opacity: 1;
+}
+/* Booking Section - Same BGMGT2 Background */
+.dp-booking {
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.82),
+      rgba(0, 0, 0, 0.82)
+    ),
+    url("../assets/BGMGT2.jpeg") center / cover no-repeat;
+}
+/* Preview Appointment Request - Premium Gold Button */
+.dp-booking-form > .dp-button {
+  background: linear-gradient(135deg, #D9B875, #B89555);
+  color: #111210;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border: 1px solid #E3C98F;
+  padding: 13px 20px;
+  font-size: 10px;
+  border-radius: 30px;
+  box-shadow: 0 4px 18px rgba(198, 167, 106, 0.20);
+  transition: all 0.25s ease;
+}
+
+.dp-booking-form > .dp-button:hover {
+  background: linear-gradient(135deg, #E3C98F, #C6A76A);
+  color: #111210;
+  border-color: #E3C98F;
+  box-shadow: 0 0 18px rgba(198, 167, 106, 0.45);
+  transform: scale(1.04);
+}
+
+/* Premium Gold Feature Styling */
+
+.dp-service-features {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dp-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  color: #e5e0d5;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  transition: all 0.25s ease;
+}
+
+.dp-feature-icon {
+  color: #c6a76a;
+  font-size: 15px;
+  transition: transform 0.3s ease;
+}
+
+.dp-feature-text {
+  transition: color 0.25s ease;
+}
+
+.dp-feature-line {
+  width: 0;
+  height: 1px;
+  margin-left: auto;
+  background: #c6a76a;
+  transition: width 0.3s ease;
+}
+
+.dp-feature-item:hover {
+  padding-left: 5px;
+  color: #ffffff;
+}
+
+.dp-feature-item:hover .dp-feature-icon {
+  transform: rotate(45deg);
+}
+
+.dp-feature-item:hover .dp-feature-line {
+  width: 18px;
+}
+
+/* Premium Horizontal Service Banners */
+.dp-service-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.dp-service-banner {
+  display: grid;
+  grid-template-columns: 75px 1fr 1.1fr;
+  align-items: center;
+  gap: 30px;
+  padding: 27px 32px;
+  background: rgba(50, 51, 45, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s ease;
+}
+
+.dp-service-banner:hover {
+  border-color: #c6a76a;
+  background: rgba(60, 58, 49, 0.9);
+  transform: translateX(5px);
+}
+
+.dp-banner-number {
+  color: #c6a76a;
+  font-family: "Playfair Display", serif;
+  font-size: 32px;
+}
+
+.dp-banner-main h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 25px;
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+
+.dp-banner-main p {
+  color: #aaa79f;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.dp-banner-details {
+  padding-left: 25px;
+  border-left: 1px solid rgba(198, 167, 106, 0.3);
+}
+
+.dp-banner-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #d8d4ca;
+  font-size: 11px;
+  padding: 5px 0;
+}
+
+.dp-banner-feature span {
+  color: #c6a76a;
+  font-size: 13px;
+}
+
+.dp-banner-details .dp-price {
+  margin-top: 9px;
+}
+
+@media (max-width: 760px) {
+  .dp-service-banner {
+    grid-template-columns: 40px 1fr;
+    gap: 15px;
+    padding: 22px;
+  }
+
+  .dp-banner-number {
+    font-size: 25px;
+  }
+
+  .dp-banner-details {
+    grid-column: 2;
+    padding-left: 15px;
+  }
+
+  .dp-banner-main h3 {
+    font-size: 21px;
+  }
+}
+
+
+/* Elegant Gold Ring Dot */
+.dp-banner-dot {
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #c6a76a;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  box-shadow: none;
+}
+
+.dp-banner-dot::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c6a76a;
+}
+/* Make Service Banners More Compact */
+.dp-service-banners {
+  max-width: 950px;
+  gap: 12px;
+}
+
+.dp-service-banner {
+  padding: 20px 25px;
+  gap: 22px;
+  grid-template-columns: 55px 1fr 1.1fr;
+}
+
+.dp-banner-number {
+  font-size: 27px;
+}
+
+.dp-banner-main h3 {
+  font-size: 22px;
+}
+
+.dp-banner-main p {
+  font-size: 11px;
+}
+
+.dp-banner-feature {
+  font-size: 10px;
+  padding: 4px 0;
+}
+
+.dp-banner-details .dp-price {
+  font-size: 10px;
+  margin-top: 6px;
+}
+
+/* Our Work Process - Premium Timeline */
+.dp-process {
+  padding: 85px 7%;
+  background: #111210;
+}
+
+.dp-process-grid {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  position: relative;
+}
+
+/* Connecting Gold Line */
+.dp-process-grid::before {
+  content: "";
+  position: absolute;
+  top: 27px;
+  left: 16.66%;
+  right: 16.66%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(198, 167, 106, 0.35),
+    #c6a76a,
+    rgba(198, 167, 106, 0.35)
+  );
+}
+
+.dp-process-card {
+  position: relative;
+  text-align: center;
+  padding: 0 25px;
+  background: transparent;
+  border: none;
+  transition: transform 0.3s ease;
+}
+
+.dp-process-card:hover {
+  transform: translateY(-6px);
+}
+
+.dp-process-number {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  border: 1px solid #c6a76a;
+  border-radius: 50%;
+  background: #111210;
+  color: #e3c98f;
+  font-family: "Playfair Display", serif;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.dp-process-card:hover .dp-process-number {
+  background: #c6a76a;
+  color: #111210;
+  box-shadow: 0 0 20px rgba(198, 167, 106, 0.3);
+}
+
+.dp-process-icon {
+  margin: 25px 0 12px;
+  color: #c6a76a;
+  font-size: 26px;
+}
+
+.dp-process-card h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+
+.dp-process-card p {
+  max-width: 260px;
+  margin: 0 auto;
+  color: #aaa79f;
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+@media (max-width: 760px) {
+  .dp-process {
+    padding: 65px 5%;
+  }
+
+  .dp-process-grid {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .dp-process-grid::before {
+    top: 27px;
+    bottom: 27px;
+    left: 50%;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+
+  .dp-process-card {
+    padding: 0 12px;
+  }
+
+  .dp-process-number {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Paint & Finish Options */
+.dp-finishes {
+  padding: 85px 7%;
+  background: #171815;
+}
+
+.dp-finish-grid {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dp-finish-card {
+  position: relative;
+  padding: 25px 20px 28px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s ease;
+}
+
+.dp-finish-card:hover {
+  transform: translateY(-7px);
+  border-color: #c6a76a;
+  background: rgba(198, 167, 106, 0.07);
+}
+
+.dp-finish-number {
+  color: #c6a76a;
+  font-family: "Playfair Display", serif;
+  font-size: 13px;
+}
+
+.dp-finish-swatch {
+  height: 105px;
+  margin: 22px 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 3px;
+}
+
+.dp-gloss {
+  background: linear-gradient(135deg, #343434, #090909 45%, #777 75%, #171717);
+}
+
+.dp-matte {
+  background: linear-gradient(135deg, #454545, #171717 55%, #303030);
+}
+
+.dp-metallic {
+  background: linear-gradient(135deg, #a6a6a6, #333 35%, #888 65%, #202020);
+}
+
+.dp-pearl {
+  background: linear-gradient(135deg, #eee5d3, #8e887f 35%, #d4c6a8 65%, #77716b);
+}
+
+.dp-finish-card h3 {
+  color: #f4f0e8;
+  font-family: "Playfair Display", serif;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+
+.dp-finish-card p {
+  color: #aaa79f;
+  font-size: 11px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .dp-finish-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .dp-finishes {
+    padding: 65px 5%;
+  }
+
+  .dp-finish-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Why Choose MotoGT */
+.dp-why-choose {
+  padding: 85px 7%;
+  background: #111210;
+}
+
+.dp-why-grid {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dp-why-card {
+  padding: 30px 22px;
+  min-height: 210px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s ease;
+}
+
+.dp-why-card:hover {
+  transform: translateY(-7px);
+  border-color: #c6a76a;
+  background: rgba(198, 167, 106, 0.07);
+}
+
+.dp-why-icon {
+  display: block;
+  margin-bottom: 22px;
+  color: #c6a76a;
+  font-size: 27px;
+}
+
+.dp-why-card h3 {
+  color: #f4f0e8;
+  font-family: "Playfair Display", serif;
+  font-size: 17px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+
+.dp-why-card p {
+  color: #aaa79f;
+  font-size: 11px;
+  line-height: 1.9;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .dp-why-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .dp-why-choose {
+    padding: 65px 5%;
+  }
+
+  .dp-why-grid {
+    grid-template-columns: 1fr;
+  }
+}

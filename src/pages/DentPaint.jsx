@@ -8,19 +8,34 @@ const services = [
     number: "01",
     name: "Dent Repair",
     description:
-      "Repair dents and restore your vehicle's original body shape with careful workmanship.",
+      "Restore your car's original body shape with professional dent repair.",
+    features: [
+      "Minor Dent Repair",
+      "Panel Dent Repair",
+      "Body Shape Restoration",
+    ],
   },
   {
     number: "02",
     name: "Scratch Removal",
     description:
-      "Improve scratched and damaged paint surfaces for a cleaner, smoother finish.",
+      "Improve your car's appearance by treating visible paint scratches.",
+    features: [
+      "Surface Scratch Treatment",
+      "Paint Correction",
+      "Polishing & Finishing",
+    ],
   },
   {
     number: "03",
     name: "Body Painting",
     description:
-      "Refresh individual panels or give your vehicle a complete paint transformation.",
+      "Refresh individual panels or transform your vehicle with a complete paint job.",
+    features: [
+      "Single Panel Painting",
+      "Multiple Panel Painting",
+      "Full Body Painting",
+    ],
   },
 ];
 
@@ -69,15 +84,165 @@ function DentPaint() {
           </p>
         </div>
 
-        <div className="dp-service-grid">
-          {services.map((service) => (
-            <article className="dp-service-card" key={service.number}>
-              <span className="dp-number">{service.number}</span>
-              <h3>{service.name}</h3>
-              <p>{service.description}</p>
-              <span className="dp-price">Price after inspection</span>
-            </article>
-          ))}
+        
+<div className="dp-service-banners">
+  {services.map((service) => (
+    <article className="dp-service-banner" key={service.number}>
+      <div className="dp-banner-dot"></div>
+
+      <div className="dp-banner-main">
+        <h3>{service.name}</h3>
+        <p>{service.description}</p>
+      </div>
+
+      
+      <div className="dp-banner-details">
+        {service.features.map((feature) => (
+          <div className="dp-banner-feature" key={feature}>
+            <span>✦</span>
+            {feature}
+          </div>
+        ))}
+
+        <span className="dp-price">
+          Custom quote after inspection
+        </span>
+      </div>
+
+    </article>
+  ))}
+</div>
+      </section>
+
+            {/* Paint & Finish Options */}
+            <section className="dp-finishes">
+        <div className="dp-section-heading">
+          <p className="dp-eyebrow">MAKE IT YOUR FINISH</p>
+          <h2>
+            Choose your
+            <em> finish.</em>
+          </h2>
+          <p>
+            Explore different paint finishes to give your
+            vehicle the look and character you want.
+          </p>
+        </div>
+
+        <div className="dp-finish-grid">
+          <article className="dp-finish-card">
+            <span className="dp-finish-number">01</span>
+            <div className="dp-finish-swatch dp-gloss"></div>
+            <h3>Gloss Finish</h3>
+            <p>A smooth, reflective surface with a classic polished look.</p>
+          </article>
+
+          <article className="dp-finish-card">
+            <span className="dp-finish-number">02</span>
+            <div className="dp-finish-swatch dp-matte"></div>
+            <h3>Matte Finish</h3>
+            <p>A subtle, non-glossy appearance for a modern style.</p>
+          </article>
+
+          <article className="dp-finish-card">
+            <span className="dp-finish-number">03</span>
+            <div className="dp-finish-swatch dp-metallic"></div>
+            <h3>Metallic Finish</h3>
+            <p>A refined finish with a distinctive metallic shimmer.</p>
+          </article>
+
+          <article className="dp-finish-card">
+            <span className="dp-finish-number">04</span>
+            <div className="dp-finish-swatch dp-pearl"></div>
+            <h3>Pearl Finish</h3>
+            <p>A premium finish with a soft, changing reflective effect.</p>
+          </article>
+        </div>
+      </section>
+      
+      {/* Our Work Process */}
+      <section className="dp-process">
+        <div className="dp-section-heading">
+          <p className="dp-eyebrow">HOW WE WORK</p>
+          <h2>
+            From inspection
+            <em> to perfection.</em>
+          </h2>
+          <p>
+            Every detail matters. Our process ensures
+            professional care from start to finish.
+          </p>
+        </div>
+
+        <div className="dp-process-grid">
+          <article className="dp-process-card">
+            <span className="dp-process-number">01</span>
+            <div className="dp-process-icon">⌕</div>
+            <h3>Vehicle Inspection</h3>
+            <p>
+              We carefully inspect your vehicle to identify
+              the damage and understand the work required.
+            </p>
+          </article>
+
+          <article className="dp-process-card">
+            <span className="dp-process-number">02</span>
+            <div className="dp-process-icon">✦</div>
+            <h3>Repair & Painting</h3>
+            <p>
+              Our service process focuses on restoring
+              your vehicle with careful repair and finishing.
+            </p>
+          </article>
+
+          <article className="dp-process-card">
+            <span className="dp-process-number">03</span>
+            <div className="dp-process-icon">✓</div>
+            <h3>Quality Check</h3>
+            <p>
+              We review the completed work before preparing
+              your vehicle for delivery.
+            </p>
+          </article>
+        </div>
+      </section>
+      {/* Why Choose MotoGT */}
+      <section className="dp-why-choose">
+        <div className="dp-section-heading">
+          <p className="dp-eyebrow">THE MOTOGT DIFFERENCE</p>
+          <h2>
+            Why choose
+            <em> MotoGT?</em>
+          </h2>
+          <p>
+            Your vehicle deserves attention, precision
+            and care at every stage.
+          </p>
+        </div>
+
+        <div className="dp-why-grid">
+          <article className="dp-why-card">
+            <span className="dp-why-icon">✦</span>
+            <h3>Attention to Detail</h3>
+            <p>We focus on every visible detail to achieve a clean and refined finish.</p>
+          </article>
+
+          <article className="dp-why-card">
+            <span className="dp-why-icon">◇</span>
+            <h3>Professional Care</h3>
+            <p>Each vehicle receives careful inspection and a service approach suited to its needs.</p>
+          </article>
+
+          <article className="dp-why-card">
+            <span className="dp-why-icon">◎</span>
+            <h3>Quality Materials</h3>
+            <p>We aim to use suitable materials for dependable repair and finishing results.</p>
+          </article>
+
+          <article className="dp-why-card">
+            <span className="dp-why-icon">✓</span>
+            <h3>Customer Satisfaction</h3>
+            <p>We value clear communication and your satisfaction throughout the service.</p>
+          </article>
         </div>
       </section>
 
@@ -117,7 +282,6 @@ function DentPaint() {
                 <option>Dent Repair</option>
                 <option>Scratch Removal</option>
                 <option>Body Painting</option>
-                <option>Full Body Painting</option>
               </select>
             </label>
 
