@@ -820,3 +820,296 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Dent & Paint Premium Tab Navigation */
+.dp-information {
+  background: #111210;
+  padding: 55px 0 20px;
+}
+
+.dp-tabs {
+  width: min(1000px, 86%);
+  margin: 0 auto 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 18px;
+}
+
+.dp-tab {
+  position: relative;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #aaa79f;
+  padding: 13px 20px;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: color 0.3s ease, background 0.3s ease;
+}
+
+.dp-tab:hover {
+  color: #c6a76a;
+  background: rgba(198, 167, 106, 0.06);
+}
+
+.dp-tab.active {
+  color: #c6a76a;
+  background: rgba(198, 167, 106, 0.04);
+}
+
+.dp-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  bottom: -19px;
+  width: 60%;
+  height: 2px;
+  background: #c6a76a;
+  box-shadow: 0 0 10px rgba(198, 167, 106, 0.4);
+  animation: dpTabUnderline 0.3s ease;
+}
+
+.dp-tab:focus-visible {
+  outline: 1px solid #c6a76a;
+  outline-offset: 3px;
+}
+
+@keyframes dpTabUnderline {
+  from {
+    transform: scaleX(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .dp-information {
+    padding-top: 35px;
+  }
+
+  .dp-tabs {
+    width: 90%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dp-tab {
+    padding: 12px 8px;
+    font-size: 10px;
+  }
+
+  .dp-tab.active::after {
+    bottom: -1px;
+  }
+}
+
+/* Premium Dent & Paint Service Banner Upgrade */
+
+.dp-service-banner {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    110deg,
+    rgba(50, 51, 45, 0.95),
+    rgba(35, 35, 31, 0.95)
+  );
+  border: 1px solid rgba(198, 167, 106, 0.22);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.dp-service-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: #c6a76a;
+  opacity: 0.55;
+  transform: scaleY(0.35);
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.dp-service-banner:hover {
+  transform: translateX(5px);
+  border-color: rgba(198, 167, 106, 0.75);
+  background: linear-gradient(
+    110deg,
+    rgba(65, 60, 48, 0.95),
+    rgba(38, 38, 33, 0.98)
+  );
+  box-shadow: 0 8px 28px rgba(198, 167, 106, 0.10);
+}
+
+.dp-service-banner:hover::before {
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+/* Premium Paint & Finish Effects */
+
+.dp-finish-card {
+  overflow: hidden;
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.dp-finish-card:hover {
+  box-shadow: 0 10px 30px rgba(198, 167, 106, 0.12);
+}
+
+.dp-finish-swatch {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.35s ease;
+}
+
+.dp-finish-swatch::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent,
+    rgba(255, 255, 255, 0.32),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.7s ease;
+}
+
+.dp-finish-card:hover .dp-finish-swatch {
+  border-color: rgba(198, 167, 106, 0.65);
+}
+
+.dp-finish-card:hover .dp-finish-swatch::after {
+  left: 140%;
+}
+
+/* Premium Process Timeline Animation */
+
+.dp-process-grid::before {
+  background-size: 200% 100%;
+  animation: dpProcessLineFlow 5s ease-in-out infinite;
+}
+
+@keyframes dpProcessLineFlow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.dp-process-icon {
+  transition: transform 0.35s ease, text-shadow 0.35s ease;
+}
+
+.dp-process-card:hover .dp-process-icon {
+  transform: scale(1.15);
+  text-shadow: 0 0 15px rgba(198, 167, 106, 0.55);
+}
+
+.dp-process-card h3 {
+  transition: color 0.3s ease;
+}
+
+.dp-process-card:hover h3 {
+  color: #c6a76a;
+}
+/* Premium Appointment Booking Form */
+
+.dp-booking-form {
+  border: 1px solid rgba(198, 167, 106, 0.28);
+  background: linear-gradient(
+    145deg,
+    rgba(35, 35, 30, 0.96),
+    rgba(20, 20, 18, 0.98)
+  );
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dp-booking-form:focus-within {
+  border-color: rgba(198, 167, 106, 0.55);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.28);
+}
+
+.dp-booking-form input,
+.dp-booking-form select,
+.dp-booking-form textarea {
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.dp-booking-form input:focus,
+.dp-booking-form select:focus,
+.dp-booking-form textarea:focus {
+  outline: none;
+  border-color: #c6a76a;
+  box-shadow: 0 0 0 3px rgba(198, 167, 106, 0.12);
+}
+/* Strong Premium Booking Form Field Styling */
+
+.dp-booking-form {
+  background: #191916 !important;
+  border: 1px solid rgba(198, 167, 106, 0.55) !important;
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.dp-booking-form label {
+  color: #d9b875;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+}
+
+.dp-booking-form input,
+.dp-booking-form select,
+.dp-booking-form textarea {
+  width: 100%;
+  background: #10100e !important;
+  color: #f4f0e8 !important;
+  border: 1px solid rgba(198, 167, 106, 0.30) !important;
+  border-radius: 7px;
+  padding: 14px 15px;
+  margin-top: 9px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.dp-booking-form input:focus,
+.dp-booking-form select:focus,
+.dp-booking-form textarea:focus {
+  border-color: #d9b875 !important;
+  box-shadow: 0 0 0 3px rgba(198, 167, 106, 0.20) !important;
+  outline: none;
+}
+
+.dp-booking-form input::placeholder,
+.dp-booking-form textarea::placeholder {
+  color: #89877f;
+}
