@@ -35,6 +35,69 @@ const [newProduct, setNewProduct] = useState({
 const [savingProduct, setSavingProduct] = useState(false);
 const [productMessage, setProductMessage] = useState("");
 
+const [orders, setOrders] = useState([]);
+const [ordersLoading, setOrdersLoading] = useState(false);
+const [ordersError, setOrdersError] = useState("");
+const [orderUpdatingId, setOrderUpdatingId] = useState(null);
+
+
+const fetchOrders = async () => {
+  setOrdersLoading(true);
+  setOrdersError("");
+
+  try {
+    const token = localStorage.getItem("motogtToken");
+
+    const response = await apiFetch("/orders", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json().catch(() => []);
+
+    if (!response.ok) {
+      throw new Error(data.message || "Could not load orders");
+    }
+
+    setOrders(data);
+  } catch (error) {
+    setOrdersError(error.message);
+  } finally {
+    setOrdersLoading(false);
+  }
+};
+
+const handleOrderStatusChange = async (orderId, status) => {
+  setOrderUpdatingId(orderId);
+
+  try {
+    const token = localStorage.getItem("motogtToken");
+
+    const response = await apiFetch(`/orders/${orderId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || "Could not update order");
+    }
+
+    await fetchOrders();
+  } catch (error) {
+    setOrdersError(error.message);
+  } finally {
+    setOrderUpdatingId(null);
+  }
+};
+
+
 useEffect(() => {
   const fetchProducts = async () => {
     setProductsLoading(true);
@@ -603,34 +666,70 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
 ))}
   </section>
 )}
-        {activeTab === 'Orders' && (
-          <section className="admin-content-card">
-            <h2>Order Management</h2>
-            <p>Review and manage customer orders.</p>
-            <div className="admin-table-row">
-              <strong>Order #1001</strong>
-              <span>Sample order</span>
-              <span className="admin-status">Pending</span>
-            </div>
-          </section>
-        )}
+      
+{activeTab === 'Orders' && (
+  <section className="admin-content-card">
+    <h2>Order Management</h2>
+    <p>Manage real customer orders.</p>
 
-        {activeTab === 'Enquiries' && (
-          <section className="admin-content-card">
-            <h2>Customer Enquiries</h2>
-            <p>Review customer questions and service requests.</p>
-            <div className="admin-table-row">
-              <strong>Sample enquiry</strong>
-              <span>Dent &amp; Paint</span>
-              <span className="admin-status">New</span>
-            </div>
-          </section>
-        )}
+    <button
+      className="admin-action-button"
+      onClick={fetchOrders}
+      disabled={ordersLoading}
+    >
+      {ordersLoading ? "Loading..." : "Refresh Orders"}
+    </button>
 
-        <footer className="admin-footer">
-          MotoGT Admin Dashboard · Prototype
-        </footer>
-      </main>
+    {ordersError && <p>{ordersError}</p>}
+
+    {ordersLoading && <p>Loading customer orders...</p>}
+
+    {!ordersLoading && !ordersError && orders.length === 0 && (
+      <p>No customer orders yet.</p>
+    )}
+
+    {!ordersLoading && orders.map((order) => (
+      <div className="admin-table-row" key={order._id}>
+        <div>
+          <strong>{order.customerName}</strong>
+          <p>{order.email}</p>
+          <p>{order.phone}</p>
+          <p>{order.address}</p>
+          <p>
+            Order: {new Date(order.createdAt).toLocaleString()}
+          </p>
+
+          {order.products.map((item, index) => (
+            <p key={index}>
+              {item.productId?.name || "Product"} × {item.quantity}
+            </p>
+          ))}
+        </div>
+
+        <span>
+          ৳{Number(order.totalAmount).toLocaleString("en-BD")}
+        </span>
+
+        <select
+          value={order.status}
+          disabled={orderUpdatingId === order._id}
+          onChange={(event) =>
+            handleOrderStatusChange(order._id, event.target.value)
+          }
+        >
+          <option value="Pending">Pending</option>
+          <option value="Processing">Processing</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+
+        {orderUpdatingId === order._id && <span>Updating...</span>}
+      </div>
+    ))}
+  </section>
+)}
+
+</main>
     </div>
   );
 }

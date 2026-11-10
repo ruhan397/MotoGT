@@ -150,3 +150,33 @@ exports.loginUser = async (req, res) => {
 
 
    
+// Get Latest Logged-in Customer Profile
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        membership: user.membership,
+      },
+    });
+  } catch (error) {
+    console.error("Get Profile Error:", error.message);
+
+    return res.status(500).json({
+      message: "Could not load customer profile.",
+    });
+  }
+};

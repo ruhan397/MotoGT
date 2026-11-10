@@ -1,18 +1,22 @@
+
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
 
-// Get all orders
+// Admin: Get all orders
 const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate('products.productId');
+    const orders = await Order.find()
+      .populate('products.productId')
+      .sort({ createdAt: -1 });
+
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get single order
+// Admin: Get single order
 const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -28,45 +32,67 @@ const getOrderById = async (req, res) => {
   }
 };
 
-// Create order with automatic membership discount
+// Customer: Create order
 const createOrder = async (req, res) => {
+  const reservedProducts = [];
+
   try {
     const { products, address } = req.body;
 
-    // Find logged-in customer
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
-      return res.status(404).json({
-        message: 'Customer not found'
+    if (!address?.trim() || !Array.isArray(products) || !products.length) {
+      return res.status(400).json({
+        message: 'Delivery address and products are required'
       });
     }
 
-    if (!address || !Array.isArray(products) || products.length === 0) {
-      return res.status(400).json({
-        message: 'Address and products are required'
-      });
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+
+    // Combine repeated product IDs
+    const quantities = new Map();
+
+    for (const item of products) {
+      const id = String(item.productId || '');
+      const quantity = Number(item.quantity);
+
+      if (!id || !Number.isInteger(quantity) || quantity < 1) {
+        return res.status(400).json({
+          message: 'Invalid product or quantity'
+        });
+      }
+
+      quantities.set(id, (quantities.get(id) || 0) + quantity);
     }
 
     let subtotal = 0;
     const orderProducts = [];
 
-    // Get actual product prices from database
-    for (const item of products) {
-      const product = await Product.findById(item.productId);
-      const quantity = Number(item.quantity);
+    // Validate and reserve stock
+    for (const [productId, quantity] of quantities) {
+      const product = await Product.findOneAndUpdate(
+        {
+          _id: productId,
+          stock: { $gte: quantity }
+        },
+        {
+          $inc: { stock: -quantity }
+        },
+        { new: true }
+      );
 
       if (!product) {
-        return res.status(404).json({
-          message: 'Product not found'
-        });
+        throw new Error(
+          `Product unavailable or insufficient stock: ${productId}`
+        );
       }
 
-      if (!Number.isInteger(quantity) || quantity < 1) {
-        return res.status(400).json({
-          message: 'Invalid product quantity'
-        });
-      }
+      reservedProducts.push({
+        productId: product._id,
+        quantity
+      });
 
       subtotal += product.price * quantity;
 
@@ -76,16 +102,14 @@ const createOrder = async (req, res) => {
       });
     }
 
-    // Calculate membership discount
-const discountPercentage = user.membership?.isActive
-? (user.membership.discountPercentage || 5)
-: 0;
+    const discountPercentage = user.membership?.isActive
+      ? (user.membership.discountPercentage || 5)
+      : 0;
 
-if (![5, 10, 15, 20].includes(discountPercentage)) {
-  return res.status(400).json({
-    message: 'Invalid membership discount'
-  });
-}
+    if (![5, 10, 15, 20].includes(discountPercentage) &&
+        discountPercentage !== 0) {
+      throw new Error('Invalid membership discount');
+    }
 
     const discountAmount = Number(
       (subtotal * discountPercentage / 100).toFixed(2)
@@ -95,18 +119,18 @@ if (![5, 10, 15, 20].includes(discountPercentage)) {
       (subtotal - discountAmount).toFixed(2)
     );
 
-    // Create order
     const order = await Order.create({
       userId: user._id,
       customerName: user.fullName,
       email: user.email,
       phone: user.phone,
-      address,
+      address: address.trim(),
       products: orderProducts,
       subtotal,
       discountPercentage,
       discountAmount,
-      totalAmount
+      totalAmount,
+      status: 'Pending'
     });
 
     res.status(201).json({
@@ -115,13 +139,19 @@ if (![5, 10, 15, 20].includes(discountPercentage)) {
     });
 
   } catch (error) {
-    res.status(400).json({
-      message: error.message
-    });
+    // Restore stock if order creation fails
+    for (const item of reservedProducts) {
+      await Product.updateOne(
+        { _id: item.productId },
+        { $inc: { stock: item.quantity } }
+      ).catch(() => {});
+    }
+
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Update order status and calculate membership loyalty
+// Admin: Update order status and membership
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -142,19 +172,10 @@ const updateOrderStatus = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-      return res.status(404).json({
-        message: 'Order not found'
-      });
+      return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Add loyalty points only once when order becomes Completed
     if (status === 'Completed' && !order.loyaltyCredited) {
-      if (!order.userId) {
-        return res.status(400).json({
-          message: 'This order is not linked to a customer account'
-        });
-      }
-
       const user = await User.findById(order.userId);
 
       if (!user) {
@@ -174,15 +195,15 @@ const updateOrderStatus = async (req, res) => {
 
       user.membership.totalSpent += order.totalAmount;
 
-      const totalSpent = user.membership.totalSpent;
+      const spent = user.membership.totalSpent;
 
-      if (totalSpent >= 50000) {
+      if (spent >= 50000) {
         user.membership.level = 'vip';
         user.membership.discountPercentage = 20;
-      } else if (totalSpent >= 25000) {
+      } else if (spent >= 25000) {
         user.membership.level = 'gold';
         user.membership.discountPercentage = 15;
-      } else if (totalSpent >= 10000) {
+      } else if (spent >= 10000) {
         user.membership.level = 'silver';
         user.membership.discountPercentage = 10;
       } else {
@@ -191,7 +212,6 @@ const updateOrderStatus = async (req, res) => {
       }
 
       await user.save();
-
       order.loyaltyCredited = true;
     }
 
@@ -204,13 +224,11 @@ const updateOrderStatus = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(400).json({
-      message: error.message
-    });
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Delete order
+// Admin: Delete order
 const deleteOrder = async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
@@ -219,7 +237,9 @@ const deleteOrder = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    res.status(200).json({ message: 'Order deleted successfully' });
+    res.status(200).json({
+      message: 'Order deleted successfully'
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
