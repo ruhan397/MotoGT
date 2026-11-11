@@ -360,12 +360,22 @@ const finalTotal = subtotal - discountAmount;
           Explore our collection of premium car accessories.
         </p>
 
-        <button
-          className="accessories-cart-toggle"
-          onClick={() => setCartOpen(true)}
-        >
-          {cartCount > 0 ? `My Cart (${cartCount})` : "My Cart"}
-        </button>
+        
+<button
+  className="accessories-cart-toggle"
+  onClick={() => setCartOpen(true)}
+>
+  <span>My Cart</span>
+
+  {cartCount > 0 && (
+    <span className="cart-count-badge">
+      {cartCount}
+    </span>
+  )}
+
+  <span className="cart-toggle-arrow">⌄</span>
+</button>
+
       </div>
 
       {!loading && !error && (
@@ -479,11 +489,7 @@ const finalTotal = subtotal - discountAmount;
         </p>
       )}
 
-      {orderMessage && (
-        <p className="accessories-order-success">
-          {orderMessage}
-        </p>
-      )}
+      
 
       {orderError && !cartOpen && (
         <p className="accessories-order-error">

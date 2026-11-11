@@ -14,7 +14,8 @@ export async function apiFetch(path, options = {}) {
   const canRetry = method === "GET" || method === "HEAD";
   const maxAttempts = canRetry ? 3 : 1;
 
-  const url = `${API_BASE_URL}/${path.replace(/^\/+/, "")}`;
+  const cleanPath = path.replace(/^\/+/, "");
+  const url = `${API_BASE_URL}/${cleanPath}`;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const controller = new AbortController();

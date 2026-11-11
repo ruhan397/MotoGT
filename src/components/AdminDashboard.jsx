@@ -46,7 +46,7 @@ const fetchOrders = async () => {
   setOrdersError("");
 
   try {
-    const token = localStorage.getItem("motogtToken");
+    const token = localStorage.getItem("motogtAdminToken");
 
     const response = await apiFetch("/orders", {
       headers: {
@@ -72,7 +72,7 @@ const handleOrderStatusChange = async (orderId, status) => {
   setOrderUpdatingId(orderId);
 
   try {
-    const token = localStorage.getItem("motogtToken");
+    const token = localStorage.getItem("motogtAdminToken");
 
     const response = await apiFetch(`/orders/${orderId}`, {
       method: "PUT",
@@ -128,7 +128,7 @@ const handleAddProduct = async (e) => {
   setProductMessage("");
 
   try {
-    const token = localStorage.getItem("motogtToken");
+    const token = localStorage.getItem("motogtAdminToken");
 
     const response = await apiFetch("/products", {
       method: "POST",
@@ -165,7 +165,7 @@ const handleUpdateProduct = async (e) => {
   setProductMessage("");
 
   try {
-    const token = localStorage.getItem("motogtToken");
+    const token = localStorage.getItem("motogtAdminToken");
 
     const response = await apiFetch(
       `/products/${editingProduct._id}`,
@@ -215,7 +215,7 @@ const handleDeleteProduct = async (productId) => {
   setProductMessage("");
 
   try {
-    const token = localStorage.getItem("motogtToken");
+    const token = localStorage.getItem("motogtAdminToken");
 
     const response = await apiFetch(
       `/products/${productId}`,
