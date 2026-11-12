@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
 import "../styles/Accessories.css";
 
@@ -7,8 +7,9 @@ function Accessories() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [activeCategory, setActiveCategory] = useState("All Products");
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -18,20 +19,9 @@ function Accessories() {
   const [orderError, setOrderError] = useState("");
 
   const [membership, setMembership] = useState(null);
-const [membershipLoading, setMembershipLoading] = useState(false);
+  const [membershipLoading, setMembershipLoading] = useState(false);
 
-  const pointerStartX = useRef(null);
-
-  const categories = [
-    "All Products",
-    "Interior Accessories",
-    "Speakers & Audio",
-    "Car Monitors",
-    "Lighting Accessories",
-    "Exterior Accessories",
-    "Electronics & Car Utility",
-  ];
-
+  // Load products
   const loadProducts = async () => {
     setLoading(true);
     setError("");
@@ -56,138 +46,102 @@ const [membershipLoading, setMembershipLoading] = useState(false);
     loadProducts();
   }, []);
 
-  
-useEffect(() => {
-  const loadMembership = async () => {
-    const token = localStorage.getItem("motogtToken");
-    const savedUser = localStorage.getItem("motogtUser");
-
-    // প্রথমে Login-এর সময় Save করা Membership দেখাবে
-    if (savedUser) {
-      try {
-        const user = JSON.parse(savedUser);
-        setMembership(user.membership || null);
-        
-      } catch {
-        setMembership(null);
-      }
-    }
-
-    if (!token) return;
-
-    setMembershipLoading(true);
-
-    try {
-      const response = await apiFetch("/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Could not load membership.");
-      }
-
-      const data = await response.json();
-
-      if (data.user?.membership) {
-        setMembership(data.user.membership);
-
-        // সর্বশেষ Customer তথ্য Save করবে
-        const previousUser = savedUser
-          ? JSON.parse(savedUser)
-          : {};
-
-        localStorage.setItem(
-          "motogtUser",
-          JSON.stringify({
-            ...previousUser,
-            ...data.user,
-          })
-        );
-      }
-    } catch (err) {
-      console.error("Membership Error:", err.message);
-      // Backend ব্যর্থ হলেও আগের Membership তথ্য থাকবে
-    } finally {
-      setMembershipLoading(false);
-    }
-  };
-
-  loadMembership();
-}, []);
-
-
+  // Load customer membership
   useEffect(() => {
-    setActiveIndex(0);
-  }, [activeCategory]);
+    const loadMembership = async () => {
+      const token = localStorage.getItem("motogtToken");
+      const savedUser = localStorage.getItem("motogtUser");
 
-  const filteredProducts =
-    activeCategory === "All Products"
-      ? products
-      : products.filter(
-          (product) => product.category === activeCategory
-        );
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          setMembership(user.membership || null);
+        } catch {
+          setMembership(null);
+        }
+      }
+
+      if (!token) return;
+
+      setMembershipLoading(true);
+
+      try {
+        const response = await apiFetch("/auth/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Could not load membership.");
+        }
+
+        const data = await response.json();
+
+        if (data.user?.membership) {
+          setMembership(data.user.membership);
+
+          const previousUser = savedUser
+            ? JSON.parse(savedUser)
+            : {};
+
+          localStorage.setItem(
+            "motogtUser",
+            JSON.stringify({
+              ...previousUser,
+              ...data.user,
+            })
+          );
+        }
+      } catch (err) {
+        console.error("Membership Error:", err.message);
+      } finally {
+        setMembershipLoading(false);
+      }
+    };
+
+    loadMembership();
+  }, []);
+
+  // Dynamic categories from database products
+  const categories = [
+    "All Products",
+    ...Array.from(
+      new Set(
+        products
+          .map((product) => product.category)
+          .filter(Boolean)
+      )
+    ).sort(),
+  ];
+
+  // Search and category filtering
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      activeCategory === "All Products" ||
+      product.category === activeCategory;
+
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+
+    const searchableText = [
+      product.name,
+      product.brand,
+      product.category,
+      product.description,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      matchesCategory &&
+      searchableText.includes(normalizedQuery)
+    );
+  });
 
   const totalProducts = filteredProducts.length;
 
-  const showPrevious = () => {
-    setActiveIndex((current) =>
-      (current - 1 + totalProducts) % totalProducts
-    );
-  };
-
-  const showNext = () => {
-    setActiveIndex((current) =>
-      (current + 1) % totalProducts
-    );
-  };
-
-  const getVisibleProducts = () => {
-    if (totalProducts === 0) return [];
-
-    if (totalProducts === 1) {
-      return [
-        {
-          product: filteredProducts[0],
-          position: "center",
-        },
-      ];
-    }
-
-    if (totalProducts === 2) {
-      return [
-        {
-          product: filteredProducts[(activeIndex + 1) % 2],
-          position: "left",
-        },
-        {
-          product: filteredProducts[activeIndex],
-          position: "center",
-        },
-      ];
-    }
-
-    return [
-      {
-        product:
-          filteredProducts[
-            (activeIndex - 1 + totalProducts) % totalProducts
-          ],
-        position: "left",
-      },
-      {
-        product: filteredProducts[activeIndex],
-        position: "center",
-      },
-      {
-        product:
-          filteredProducts[(activeIndex + 1) % totalProducts],
-        position: "right",
-      },
-    ];
-  };
-
+  // Add product to cart
   const addToCart = (product) => {
     if (Number(product.stock) < 1) {
       setOrderError("This product is currently out of stock.");
@@ -204,7 +158,9 @@ useEffect(() => {
 
       if (existing) {
         if (existing.quantity >= Number(product.stock)) {
-          setOrderError("You cannot add more than the available stock.");
+          setOrderError(
+            "You cannot add more than the available stock."
+          );
           return current;
         }
 
@@ -221,6 +177,7 @@ useEffect(() => {
     setCartOpen(true);
   };
 
+  // Change cart quantity
   const changeQuantity = (productId, change) => {
     setCart((current) =>
       current.map((item) => {
@@ -231,7 +188,9 @@ useEffect(() => {
         if (nextQuantity < 1) return item;
 
         if (nextQuantity > Number(item.product.stock)) {
-          setOrderError("Quantity cannot exceed available stock.");
+          setOrderError(
+            "Quantity cannot exceed available stock."
+          );
           return item;
         }
 
@@ -240,9 +199,12 @@ useEffect(() => {
     );
   };
 
+  // Remove product from cart
   const removeFromCart = (productId) => {
     setCart((current) =>
-      current.filter((item) => item.product._id !== productId)
+      current.filter(
+        (item) => item.product._id !== productId
+      )
     );
   };
 
@@ -257,16 +219,17 @@ useEffect(() => {
     0
   );
 
-  const discountPercentage =
-  membership?.isActive
+  // Membership discount calculation
+  const discountPercentage = membership?.isActive
     ? Number(membership.discountPercentage || 0)
     : 0;
 
-const discountAmount =
-  (subtotal * discountPercentage) / 100;
+  const discountAmount =
+    (subtotal * discountPercentage) / 100;
 
-const finalTotal = subtotal - discountAmount;
+  const finalTotal = subtotal - discountAmount;
 
+  // Place order
   const placeOrder = async (event) => {
     event.preventDefault();
 
@@ -323,31 +286,11 @@ const finalTotal = subtotal - discountAmount;
       setAddress("");
     } catch (err) {
       setOrderError(
-        err.message || "Something went wrong. Please try again."
+        err.message ||
+          "Something went wrong. Please try again."
       );
     } finally {
       setPlacingOrder(false);
-    }
-  };
-
-  const handlePointerDown = (event) => {
-    pointerStartX.current = event.clientX;
-  };
-
-  const handlePointerUp = (event) => {
-    if (pointerStartX.current === null) return;
-
-    const difference =
-      event.clientX - pointerStartX.current;
-
-    pointerStartX.current = null;
-
-    if (Math.abs(difference) > 50) {
-      if (difference < 0) {
-        showNext();
-      } else {
-        showPrevious();
-      }
     }
   };
 
@@ -355,29 +298,77 @@ const finalTotal = subtotal - discountAmount;
     <section className="accessories-page">
       <div className="accessories-heading">
         <p className="eyebrow">MOTOGT COLLECTION</p>
+
         <h1>Car Accessories</h1>
+
         <p>
           Explore our collection of premium car accessories.
         </p>
 
-        
-<button
-  className="accessories-cart-toggle"
-  onClick={() => setCartOpen(true)}
->
-  <span>My Cart</span>
+        <button
+          className="accessories-cart-toggle"
+          onClick={() => setCartOpen(true)}
+        >
+          <span>My Cart</span>
 
-  {cartCount > 0 && (
-    <span className="cart-count-badge">
-      {cartCount}
-    </span>
-  )}
+          {cartCount > 0 && (
+            <span className="cart-count-badge">
+              {cartCount}
+            </span>
+          )}
 
-  <span className="cart-toggle-arrow">⌄</span>
-</button>
-
+          <span className="cart-toggle-arrow">⌄</span>
+        </button>
       </div>
 
+      {/* Search */}
+      {!loading && !error && (
+        <div className="accessories-search-wrap">
+          <label
+            className="accessories-search"
+            htmlFor="accessories-search-input"
+          >
+            <span
+              className="accessories-search-icon"
+              aria-hidden="true"
+            >
+              ⌕
+            </span>
+
+            <input
+              id="accessories-search-input"
+              type="search"
+              value={searchQuery}
+              onChange={(event) =>
+                setSearchQuery(event.target.value)
+              }
+              placeholder="Search accessories..."
+              autoComplete="off"
+            />
+
+            {searchQuery && (
+              <button
+                type="button"
+                className="accessories-search-clear"
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </label>
+
+          <p className="accessories-search-count">
+            {searchQuery.trim()
+              ? `${totalProducts} matching product${
+                  totalProducts === 1 ? "" : "s"
+                }`
+              : `${totalProducts} products available`}
+          </p>
+        </div>
+      )}
+
+      {/* Category filters */}
       {!loading && !error && (
         <div className="accessories-category-filter">
           {categories.map((category) => (
@@ -394,109 +385,106 @@ const finalTotal = subtotal - discountAmount;
         </div>
       )}
 
+      {/* Loading */}
       {loading && <p>Loading products...</p>}
 
+      {/* Error */}
       {error && (
         <div>
           <p>{error}</p>
-          <button onClick={loadProducts}>Try Again</button>
+
+          <button onClick={loadProducts}>
+            Try Again
+          </button>
         </div>
       )}
 
+      {/* Empty products */}
       {!loading && !error && totalProducts === 0 && (
         <p className="accessories-empty">
-          No products found in this category.
+          {searchQuery.trim()
+            ? "No products found. Try a different search."
+            : "No products found in this category."}
         </p>
       )}
 
+      {/* All products grid */}
       {!loading && !error && totalProducts > 0 && (
-        <div className="accessories-carousel">
-          <button
-            className="carousel-arrow carousel-arrow-left"
-            onClick={showPrevious}
-            aria-label="Previous product"
-            disabled={totalProducts < 2}
-          >
-            &#10094;
-          </button>
+        <div className="accessories-product-grid">
+          {filteredProducts.map((product) => (
+            <article
+              className="accessories-product-card"
+              key={product._id}
+            >
+              <div className="accessories-product-image">
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="product-image-placeholder">
+                    MOTOGT
+                  </div>
+                )}
+              </div>
 
-          <div
-            className="accessories-carousel-track"
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={() => {
-              pointerStartX.current = null;
-            }}
-          >
-            {getVisibleProducts().map(
-              ({ product, position }) => (
-                <article
-                  key={product._id}
-                  className={`carousel-card carousel-card--${position}`}
-                  onClick={() => {
-                    if (position === "left") showPrevious();
-                    if (position === "right") showNext();
-                  }}
-                >
-                  {product.image && (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      draggable="false"
-                    />
-                  )}
+              <div className="accessories-product-info">
+               
 
-                  <h3>{product.name}</h3>
-                  <p>{product.brand}</p>
-                  <p>
-                    ৳{Number(product.price).toLocaleString("en-BD")}
-                  </p>
+                <h3>{product.name}</h3>
 
-                  <button
-                    className="accessories-add-button"
-                    onPointerDown={(event) =>
-                      event.stopPropagation()
+                <p className="product-brand">
+                  {product.brand}
+                </p>
+
+                
+
+                <div className="product-card-bottom">
+                  <strong>
+                    ৳
+                    {Number(product.price).toLocaleString(
+                      "en-BD"
+                    )}
+                  </strong>
+
+                  <span
+                    className={
+                      Number(product.stock) > 0
+                        ? "product-stock available"
+                        : "product-stock unavailable"
                     }
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      addToCart(product);
-                    }}
-                    disabled={Number(product.stock) < 1}
                   >
-                    {Number(product.stock) < 1
-                      ? "Out of Stock"
-                      : "Add to Cart"}
-                  </button>
-                </article>
-              )
-            )}
-          </div>
+                    {Number(product.stock) > 0
+                      ? "In Stock"
+                      : "Out of Stock"}
+                  </span>
+                </div>
 
-          <button
-            className="carousel-arrow carousel-arrow-right"
-            onClick={showNext}
-            aria-label="Next product"
-            disabled={totalProducts < 2}
-          >
-            &#10095;
-          </button>
+                <button
+                  className="accessories-add-button"
+                  onClick={() => addToCart(product)}
+                  disabled={Number(product.stock) < 1}
+                >
+                  {Number(product.stock) < 1
+                    ? "Out of Stock"
+                    : "Add to Cart"}
+                </button>
+              </div>
+            </article>
+          ))}
         </div>
       )}
 
-      {!loading && !error && totalProducts > 1 && (
-        <p className="carousel-counter">
-          {activeIndex + 1} / {totalProducts}
-        </p>
-      )}
-
-      
-
+      {/* Cart error */}
       {orderError && !cartOpen && (
         <p className="accessories-order-error">
           {orderError}
         </p>
       )}
 
+      {/* Cart panel */}
       {cartOpen && (
         <div
           className="accessories-cart-backdrop"
@@ -541,8 +529,17 @@ const finalTotal = subtotal - discountAmount;
                         <strong>{product.name}</strong>
 
                         <span>
-                          ৳{Number(product.price).toLocaleString("en-BD")}
+                          ৳
+                          {Number(
+                            product.price
+                          ).toLocaleString("en-BD")}
                         </span>
+
+                        {product.description && (
+  <p className="accessories-cart-description">
+    {product.description}
+  </p>
+)}
 
                         <div className="accessories-quantity-control">
                           <button
@@ -580,43 +577,51 @@ const finalTotal = subtotal - discountAmount;
                   ))}
                 </div>
 
-               
-<div className="accessories-cart-total">
-  <span>Subtotal</span>
-  <strong>
-    ৳{subtotal.toLocaleString("en-BD", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}
-  </strong>
-</div>
+                {/* Cart subtotal */}
+                <div className="accessories-cart-total">
+                  <span>Subtotal</span>
 
-<div className="accessories-cart-total">
-  <span>
-    Membership Discount
-    {membershipLoading
-      ? " (Loading...)"
-      : ` (${discountPercentage}%)`}
-  </span>
-  <strong>
-    - ৳{discountAmount.toLocaleString("en-BD", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}
-  </strong>
-</div>
+                  <strong>
+                    ৳
+                    {subtotal.toLocaleString("en-BD", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
 
-<div className="accessories-cart-total">
-  <strong>Final Total</strong>
-  <strong>
-    ৳{finalTotal.toLocaleString("en-BD", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}
-  </strong>
-</div>
+                {/* Membership discount */}
+                <div className="accessories-cart-total">
+                  <span>
+                    Membership Discount
+                    {membershipLoading
+                      ? " (Loading...)"
+                      : ` (${discountPercentage}%)`}
+                  </span>
 
+                  <strong>
+                    - ৳
+                    {discountAmount.toLocaleString("en-BD", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
 
+                {/* Final total */}
+                <div className="accessories-cart-total">
+                  <strong>Final Total</strong>
+
+                  <strong>
+                    ৳
+                    {finalTotal.toLocaleString("en-BD", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
+
+                {/* Checkout */}
                 <form
                   className="accessories-checkout-form"
                   onSubmit={placeOrder}
@@ -637,7 +642,8 @@ const finalTotal = subtotal - discountAmount;
                   />
 
                   <p>
-                    Payment Method: <strong>Cash on Delivery</strong>
+                    Payment Method:{" "}
+                    <strong>Cash on Delivery</strong>
                   </p>
 
                   {orderError && (

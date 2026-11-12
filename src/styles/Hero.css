@@ -209,3 +209,94 @@
 .hero .hero-content {
   transform: translate(25px, 5px);
 }
+
+/* Subtle premium entrance motion for the existing Hero layout */
+.hero .hero-content .eyebrow {
+  animation: motoHeroEyebrowIn 850ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.hero .hero-content h1 {
+  animation: motoHeroTitleIn 950ms 120ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.hero .hero-visual {
+  animation: motoHeroVisualIn 1s 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.hero .hero-visual .hero-logo {
+  animation: motoHeroLogoFloat 6s 1.2s ease-in-out infinite;
+}
+
+.hero .hero-visual .visual-caption {
+  animation: motoHeroCaptionIn 800ms 650ms ease both;
+}
+
+@keyframes motoHeroEyebrowIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(16px); }
+}
+
+@keyframes motoHeroTitleIn {
+  from { opacity: 0; transform: translateY(22px) scaleX(1.10); }
+  to { opacity: 1; transform: translateY(0) scaleX(1.10); }
+}
+
+@keyframes motoHeroVisualIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes motoHeroLogoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes motoHeroCaptionIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .hero-content .eyebrow,
+  .hero .hero-content h1,
+  .hero .hero-visual,
+  .hero .hero-visual .hero-logo,
+  .hero .hero-visual .visual-caption {
+    animation: none !important;
+  }
+}
+
+
+
+/* Premium cinematic polish: preserve the existing hero composition */
+.hero::before {
+  animation: motoHeroBackdropIn 1.5s ease-out both;
+  transform-origin: center;
+}
+
+.hero .hero-content h1 em {
+  text-shadow: 0 0 24px rgba(198, 167, 106, 0.16);
+}
+
+.hero .hero-visual .hero-logo {
+  transition: filter 450ms ease, box-shadow 450ms ease;
+}
+
+.hero .hero-visual:hover .hero-logo {
+  filter: brightness(1.06);
+  box-shadow:
+    inset 1px 1px 2px rgba(255, 255, 255, 0.8),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.65),
+    0 0 15px rgba(198, 167, 106, 0.22),
+    0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+@keyframes motoHeroBackdropIn {
+  from { opacity: 0.7; transform: scale(1.07); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before { animation: none !important; }
+  .hero .hero-visual .hero-logo { transition: none; }
+}

@@ -39,6 +39,36 @@ function Services() {
     };
   }, []);
 
+  useEffect(() => {
+    const revealElements = document.querySelectorAll(
+      ".intro-strip, .services .section-heading, .services .service-card"
+    );
+
+    if (!("IntersectionObserver" in window)) {
+      revealElements.forEach((element) => element.classList.add("moto-is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("moto-is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -35px 0px" }
+    );
+
+    revealElements.forEach((element) => {
+      element.classList.add("moto-reveal");
+      observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <section className="intro-strip" id="about">

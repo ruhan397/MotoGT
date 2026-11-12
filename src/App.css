@@ -501,3 +501,25 @@ footer p {
   text-align: right;
 }
 
+
+
+/* Shared homepage reveal for Contact, Store and Footer */
+.moto-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 800ms ease, transform 800ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.moto-reveal.moto-is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moto-reveal,
+  .moto-reveal.moto-is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
