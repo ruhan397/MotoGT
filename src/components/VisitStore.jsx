@@ -1,3 +1,4 @@
+
 import "../styles/VisitStore.css";
 import shopImage from "../assets/ShopFront.jpeg";
 
@@ -6,13 +7,13 @@ function VisitStore() {
     <section className="visit-store" id="visit-store">
       <div className="visit-store-card">
 
-      <div className="visit-store-heading">
-  <h2>
-    <span className="word-visit">VISIT</span>{" "}
-    <span className="word-our">OUR</span>{" "}
-    <em className="word-store">STORE.</em>
-  </h2>
-</div>
+        <div className="visit-store-heading">
+          <h2>
+            <span className="word-visit">VISIT</span>{" "}
+            <span className="word-our">OUR</span>{" "}
+            <em className="word-store">STORE.</em>
+          </h2>
+        </div>
 
         <div className="visit-store-image">
           <img src={shopImage} alt="MotoGT Shop Front" />
@@ -38,6 +39,16 @@ function VisitStore() {
 
           <p>Kazi Tula Uchashorok, Sylhet</p>
         </div>
+
+        <a
+          href="https://maps.app.goo.gl/BSfn7Sf91B9PjV4e6"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="get-directions-btn"
+        >
+          GET DIRECTIONS
+          <span className="direction-arrow">↗</span>
+        </a>
 
       </div>
     </section>

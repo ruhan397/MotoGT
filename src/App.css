@@ -115,7 +115,7 @@ button, a {
 
 
 .contact-section h2 {
-  font-size: clamp(48px, 6.2vw, 79px);
+  font-size: clamp(40px, 5vw, 56px);
   letter-spacing: -3px;
   line-height: 1.04;
   margin: 24px 0;
@@ -522,4 +522,41 @@ footer p {
     transform: none;
     transition: none;
   }
+}
+
+/* Restore Golden Section Headings */
+
+.services .eyebrow,
+.contact-section .eyebrow {
+  color: #C6A76A !important;
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 500;
+  letter-spacing: 2px;
+}
+
+.services .section-heading h2,
+.contact-section h2 {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 500;
+}
+
+.services .section-heading h2 em,
+.contact-section h2 em {
+  color: red !important;
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 500;
+  font-style: italic;
+}
+
+
+
+.contact-section .eyebrow {
+ font-size: 13px !important;
+}
+
+/* Brighter Golden Eyebrows */
+
+.services .eyebrow,
+.contact-section .eyebrow {
+  color: #E5C47B !important;
 }

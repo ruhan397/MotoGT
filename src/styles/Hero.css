@@ -1,302 +1,477 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* =================================
+   MotoGT Premium Hero
+================================= */
 
 .hero {
-  display: grid;
-  grid-template-columns: 1fr 0.88fr;
-  min-height: 550px;
-  padding: 45px 7%;
-  gap: 30px;
-  align-items: center;
-
-  position: relative;
+  position: relative !important;
   isolation: isolate;
-  background: #111;
-
-  
-}
-
-.hero-content {
-  max-width: 570px;
-  text-align: center;
-  position: relative;
-  left: 25px;
-  transform: translateY(-10px);
-}
-
-
-.eyebrow {
-  font-size: 11px;
-  letter-spacing: 2.7px;
-  font-weight: 700;
-  color: goldenrod;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
-  transform: translateY(16px);
-}
-
-.hero h1 {
-  font-size: clamp(46px, 5.2vw, 72px);
-  letter-spacing: -0px;
-  line-height: 1.04;
-  margin: 24px 0;
-  font-weight: 400;
-  font-family: 'Playfair Display', serif;
-  transform: scaleX(1.10);
-}
-
-.hero h1 em {
-  font-family: 'Playfair Display', serif;
-  font-weight: 500;
-  color: red;
-}
-
-.hero-copy {
-  text-align: center;
-  font-size: 15px !important;
-  color: silver;
-  max-width: 540px;
-  margin: 50px auto 0;
-  line-height: 1.8;
-}
-
-.hero .hero-visual {
-  position: relative;
-  width: 80%;
-  height: 300px;
-  min-height: 300px;
-  justify-self: end;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-}
-
-/* Keep the ellipse frames hidden */
-.hero-visual::before,
-.hero-visual::after {
-  display: none !important;
-}
-
-
-.hero-visual .hero-logo {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 80%;
-  max-height: 100%;
-  object-fit: contain;
-  object-position: center;
-  margin: 0;
-
-  border: 3px solid #aeb4ba;
-  box-shadow:
-    inset 1px 1px 2px rgba(255, 255, 255, 0.8),
-    inset -1px -1px 3px rgba(0, 0, 0, 0.65),
-    0 0 5px rgba(190, 200, 210, 0.5),
-    0 3px 8px rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
-}
-
-
-
-.hero-visual .visual-caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 18px;
+  min-height: 680px;
   width: 100% !important;
-  padding: 0 24px;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center;
-  gap: 8px;
-  z-index: 2;
   box-sizing: border-box;
+  padding: 65px 5% 75px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden;
+  background: #111210;
+  color: #f4f0e8;
+  text-align: center !important;
 }
 
-.hero-visual .visual-caption span {
-  width: auto !important;
-  min-width: 0;
-  margin: 0;
-  color: #111;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px !important;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
-  flex: 0 0 auto !important;
-}
-
-.hero-visual .visual-caption span:first-child {
-  text-align: left;
-}
-
-.hero-visual .visual-caption span:last-child {
-  text-align: right;
-}
-
-.hero-visual .visual-caption .caption-dot {
-  width: auto;
-  color: black;
-  font-size: 14px;
-  margin: 0 8px;
-  font-weight: 700;
-}
-
-.text-btn:hover {
-  color: white;
-}
-
-@media (max-width: 760px) {
-  .hero {
-    grid-template-columns: 1fr;
-    padding: 55px 5%;
-    gap: 38px;
-  }
-
-  .hero h1 {
-    font-size: clamp(40px, 10vw, 58px);
-  }
-
-  .hero .hero-visual {
-    width: 100%;
-    justify-self: stretch;
-  }
-
-  .hero-visual .visual-caption {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-}
-.hero .hero-copy {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-size: 10px;
-}
-.hero {
-  position: relative;
-  isolation: isolate;
-}
+/* Background */
 
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
-  pointer-events: none;
-
+  z-index: -2;
   background:
     linear-gradient(
-      rgba(0, 0, 0, 0.65),
-      rgba(0, 0, 0, 0.65)
+      180deg,
+      rgba(17, 18, 16, 0.76),
+      rgba(17, 18, 16, 0.62),
+      rgba(17, 18, 16, 0.88)
     ),
     url('../assets/BMGTL2.jpeg');
-
   background-size: cover;
   background-position: left center;
   background-repeat: no-repeat;
-}
-.nav-cta {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: motoHeroBackground 1.4s ease-out both;
 }
 
-.nav-cta:hover {
-  transform: scale(1.12);
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 50% 42%,
+      rgba(198, 167, 106, 0.11),
+      transparent 48%
+    );
 }
+
+/* Main Composition */
+
+.hero .hero-inner {
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  text-align: center !important;
+}
+
+/* Eyebrow */
+
+.hero .hero-eyebrow {
+  margin: 0 0 34px;
+  color: #c6a76a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  animation: motoHeroTextIn 850ms 100ms ease both;
+}
+
+/* Logo Area */
+
+.hero .hero-logo-area {
+  width: 100% !important;
+  margin: 0 auto !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  animation: motoHeroLogoIn 1s 180ms ease both;
+}
+
+/* Plate: fitted around the logo */
+
+.hero .hero-logo-card {
+  position: relative;
+
+  width: fit-content !important;
+  height: fit-content !important;
+
+  margin: 0 auto !important;
+  padding: 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    145deg,
+    rgba(244, 240, 232, 0.97),
+    rgba(224, 220, 208, 0.94)
+  );
+
+  border: 1px solid rgba(198, 167, 106, 0.75);
+  border-radius: 5px;
+
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 5px rgba(17, 18, 16, 0.035);
+
+  transition:
+    transform 450ms ease,
+    box-shadow 450ms ease,
+    border-color 450ms ease;
+}
+
+.hero .hero-logo-card:hover {
+  transform: translateY(-4px);
+  border-color: #d9b875;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.45),
+    0 0 18px rgba(198, 167, 106, 0.12);
+}
+
+/* Logo Image */
+
+
+.hero .hero-logo {
+  display: block;
+  width: clamp(180px, 22vw, 250px) !important;
+  height: 190px !important;
+  max-width: 100%;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+}
+
+/* Decorative Details */
+
+.logo-card-line {
+  position: absolute;
+  width: 30px;
+  height: 1px;
+  background: #a58a55;
+  opacity: 0.65;
+}
+
+.logo-card-line-top {
+  top: 8px;
+  left: 10px;
+}
+
+.logo-card-line-bottom {
+  bottom: 8px;
+  right: 10px;
+}
+
+/* Business Identity */
+
+.hero .visual-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 13px;
+  margin-top: 23px;
+  color: #e8e2d7;
+}
+
+.hero .visual-caption span {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.hero .visual-caption .caption-dot {
+  color: #c6a76a;
+  font-size: 16px;
+}
+
+/* Headline */
+
 .hero .hero-content {
-  transform: translate(25px, 5px);
-}
+  width: 100% !important;
+  max-width: 850px !important;
+  margin: 36px auto 0 !important;
+  text-align: center !important;
 
-/* Subtle premium entrance motion for the existing Hero layout */
-.hero .hero-content .eyebrow {
-  animation: motoHeroEyebrowIn 850ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: motoHeroTextIn 1s 350ms ease both;
 }
 
 .hero .hero-content h1 {
-  animation: motoHeroTitleIn 950ms 120ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  width: 100%;
+  margin: 0;
+
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(38px, 5.4vw, 70px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -1.8px;
+
+  color: #f4f0e8;
+  text-align: center !important;
 }
 
-.hero .hero-visual {
-  animation: motoHeroVisualIn 1s 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+.hero h1 em {
+  color: red !important;
+  font-family: 'Playfair Display', serif;
+  font-weight: 500;
+  font-style: italic;
 }
 
-.hero .hero-visual .hero-logo {
-  animation: motoHeroLogoFloat 6s 1.2s ease-in-out infinite;
-}
+/* Animations */
 
-.hero .hero-visual .visual-caption {
-  animation: motoHeroCaptionIn 800ms 650ms ease both;
-}
-
-@keyframes motoHeroEyebrowIn {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: translateY(16px); }
-}
-
-@keyframes motoHeroTitleIn {
-  from { opacity: 0; transform: translateY(22px) scaleX(1.10); }
-  to { opacity: 1; transform: translateY(0) scaleX(1.10); }
-}
-
-@keyframes motoHeroVisualIn {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes motoHeroLogoFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-@keyframes motoHeroCaptionIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero .hero-content .eyebrow,
-  .hero .hero-content h1,
-  .hero .hero-visual,
-  .hero .hero-visual .hero-logo,
-  .hero .hero-visual .visual-caption {
-    animation: none !important;
+@keyframes motoHeroBackground {
+  from {
+    opacity: 0.65;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-
-
-/* Premium cinematic polish: preserve the existing hero composition */
-.hero::before {
-  animation: motoHeroBackdropIn 1.5s ease-out both;
-  transform-origin: center;
+@keyframes motoHeroTextIn {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.hero .hero-content h1 em {
-  text-shadow: 0 0 24px rgba(198, 167, 106, 0.16);
+@keyframes motoHeroLogoIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.hero .hero-visual .hero-logo {
-  transition: filter 450ms ease, box-shadow 450ms ease;
+@keyframes motoHeroLogoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
-.hero .hero-visual:hover .hero-logo {
-  filter: brightness(1.06);
-  box-shadow:
-    inset 1px 1px 2px rgba(255, 255, 255, 0.8),
-    inset -1px -1px 3px rgba(0, 0, 0, 0.65),
-    0 0 15px rgba(198, 167, 106, 0.22),
-    0 8px 24px rgba(0, 0, 0, 0.45);
+/* Tablet and Mobile */
+
+@media (max-width: 760px) {
+  .hero {
+    min-height: 620px;
+    padding: 65px 5% 70px !important;
+  }
+
+  .hero .hero-eyebrow {
+    margin-bottom: 30px;
+    font-size: 9px;
+    letter-spacing: 3px;
+  }
+
+  .hero .hero-logo {
+    width: min(68vw, 230px) !important;
+    height: 175px !important;
+    max-height: none;
+  }
+  
+
+  .hero .visual-caption {
+    gap: 9px;
+    margin-top: 20px;
+  }
+
+  .hero .visual-caption span {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+  }
+
+  .hero .hero-content {
+    margin-top: 32px !important;
+  }
+
+  .hero .hero-content h1 {
+    font-size: clamp(37px, 9vw, 52px);
+    letter-spacing: -1px;
+  }
 }
 
-@keyframes motoHeroBackdropIn {
-  from { opacity: 0.7; transform: scale(1.07); }
-  to { opacity: 1; transform: scale(1); }
+@media (max-width: 380px) {
+  .hero .hero-logo {
+    width: min(68vw, 210px) !important;
+  }
+
+  .hero .visual-caption span {
+    font-size: 8px;
+    letter-spacing: 0.8px;
+  }
 }
+
+/* Accessibility */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero::before { animation: none !important; }
-  .hero .hero-visual .hero-logo { transition: none; }
+  .hero::before,
+  .hero .hero-eyebrow,
+  .hero .hero-logo-area,
+  .hero .hero-content,
+  .hero .hero-logo {
+    animation: none !important;
+  }
+
+  .hero .hero-logo-card {
+    transition: none !important;
+  }
 }
+/* Remove only the outer logo card */
+.hero .hero-logo-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Remove decorative card lines */
+.hero .logo-card-line {
+  display: none !important;
+}
+
+/* Final Hero Logo Size */
+.hero .hero-logo {
+  width: clamp(220px, 25vw, 300px) !important;
+  height: auto !important;
+}
+
+@media (max-width: 760px) {
+  .hero .hero-logo {
+    width: min(72vw, 270px) !important;
+    height: auto !important;
+  }
+}
+
+/* Premium Hero Eyebrow */
+.hero .hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3.5px;
+  color: #C6A76A;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+/* Smaller Hero Caption */
+.hero .hero-caption {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+/* Premium Hero Eyebrow */
+.hero .hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3.5px;
+  color: #D9B875;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+/* Smaller Visual Caption */
+.hero .visual-caption {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  gap: 7px;
+}
+
+/* Premium Hero Eyebrow */
+.hero .hero-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2.5px !important;
+  color: #D9B875 !important;
+  text-transform: uppercase;
+}
+
+.hero .hero-eyebrow::before,
+.hero .hero-eyebrow::after {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #C6A76A
+  );
+  opacity: 0.75;
+}
+
+.hero .hero-eyebrow::after {
+  transform: scaleX(-1);
+}
+
+/* Smaller Car Accessories Caption */
+.hero .visual-caption {
+  font-size: 9px !important;
+  letter-spacing: 1.5px !important;
+}
+
+/* Reduce only the bottom caption */
+.hero .visual-caption {
+  font-size: 9px !important;
+}
+/* Final Caption Font Size */
+.hero .visual-caption span {
+  font-size: 9px !important;
+}
+
+/* Elegant Champagne Gold Glow */
+.hero .hero-eyebrow {
+  color: #E2C47F !important;
+  text-shadow:
+    0 0 5px rgba(217, 184, 117, 0.30),
+    0 0 12px rgba(217, 184, 117, 0.16);
+}
+
+.hero .hero-eyebrow::before,
+.hero .hero-eyebrow::after {
+  box-shadow: 0 0 6px rgba(217, 184, 117, 0.45);
+  opacity: 0.9;
+}
+
+/* Enhance MotoGT Logo Colors */
+.hero .hero-logo {
+  filter: saturate(1.4) contrast(1.06);
+}
+
+.hero .hero-logo {
+  width: clamp(240px, 28vw, 330px) !important;
+  height: auto !important;
+}
+

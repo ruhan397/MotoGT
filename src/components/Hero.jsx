@@ -1,37 +1,47 @@
+
 import "../styles/Hero.css";
-import logo from '../assets/GTM.jpeg'
+import logo from "../assets/MotoGT-logo-clean.png";
 
 function Hero() {
   return (
     <section className="hero">
-      <div className="hero-content">
-        <p className="eyebrow">YOUR VISION. OUR CRAFT.</p>
+      <div className="hero-inner">
 
-        <h1>
-          Make every<br />
-          drive <em>distinct.</em>
-        </h1>
-        
+        <div className="hero-eyebrow">
+          YOUR VISION. OUR CRAFT.
+        </div>
 
-      </div>
+        <div className="hero-logo-area">
+          <div className="hero-logo-card">
+            <span className="logo-card-line logo-card-line-top"></span>
 
-      <div className="hero-visual">
-        <img
-          className="hero-logo"
-          src={logo}
-          alt="MotoGT logo"
-        />
-        
-      
-<div className="visual-caption">
-  <span>CAR ACCESSORIES</span>
-  <span className="caption-dot">•</span>
-  <span>DENT &amp; PAINT</span>
-</div>
+            <img
+              className="hero-logo"
+              src={logo}
+              alt="MotoGT logo"
+            />
+
+            <span className="logo-card-line logo-card-line-bottom"></span>
+          </div>
+
+          <div className="visual-caption">
+            <span>CAR ACCESSORIES</span>
+            <span className="caption-dot">•</span>
+            <span>DENT &amp; PAINT</span>
+          </div>
+        </div>
+
+        <div className="hero-content">
+          <h1>
+            Make every drive
+            <br />
+            <em>distinct.</em>
+          </h1>
+        </div>
 
       </div>
     </section>
-  )
+  );
 }
 
-export default Hero
+export default Hero;

@@ -310,3 +310,453 @@ text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
   }
 }
 
+
+/* Premium Services Card Enhancement */
+
+/* Keep image zoom inside the card */
+.services .service-card {
+  overflow: hidden;
+  will-change: transform;
+  transition:
+    transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 450ms ease,
+    box-shadow 450ms ease;
+}
+
+/* Fix hover and scroll-reveal transform conflict */
+.services .service-card.moto-reveal.moto-is-visible:hover {
+  transform: translateY(-7px);
+  border-color: rgba(198, 167, 106, 0.65);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+}
+
+/* Smooth image zoom */
+.services .service-image {
+  transition:
+    transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 650ms ease;
+}
+
+.services .service-card:hover .service-image {
+  transform: scale(1.045);
+  filter: brightness(1.06);
+}
+
+/* Heading refinement */
+.services .section-heading h2 {
+  transition: text-shadow 450ms ease;
+}
+
+.services .section-heading h2 em {
+  transition: text-shadow 450ms ease;
+}
+
+.services .section-heading h2 em:hover {
+  text-shadow: 0 0 20px rgba(198, 167, 106, 0.22);
+}
+
+/* Card link interaction */
+.services .service-card a {
+  transition:
+    color 300ms ease,
+    letter-spacing 300ms ease;
+}
+
+.services .service-card a:hover {
+  color: #d9b875 !important;
+  letter-spacing: 0.4px;
+}
+
+/* Keyboard accessibility */
+.services .service-card a:focus-visible {
+  outline: 2px solid #C6A76A;
+  outline-offset: 5px;
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .services .service-card,
+  .services .service-image,
+  .services .service-card a,
+  .services .section-heading h2,
+  .services .section-heading h2 em {
+    transition: none !important;
+  }
+
+  .services .service-card.moto-reveal.moto-is-visible:hover {
+    transform: none;
+  }
+}
+
+/* ========================================
+   MotoGT Premium Quote Strip Enhancement
+======================================== */
+
+/* Quote strip background refinement */
+.intro-strip {
+  position: relative;
+  padding: 30px 7%;
+  background: linear-gradient(
+    180deg,
+    rgba(198, 167, 106, 0.025),
+    rgba(0, 0, 0, 0.12)
+  );
+  border-top: 1px solid rgba(198, 167, 106, 0.14);
+  border-bottom: 1px solid rgba(198, 167, 106, 0.14);
+}
+
+/* Responsive premium glass frame */
+.intro-strip .intro-quote-frame {
+  width: clamp(280px, 48vw, 620px);
+  max-width: 100%;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 22px;
+  box-sizing: border-box;
+
+  border: 1px solid rgba(198, 167, 106, 0.42);
+  border-radius: 5px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(40, 36, 27, 0.78),
+    rgba(12, 12, 11, 0.88)
+  );
+
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.24),
+    inset 0 1px 1px rgba(255, 255, 255, 0.07);
+
+  transition:
+    border-color 400ms ease,
+    box-shadow 400ms ease;
+}
+
+/* Subtle gold hover lighting */
+.intro-strip .intro-quote-frame:hover {
+  border-color: rgba(198, 167, 106, 0.72);
+  box-shadow:
+    0 0 18px rgba(198, 167, 106, 0.12),
+    0 5px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Refined quote typography */
+.intro-strip .intro-label {
+  font-size: clamp(9px, 0.85vw, 11px) !important;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  color: #d9b875;
+  text-shadow: 0 0 10px rgba(198, 167, 106, 0.2);
+
+  white-space: nowrap;
+  text-align: center;
+
+  transition:
+    transform 850ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 650ms ease;
+}
+
+/* Mobile refinement */
+@media (max-width: 760px) {
+  .intro-strip {
+    padding: 24px 5%;
+  }
+
+  .intro-strip .intro-quote-frame {
+    width: 100%;
+    max-width: 480px;
+    min-height: 42px;
+    height: 42px;
+    padding: 0 10px;
+  }
+
+  .intro-strip .intro-label {
+    font-size: 9px !important;
+    letter-spacing: 0.35px;
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .intro-strip .intro-quote-frame,
+  .intro-strip .intro-label {
+    transition: none !important;
+  }
+}
+
+/* MotoGT - Diagonal Split Service Cards */
+
+.services .service-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(125px, 42%);
+  grid-template-rows: auto auto 1fr auto;
+  column-gap: 18px;
+  align-items: center;
+  min-height: 245px;
+  padding: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Left-side content */
+.services .service-card > .card-number {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
+}
+
+.services .service-card > h3 {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+}
+
+.services .service-card > p {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: start;
+}
+
+.services .service-card > a {
+  grid-column: 1;
+  grid-row: 4;
+  align-self: start;
+}
+
+/* Right-side diagonal image */
+.services .service-card > .service-image {
+  grid-column: 2;
+  grid-row: 1 / 5;
+  width: 100%;
+  height: 205px;
+  min-height: 0;
+  object-fit: cover;
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+  transform: scale(1);
+  transition:
+    transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 650ms ease;
+}
+
+.services .service-card:hover > .service-image {
+  transform: scale(1.045);
+  filter: brightness(1.08);
+}
+
+/* Responsive layout */
+@media (max-width: 760px) {
+  .services .service-card {
+    min-height: 220px;
+    padding: 18px;
+    grid-template-columns: minmax(0, 1fr) minmax(105px, 40%);
+    column-gap: 12px;
+  }
+
+  .services .service-card > .service-image {
+    height: 185px;
+  }
+}
+
+@media (max-width: 380px) {
+  .services .service-card {
+    padding: 13px;
+    column-gap: 8px;
+  }
+
+  .services .service-card > .service-image {
+    height: 165px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .services .service-card > .service-image {
+    transition: none;
+  }
+}
+
+/* MotoGT - Balanced Diagonal Image Layout */
+
+.services .service-card {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  grid-template-rows: auto auto 1fr auto;
+  column-gap: 12px;
+  min-height: 0;
+  padding: 18px;
+  align-items: stretch;
+}
+
+.services .service-card > .service-image {
+  height: 100%;
+  min-height: 230px;
+  align-self: stretch;
+  object-fit: cover;
+}
+
+/* Give the image more visual space */
+.services .service-card > .card-number,
+.services .service-card > h3,
+.services .service-card > p,
+.services .service-card > a {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .services .service-card {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    padding: 14px;
+    column-gap: 10px;
+  }
+
+  .services .service-card > .service-image {
+    min-height: 210px;
+  }
+}
+
+
+
+
+
+
+
+
+
+/* Final image alignment correction */
+.services .service-card {
+  padding: 18px;
+  min-height: 260px;
+  overflow: hidden;
+}
+
+.services .service-card > .service-image {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  align-self: stretch;
+
+  width: calc(100% + 18px);
+  height: calc(100% + 36px);
+  min-height: 260px;
+
+  margin: -18px 0 -18px 0;
+  object-fit: cover;
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+@media (max-width: 760px) {
+  .services .service-card {
+    min-height: 260px;
+  }
+
+  .services .service-card > .service-image {
+    min-height: 260px;
+  }
+}
+
+/* Shift Dent & Paint image focus to the right */
+.services .paint-card > .service-image {
+  object-position: 25% center;
+}
+
+.services .service-card > a {
+  transform: translateY(-20px);
+}
+
+
+.services .accessories-card:hover > .service-image {
+  transform: scale(1);
+}
+
+/* Premium Gold Diagonal Edge */
+.services .service-card > .service-image {
+  clip-path: polygon(17% 0, 100% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(-2px 0 2px rgba(198, 167, 106, 0.35));
+  transition:
+    filter 500ms ease,
+    transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Subtle gold lighting on hover */
+.services .service-card:hover > .service-image {
+  filter:
+    brightness(1.06)
+    drop-shadow(-3px 0 5px rgba(198, 167, 106, 0.65));
+}
+
+
+
+
+
+
+
+
+
+/* Design 3 - Neon Diagonal Edge */
+
+.services .service-card {
+  isolation: isolate;
+}
+
+.services .service-card > .service-image {
+  position: relative;
+  z-index: 1;
+}
+
+/* Glowing diagonal edge */
+.services .service-card::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: -15%;
+  right: 51%;
+  width: 3px;
+  height: 130%;
+  transform: rotate(12deg);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #d9b875,
+    #fff4d5,
+    #d9b875,
+    transparent
+  );
+  box-shadow:
+    0 0 5px rgba(217, 184, 117, 0.8),
+    0 0 14px rgba(217, 184, 117, 0.5),
+    0 0 25px rgba(255, 244, 213, 0.2);
+  pointer-events: none;
+}
+
+/* Rounded Premium Service Cards */
+.services .service-card {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Increase Diagonal Split Image Size */
+
+.services .service-card {
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+}
+
+.services .service-card > .service-image {
+  clip-path: polygon(17% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+@media (max-width: 760px) {
+  .services .service-card {
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  }
+}
+
+/* Slightly Thicker Diagonal Split */
+
+.services .service-card {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+}
+
+/* Slightly Narrower Animated Quote Box */
+.intro-strip .intro-quote-frame {
+  width: min(540px, calc(100% - 50px));
+  margin-left: auto;
+  margin-right: auto;
+}

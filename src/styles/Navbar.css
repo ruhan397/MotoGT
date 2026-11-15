@@ -1,5 +1,8 @@
 
-  
+/* =====================================
+   MotoGT - Premium Navigation
+===================================== */
+
 .navbar {
   min-height: 88px;
   padding: 20px 7%;
@@ -7,8 +10,23 @@
   align-items: center;
   justify-content: space-between;
   gap: 28px;
-  border-bottom: 1px solid #ffffff14;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  background: rgba(17, 18, 16, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-bottom: 1px solid rgba(198, 167, 106, 0.22);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+
+  animation: motoNavbarIn 650ms ease both;
+  transition: background 300ms ease, box-shadow 300ms ease;
 }
+
+/* Logo - unchanged */
 
 .brand {
   font-size: 25px;
@@ -38,76 +56,149 @@
   object-position: left center;
 }
 
+/* Navigation Links */
 
 .nav-links {
-display: flex;
-gap: 32px;
-color: white;
-font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  color: white;
+  font-size: 12px;
 }
 
 .nav-links a {
-display: inline-block;
-position: relative;
-text-decoration: none;
-transition: transform 0.3s ease;
+  position: relative;
+  display: inline-block;
+  color: #F4F0E8;
+  text-decoration: none;
+  transition: color 300ms ease, transform 300ms ease;
 }
 
 .nav-links a::after {
-content: "";
-position: absolute;
-left: 0;
-bottom: -6px;
-width: 100%;
-height: 1px;
-background: #C9A45C;
-transform: scaleX(0);
-transform-origin: left;
-transition: transform 0.3s ease;
-}
-
-.nav-links a {
-display: inline-block;
-position: relative;
-text-decoration: none;
-transition: transform 0.3s ease;
-transform: scale(1);
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 100%;
+  height: 1.5px;
+  background: linear-gradient(90deg, #C6A76A, #F4E2B5);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 300ms ease;
 }
 
 .nav-links a:hover {
-color: white;
-transform: scale(1.25);
+  color: #D9B875;
+  transform: translateY(-2px);
 }
 
 .nav-links a:hover::after {
-transform: scaleX(1);
+  transform: translateX(-50%) scaleX(1);
 }
 
+/* Login / Logout Actions */
 
-
-
-.nav-cta {
-background: linear-gradient(135deg, #E0E0E0, #AFAFAF);
-color: #222320;
-
-font-family: 'Manrope', sans-serif;
-font-weight: 600;
-letter-spacing: 0.5px;
-
-border: 1px solid #E5E5E5;
-padding: 13px 20px;
-font-size: 13px;
-border-radius: 3px;
-box-shadow: 0 0 10px rgba(192, 192, 192, 0.25),
-            0 0 20px rgba(192, 192, 192, 0.12);
-transition: all 0.25s ease;
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-
-.nav-cta:hover {
-  background: whitesmoke;
-  color: #111210;
+.nav-login {
+  color: #E0E0E0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: color 300ms ease;
+  transform: translateX(-8px);
 }
+
+.nav-login:hover {
+  color: #D9B875;
+}
+
+/* Claim Membership / Logout Button */
+
+.navbar .nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 13px 20px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-decoration: none;
+
+  color: #F4F0E8 !important;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(198, 167, 106, 0.55);
+  border-radius: 30px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  transition: background 300ms ease, border-color 300ms ease,
+              box-shadow 300ms ease, transform 300ms ease;
+}
+
+.navbar .nav-cta:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #F4F0E8 !important;
+  border-color: #FFFFFF;
+  box-shadow:
+    0 0 14px rgba(220, 220, 220, 0.4),
+    0 0 26px rgba(220, 220, 220, 0.2);
+  transform: translateY(-2px) scale(1.04);
+}
+/* Contact Button - preserve existing styling */
+
+.contact-section .primary-btn.nav-cta {
+  color: #F4F0E8 !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-radius: 30px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
+  transition: all 0.25s ease;
+}
+
+.contact-section .primary-btn.nav-cta:hover {
+  color: #F4F0E8 !important;
+  background: rgba(255, 255, 255, 0.30) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* Keyboard Accessibility */
+
+.nav-links a:focus-visible,
+.nav-actions a:focus-visible {
+  outline: 2px solid #C6A76A;
+  outline-offset: 5px;
+  border-radius: 3px;
+}
+
+/* Entrance Animation */
+
+@keyframes motoNavbarIn {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Navigation */
 
 @media (max-width: 760px) {
   .navbar {
@@ -124,104 +215,274 @@ transition: all 0.25s ease;
     font-size: 11px;
   }
 
-  .nav-cta {
+  .nav-actions {
+    gap: 12px;
+  }
+
+  .navbar .nav-cta {
     padding: 10px 12px;
   }
 }
 
-.navbar .nav-cta {
-  background: rgba(255, 255, 255, 0.10);
-  color: #F4F0E8 !important;
-  font-weight: 800;
-  letter-spacing: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  padding: 13px 20px;
-  font-size: 10px;
-  border-radius: 30px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
-  transition: all 0.25s ease;
-}
-
-.navbar .nav-cta:hover {
-background: rgba(255, 255, 255, 0.22);
-color: #F4F0E8 !important;
-border-color: #FFFFFF;
-box-shadow: 0 0 14px rgba(220, 220, 220, 0.4),
-            0 0 26px rgba(220, 220, 220, 0.2);
-                      
-transform: scale(1.04);
-}
-.contact-section .primary-btn.nav-cta {
-color: #F4F0E8 !important;
-background: rgba(255, 255, 255, 0.22) !important;
-border: 1px solid rgba(255, 255, 255, 0.35) !important;
-border-radius: 30px;
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
-transition: all 0.25s ease;
-}
-
-.contact-section .primary-btn.nav-cta:hover {
-color: #F4F0E8 !important;
-background: rgba(255, 255, 255, 0.30) !important;
-border-color: rgba(255, 255, 255, 0.5) !important;
-box-shadow: 0 0 14px rgba(255, 255, 255, 0.15);
-transform: scale(1.04);
-}
-
-.nav-actions {
-display: flex;
-align-items: center;
-gap: 20px;
-}
-
-.nav-login {
-color: #E0E0E0;
-font-family: 'Manrope', sans-serif;
-font-size: 11px;
-font-weight: 600;
-letter-spacing: 1px;
-text-decoration: none;
-transition: color 0.3s ease;
-transform: translateX(-8px);
-}
-
-.nav-login:hover {
-color: #C9A45C;
-}
-
-@media (max-width: 760px) {
-.nav-actions {
-  gap: 12px;
-}
-}
-
-/* Premium navigation motion */
-.navbar {
-animation: motoNavbarIn 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.nav-links a:hover {
-transform: translateY(-2px) scale(1.07);
-}
-
-.navbar .nav-cta:hover,
-.contact-section .primary-btn.nav-cta:hover {
-transform: translateY(-2px) scale(1.045);
-}
-
-.nav-links a::after {
-transform-origin: center;
-}
-
-@keyframes motoNavbarIn {
-from { opacity: 0; transform: translateY(-14px); }
-to { opacity: 1; transform: translateY(0); }
-}
+/* Reduced Motion */
 
 @media (prefers-reduced-motion: reduce) {
-.navbar { animation: none !important; }
+  .navbar,
+  .nav-links a,
+  .nav-links a::after,
+  .navbar .nav-cta {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =====================================
+   MotoGT - Floating Premium Navigation
+===================================== */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.055);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 5px 22px rgba(0, 0, 0, 0.18);
+}
+
+.nav-links a {
+  position: relative;
+  padding: 11px 16px;
+  border-radius: 30px;
+  color: rgba(244, 240, 232, 0.78);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.45px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color 300ms ease,
+    background 300ms ease,
+    box-shadow 300ms ease,
+    transform 300ms ease;
+}
+
+/* Remove old underline */
+.nav-links a::after {
+  display: none;
+}
+
+/* Premium hover */
+.nav-links a:hover {
+  color: #E5C47B;
+  background: rgba(198, 167, 106, 0.10);
+  box-shadow: inset 0 0 0 1px rgba(198, 167, 106, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Active navigation */
+.nav-links a.active {
+  color: #E5C47B;
+  background: rgba(198, 167, 106, 0.15);
+  box-shadow:
+    inset 0 0 0 1px rgba(198, 167, 106, 0.28),
+    0 2px 12px rgba(198, 167, 106, 0.08);
+}
+
+/* Keyboard focus */
+.nav-links a:focus-visible {
+  outline: 2px solid #C6A76A;
+  outline-offset: 3px;
+}
+
+/* Mobile adjustment */
+@media (max-width: 760px) {
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 18px;
+    padding: 6px;
+  }
+
+  .nav-links a {
+    padding: 10px 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-links {
+    gap: 3px;
+  }
+
+  .nav-links a {
+    padding: 9px 10px;
+    font-size: 10px;
+  }
+}
+/* Premium Navigation Font Size */
+.nav-links a {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Reduce spacing between navigation links */
+.nav-links {
+  gap: 2px;
+  padding: 5px;
+}
+
+.nav-links a {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+/* Increase Sign In and Claim Membership text size */
+.navbar .nav-login {
+  font-size: 12px;
+}
+
+.navbar .nav-cta {
+  font-size: 12px;
+  padding: 11px 20px;
+}
+
+/* Compact Premium Navigation */
+.navbar .nav-links {
+  gap: 5px;
+}
+
+.navbar .nav-links a {
+  min-height: 38px;
+  padding: 9px 11px;
+  gap: 7px;
+  font-size: 11px;
+  border-radius: 10px;
+}
+
+.navbar .nav-links a svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Responsive Navbar */
+@media (max-width: 760px) {
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 4%;
+  }
+
+  .navbar .nav-links {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .navbar .nav-links a {
+    padding: 8px 10px;
+    font-size: 10px;
+    min-height: 34px;
+  }
+
+  .navbar .nav-links a svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .navbar .nav-actions {
+    justify-content: center;
+  }
+}
+
+/* Align navigation icons with text */
+.navbar .nav-links a {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.navbar .nav-links a svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  flex-shrink: 0;
+
+  stroke: #F4F0E8;
+  stroke-width: 1.8;
+  fill: none;
+
+  margin: 0;
+  transform: none;
+}
+
+.navbar .nav-links a span {
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.navbar .nav-links a:hover svg,
+.navbar .nav-links a.active svg {
+  stroke: #FFFFFF;
+}
+
+.navbar .nav-links {
+  padding: 6px 14px;
+}
+
+/* Remove active page gold highlight */
+.navbar .nav-links a.active {
+  color: rgba(244, 240, 232, 0.88);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.075),
+    rgba(255, 255, 255, 0.025)
+  );
+  border-color: rgba(198, 167, 106, 0.20);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+/* Premium Glass Capsule */
+.navbar .nav-links {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.10),
+    rgba(255, 255, 255, 0.025) 50%,
+    rgba(198, 167, 106, 0.045)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.20);
+
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.16),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.035),
+    0 8px 25px rgba(0, 0, 0, 0.24),
+    0 0 18px rgba(255, 255, 255, 0.025);
+}
+
+/* Gold Navigation Icons */
+.navbar .nav-links a svg {
+  stroke: #C6A76A;
+}
+
+.navbar .nav-links a:hover svg,
+.navbar .nav-links a.active svg {
+  stroke: #E5C47B;
 }

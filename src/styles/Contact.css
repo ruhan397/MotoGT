@@ -61,3 +61,48 @@ left: 125%;
 .contact-section .primary-btn,
 .contact-section .primary-btn::after { transition: none; }
 }
+
+/* MotoGT Premium Contact Refinement */
+
+.contact-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-section .eyebrow:hover {
+  letter-spacing: 3px;
+  color: #d9b875;
+}
+
+.contact-section h2 {
+  transition: text-shadow 450ms ease;
+}
+
+.contact-section h2 em {
+  transition: text-shadow 450ms ease;
+}
+
+.contact-section h2:hover em {
+  text-shadow: 0 0 22px rgba(255, 0, 0, 0.18);
+}
+
+.contact-section .primary-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(198, 167, 106, 0.16);
+}
+
+.contact-section .primary-btn:focus-visible {
+  outline: 2px solid #C6A76A;
+  outline-offset: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-section h2,
+  .contact-section h2 em {
+    transition: none;
+  }
+
+  .contact-section .primary-btn:hover {
+    transform: none;
+  }
+}
