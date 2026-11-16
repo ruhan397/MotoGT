@@ -208,10 +208,10 @@
 .hero .hero-content {
   width: 100% !important;
   max-width: 850px !important;
-  margin: 36px auto 0 !important;
+  margin: 56px auto 0 !important;
   text-align: center !important;
 
-  animation: motoHeroTextIn 1s 350ms ease both;
+  animation: none;
 }
 
 .hero .hero-content h1 {
@@ -475,3 +475,71 @@
   height: auto !important;
 }
 
+/* Hero Heading - Distinct Emphasis */
+.hero .hero-content h1 .hero-main-line {
+  display: inline-block;
+  font-size: 0.72em;
+}
+
+.hero .hero-content h1 .hero-main-line {
+  display: inline-block;
+  font-size: 0.65em;
+}
+
+.hero .hero-content h1 .hero-main-line {
+  display: inline-block;
+  font-size: 0.65em;
+  transform: scaleX(1.15);
+  transform-origin: center;
+}
+
+.hero .hero-content h1 .hero-main-line {
+  transform: scaleX(1.15) scaleY(1.06);
+  transform-origin: center;
+}
+
+.hero .hero-content h1 .hero-main-line {
+  letter-spacing: 1.4px;
+}
+
+
+
+/* Smooth Left-to-Right Headline Animation */
+.hero .hero-content h1 {
+  animation: motoHeadlineSlide 9s ease-in-out 1.2s infinite;
+}
+
+@keyframes motoHeadlineSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-35px);
+  }
+
+  18.75%, 81.25% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  96.25%, 100% {
+    opacity: 0;
+    transform: translateX(35px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .hero-content h1 {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero .hero-content {
+  transform: translateY(10px);
+}
+
+/* Move Top Hero Elements Down */
+.hero .hero-eyebrow,
+.hero .hero-logo-area {
+  position: relative;
+  top: 15px;
+}

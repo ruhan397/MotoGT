@@ -32,11 +32,11 @@ function Hero() {
         </div>
 
         <div className="hero-content">
-          <h1>
-            Make every drive
-            <br />
-            <em>distinct.</em>
-          </h1>
+        <h1>
+  <span className="hero-main-line">Make every drive</span>
+  <br />
+  <em>distinct.</em>
+</h1>
         </div>
 
       </div>

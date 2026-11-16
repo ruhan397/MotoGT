@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+.membership-dashboard {
+    min-height: 80vh;
+    padding: 55px 6% 90px;
+    background: linear-gradient(135deg, #25282c 0%, #343a40 50%, #1b1e22 100%);
+    color: #f4f0e8;
+  }
+  
+  .dashboard-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  
+  .dashboard-back {
+    border: 1px solid rgba(198, 167, 106, 0.35);
+    background: transparent;
+    color: #d9b875;
+    padding: 10px 17px;
+    border-radius: 4px;
+    cursor: pointer;
+    font: inherit;
+    transition: 0.25s ease;
+  }
+  
+  .dashboard-back:hover {
+    background: rgba(198, 167, 106, 0.1);
+    transform: translateX(-3px);
+  }
+  
+  .dashboard-header {
+    margin: 45px 0 30px;
+  }
+  
+  .dashboard-eyebrow {
+    color: #c6a76a;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    font-weight: 600;
+  }
+  
+  .dashboard-header h1 {
+    margin: 10px 0;
+    font-family: "Playfair Display", serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 500;
+  }
+  
+  .dashboard-header > p:last-child {
+    color: #aaa9a2;
+    font-size: 14px;
+  }
+  
+  .dashboard-membership-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 32px;
+    border: 1px solid rgba(198, 167, 106, 0.4);
+    border-radius: 12px;
+    background: linear-gradient(120deg, #29271f, #171816 75%);
+  }
+  
+  .dashboard-small-label,
+  .dashboard-discount span {
+    color: #c6a76a;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  
+  .dashboard-membership-card h2 {
+    margin: 10px 0 5px;
+    color: #d9b875;
+    font-family: "Playfair Display", serif;
+    font-size: 30px;
+  }
+  
+  .dashboard-membership-card p {
+    color: #c4c1b9;
+    margin: 0;
+  }
+  
+  .dashboard-discount {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+  }
+  
+  .dashboard-discount strong {
+    color: #d9b875;
+    font-size: 42px;
+    font-weight: 500;
+  }
+  
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 22px 0 45px;
+  }
+  
+  .dashboard-stat {
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 8px;
+    background: #191a18;
+  }
+  
+  .dashboard-stat span,
+  .dashboard-order-info span {
+    display: block;
+    color: #999990;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  
+  .dashboard-stat strong {
+    color: #e2d5b8;
+    font-size: 25px;
+    font-weight: 500;
+  }
+  
+  .dashboard-progress,
+  .dashboard-history {
+    margin-top: 40px;
+  }
+  
+  .dashboard-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-section-heading h2 {
+    margin: 7px 0 0;
+    font-family: "Playfair Display", serif;
+    font-size: 26px;
+    font-weight: 500;
+  }
+  
+  .dashboard-section-heading > strong {
+    color: #d9b875;
+    font-size: 20px;
+  }
+  
+  .dashboard-section-heading > span {
+    color: #aaa9a2;
+    font-size: 13px;
+  }
+  
+  .dashboard-progress-track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #30312d;
+  }
+  
+  .dashboard-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #8e7040, #d9b875);
+    transition: width 0.4s ease;
+  }
+  
+  .dashboard-progress > p {
+    margin-top: 13px;
+    color: #aaa9a2;
+    font-size: 13px;
+  }
+  
+  .dashboard-progress > p strong {
+    color: #d9b875;
+  }
+  
+  .dashboard-empty {
+    padding: 35px 20px;
+    text-align: center;
+    border: 1px dashed rgba(198, 167, 106, 0.25);
+    border-radius: 8px;
+  }
+  
+  .dashboard-empty h3 {
+    color: #e5d7b8;
+    font-family: "Playfair Display", serif;
+    font-weight: 500;
+  }
+  
+  .dashboard-empty p,
+  .dashboard-message {
+    color: #aaa9a2;
+    font-size: 14px;
+  }
+  
+  .dashboard-order-list {
+    display: grid;
+    gap: 15px;
+  }
+  
+  .dashboard-order {
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 8px;
+    background: #191a18;
+  }
+  
+  .dashboard-order-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .dashboard-order-label {
+    display: block;
+    color: #999990;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  
+  .dashboard-order-top > div > strong {
+    color: #e2d5b8;
+    font-size: 14px;
+  }
+  
+  .dashboard-order-status {
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    background: rgba(198, 167, 106, 0.12);
+    color: #d9b875;
+  }
+  
+  .status-completed,
+  .status-delivered {
+    color: #9bc99b;
+    background: rgba(100, 170, 100, 0.12);
+  }
+  
+  .status-cancelled {
+    color: #e49a91;
+    background: rgba(200, 90, 80, 0.12);
+  }
+  
+  .status-processing {
+    color: #9ebce0;
+    background: rgba(90, 130, 190, 0.12);
+  }
+  
+  .dashboard-order-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 18px 0;
+  }
+  
+  .dashboard-order-info strong {
+    color: #e2d5b8;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  
+  .dashboard-order-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .dashboard-order-products span {
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: #252621;
+    color: #bcb9af;
+    font-size: 11px;
+  }
+  
+  .dashboard-error {
+    color: #e49a91;
+  }
+  
+  @media (max-width: 650px) {
+    .membership-dashboard {
+      padding: 35px 5% 65px;
+    }
+  
+    .dashboard-membership-card {
+      padding: 23px 19px;
+    }
+  
+    .dashboard-membership-card h2 {
+      font-size: 24px;
+    }
+  
+    .dashboard-discount strong {
+      font-size: 34px;
+    }
+  
+    .dashboard-stats {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  
+    .dashboard-stat {
+      padding: 17px;
+    }
+  
+    .dashboard-order {
+      padding: 17px;
+    }
+  
+    .dashboard-order-info {
+      gap: 8px;
+    }
+  
+    .dashboard-order-info strong {
+      font-size: 11px;
+    }
+  }
+  
+  .membership-dashboard {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+/* Elegant Luxury Number Style */
+
+.dashboard-discount strong,
+.dashboard-stat strong,
+.dashboard-section-heading > strong,
+.dashboard-progress > p strong,
+.dashboard-order-info strong {
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 8px rgba(217, 184, 117, 0.16);
+}
+
+.dashboard-discount strong {
+  font-size: 46px;
+}
+
+.dashboard-stat strong {
+  font-size: 27px;
+}
+
+.dashboard-section-heading > strong {
+  font-size: 23px;
+}
+
+.dashboard-order-info strong {
+  font-size: 15px;
+}

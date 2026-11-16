@@ -272,3 +272,45 @@
 .membership-card .membership-heading h2 {
   transform: translateY(-12px);
 }
+
+/* PREMIUM DARK SILVER MEMBERSHIP */
+.membership-card--silver {
+  background: linear-gradient(
+    135deg,
+    #454B52 0%,
+    #292E34 48%,
+    #191D22 100%
+  ) !important;
+
+  border: 1px solid rgba(190, 198, 207, 0.38) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 8px 25px rgba(0, 0, 0, 0.22);
+}
+
+.membership-card--silver .membership-label,
+.membership-card--silver .membership-detail strong,
+.membership-card--silver .membership-progress strong {
+  color: #C2CAD3 !important;
+}
+
+.membership-card--silver .membership-level {
+  border-color: rgba(190, 198, 207, 0.55) !important;
+  color: #D0D6DD !important;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.membership-card--silver .membership-detail {
+  background: rgba(0, 0, 0, 0.16);
+  border-color: rgba(190, 198, 207, 0.12);
+}
+
+.membership-card {
+  cursor: pointer;
+}
+
+.membership-card:focus-visible {
+  outline: 2px solid #C6A76A;
+  outline-offset: 4px;
+}

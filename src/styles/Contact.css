@@ -2,7 +2,13 @@
 .contact-section {
   padding: 75px 7% 90px;
   text-align: center;
-  background: #1a1b17;
+  background:
+  radial-gradient(
+    ellipse at 50% 45%,
+    rgba(198, 167, 106, 0.09) 0%,
+    rgba(26, 27, 23, 0.4) 38%,
+    #111210 100%
+  );
   border-top: 1px solid #ffffff12;
 }
 
@@ -105,4 +111,439 @@ left: 125%;
   .contact-section .primary-btn:hover {
     transform: none;
   }
+}
+
+/* MotoGT Smartphone Contact Design */
+
+.contact-phone {
+  position: relative;
+  width: 260px;
+  height: 430px;
+  margin: 35px auto 38px;
+  padding: 9px;
+  border: 2px solid #9d8557;
+  border-radius: 38px;
+  background: linear-gradient(145deg, #292a26, #080908);
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.45),
+    0 0 28px rgba(198, 167, 106, 0.09);
+}
+
+.phone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 29px;
+  background:
+    radial-gradient(circle at 50% 35%, #292820 0%, #11120f 55%, #080908 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone-camera {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65px;
+  height: 17px;
+  border-radius: 20px;
+  background: #050505;
+  z-index: 2;
+}
+
+.phone-screen-content {
+  text-align: center;
+  padding: 20px;
+}
+
+.phone-small-text {
+  color: #C6A76A;
+  font-size: 9px;
+  letter-spacing: 5px;
+}
+
+.phone-screen-content h2 {
+  margin: 28px 0 14px;
+  color: #f4f0e8;
+  font-family: "Playfair Display", serif;
+  font-size: 30px;
+  line-height: 1.3;
+  font-weight: 400;
+  letter-spacing: 1px;
+  transform: none;
+}
+
+.phone-screen-content h2 em {
+  color: #C6A76A;
+}
+
+.phone-screen-content p {
+  color: #aaa79f;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.phone-line {
+  display: block;
+  width: 45px;
+  height: 1px;
+  margin: 24px auto 0;
+  background: #C6A76A;
+}
+
+.phone-side-button {
+  position: absolute;
+  width: 3px;
+  background: #9d8557;
+  border-radius: 5px;
+}
+
+.phone-side-left {
+  left: -4px;
+  top: 105px;
+  height: 45px;
+}
+
+.phone-side-right {
+  right: -4px;
+  top: 125px;
+  height: 65px;
+}
+
+@media (max-width: 760px) {
+  .contact-phone {
+    width: 235px;
+    height: 390px;
+  }
+
+  .phone-screen-content h2 {
+    font-size: 27px;
+  }
+}
+
+/* Larger Smartphone Mockup */
+
+.contact-phone {
+  width: 310px;
+  height: 500px;
+  padding: 11px;
+  border-radius: 42px;
+}
+
+.phone-screen {
+  border-radius: 32px;
+}
+
+.phone-screen-content {
+  padding: 24px;
+}
+
+.phone-screen-content h2 {
+  font-size: 35px;
+  line-height: 1.35;
+  margin: 32px 0 18px;
+}
+
+.phone-screen-content p {
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .contact-phone {
+    width: 270px;
+    height: 440px;
+  }
+
+  .phone-screen-content h2 {
+    font-size: 30px;
+  }
+}
+
+.phone-screen-content h2 {
+  font-size: 29px;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 760px) {
+  .phone-screen-content h2 {
+    font-size: 25px;
+  }
+}
+
+/* Premium Silver Smartphone Frame */
+
+.contact-phone {
+  border: 2px solid #c7cbd0;
+  background: linear-gradient(
+    145deg,
+    #f2f3f4,
+    #8e949b 35%,
+    #d9dce0 65%,
+    #737980
+  );
+
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.45),
+    0 0 22px rgba(220, 225, 230, 0.10);
+}
+
+.phone-side-button {
+  background: linear-gradient(
+    180deg,
+    #f0f1f2,
+    #858b92,
+    #d9dce0
+  );
+}
+
+.contact-phone {
+  border: 1px solid #bfc3c8;
+  padding: 9px;
+  background: linear-gradient(
+    145deg,
+    #e5e7e9,
+    #92989f,
+    #d5d8dc
+  );
+}
+
+
+.contact-phone {
+  border: 0.3px solid rgba(235, 240, 245, 0.45);
+  background: rgba(210, 218, 225, 0.45);
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.4),
+    0 0 8px rgba(230, 235, 240, 0.05);
+}
+
+.phone-screen {
+  border: none;
+}
+
+/* Ultra Minimal Glass Edge */
+
+.contact-phone {
+  border: 1px solid rgba(235, 240, 245, 0.28) !important;
+  background: #10110f !important;
+  padding: 9px !important;
+
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.4),
+    inset 0 0 3px rgba(255, 255, 255, 0.12) !important;
+}
+
+.phone-screen {
+  border: none !important;
+}
+
+.phone-side-button {
+  width: 1px !important;
+  background: rgba(220, 225, 230, 0.35) !important;
+}
+
+.phone-screen-content h2 {
+  font-weight: 300 !important;
+  letter-spacing: 0 !important;
+}
+
+.phone-screen-content h2 em {
+  font-weight: 300 !important;
+}
+
+.phone-screen-content h2 {
+  font-size: 28px !important;
+}
+
+@media (max-width: 760px) {
+  .phone-screen-content h2 {
+    font-size: 26px !important;
+  }
+}
+
+.phone-screen-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 35px 20px 25px;
+}
+
+.phone-screen-content h2 {
+  margin: 0 !important;
+}
+
+.phone-line {
+  margin-top: 0 !important;
+}
+
+.phone-screen-content {
+  display: block;
+  height: auto;
+  width: auto;
+  padding: 24px;
+  transform: none;
+}
+
+.phone-screen-content h2 {
+  margin: 28px 0 14px !important;
+}
+
+.phone-line {
+  margin: 24px auto 0 !important;
+}
+
+/* Final Smartphone Screen Content Polish */
+
+.phone-screen-content {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 17px;
+  height: 100%;
+  width: 100%;
+  padding: 20px !important;
+  transform: none !important;
+}
+
+.phone-screen-content h2 {
+  font-size: 26px !important;
+  font-weight: 300 !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0 !important;
+  margin: 0 !important;
+}
+
+.phone-screen-content h2 em {
+  font-weight: 300 !important;
+}
+
+.phone-screen-content p {
+  margin: 0 !important;
+  font-size: 12px;
+}
+
+.phone-line {
+  margin: 0 !important;
+  width: 48px;
+}
+
+/* Refined Smartphone Height */
+
+.contact-phone {
+  height: 460px !important;
+}
+.contact-phone {
+  width: 280px !important;
+  height: 460px !important;
+}
+
+
+/* Smartphone Screen Typography Enhancement */
+
+.phone-screen-content {
+  width: 100%;
+  padding: 20px 12px !important;
+}
+
+.phone-small-text {
+  font-size: 11px !important;
+  letter-spacing: 6px;
+}
+
+.phone-screen-content h2 {
+  font-size: 30px !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0.3px !important;
+  width: 100%;
+}
+
+.phone-screen-content p {
+  font-size: 13px !important;
+  letter-spacing: 1.2px;
+}
+
+.phone-line {
+  width: 54px;
+}
+
+/* iPhone Style Home Indicator */
+
+.phone-line {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 108px !important;
+  height: 4px;
+  margin: 0 !important;
+  border-radius: 10px;
+  background: rgba(245, 245, 245, 0.85);
+  box-shadow: none;
+}
+.contact-phone {
+  width: 265px !important;
+}
+
+.phone-line {
+  width: 65px !important;
+  height: 4px !important;
+}
+
+.phone-screen-content h2 {
+  font-size: 34px !important;
+  line-height: 1.25 !important;
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+}
+
+.phone-screen-content {
+  transform: translateY(-18px) !important;
+}
+
+.contact-section .eyebrow {
+  font-family: "DM Sans", sans-serif !important;
+  font-size: clamp(15px, 1.5vw, 18px) !important;
+  font-weight: 600 !important;
+  letter-spacing: 3px !important;
+  line-height: 1.5 !important;
+  color: #C6A76A !important;
+}
+
+.contact-section .eyebrow {
+  transform: translateX(7px);
+}
+
+.phone-whatsapp {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.phone-whatsapp svg {
+  width: 22px;
+  height: 22px;
+}
+
+
+.phone-screen-content {
+  transform: translateY(-10px);
+}
+
+.phone-whatsapp {
+  bottom: 70px;
 }

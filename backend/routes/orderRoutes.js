@@ -8,21 +8,26 @@ const { adminOnly } = require('../middleware/adminMiddleware');
 const {
   getOrders,
   getOrderById,
+  getMyOrders,
   createOrder,
   updateOrderStatus,
   deleteOrder
 } = require('../controllers/orderController');
 
-// Only Admin can view all orders
+// Customer: Get their own order history
+// Keep this route before /:id
+router.get('/my-orders', protect, getMyOrders);
+
+// Admin: Get all orders
 router.get('/', protect, adminOnly, getOrders);
 
-// Only Admin can view individual order details
-router.get('/:id', protect, adminOnly, getOrderById);
-
-// Logged-in customers can create orders
+// Customer: Create order
 router.post('/', protect, createOrder);
 
-// Only Admin can update or delete orders
+// Admin: Get single order
+router.get('/:id', protect, adminOnly, getOrderById);
+
+// Admin: Update or delete orders
 router.put('/:id', protect, adminOnly, updateOrderStatus);
 router.delete('/:id', protect, adminOnly, deleteOrder);
 

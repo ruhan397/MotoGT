@@ -43,9 +43,7 @@ function MembershipCard() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err.message || "Could not load membership."
-          );
+          setError(err.message || "Could not load membership.");
         }
       } finally {
         if (!cancelled) {
@@ -115,11 +113,23 @@ function MembershipCard() {
 
   return (
     <section className="membership-section">
-      <div className={`membership-card membership-card--${levelClass}`}>
-
+      <div
+        className={`membership-card membership-card--${levelClass}`}
+        role="link"
+        tabIndex={0}
+        aria-label="Open Membership Dashboard"
+        onClick={() => {
+          window.location.href = "/membership";
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            window.location.href = "/membership";
+          }
+        }}
+      >
         <div className="membership-top">
           <div className="membership-heading">
-
             <div className="membership-brand">
               <img src={logo} alt="MotoGT logo" />
               <span className="membership-label">
@@ -128,7 +138,6 @@ function MembershipCard() {
             </div>
 
             <h2>Welcome, {user.fullName}</h2>
-
           </div>
 
           <span className="membership-level">
@@ -137,7 +146,6 @@ function MembershipCard() {
         </div>
 
         <div className="membership-details">
-
           <div className="membership-detail">
             <span>Current Discount</span>
             <strong>{discount}%</strong>
@@ -149,7 +157,6 @@ function MembershipCard() {
               ৳{totalSpent.toLocaleString("en-BD")}
             </strong>
           </div>
-
         </div>
 
         <div className="membership-progress">
@@ -170,7 +177,6 @@ function MembershipCard() {
             </p>
           )}
         </div>
-
       </div>
     </section>
   );

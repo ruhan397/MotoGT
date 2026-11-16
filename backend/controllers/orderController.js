@@ -3,6 +3,59 @@ const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
 
+// Recalculate membership from successfully completed orders
+const syncMembership = async (userId) => {
+  if (!userId) return;
+
+  const result = await Order.aggregate([
+    {
+      $match: {
+        userId,
+        status: { $in: ['Completed', 'Delivered'] }
+      }
+    },
+    {
+      $group: {
+        _id: '$userId',
+        totalSpent: { $sum: '$totalAmount' }
+      }
+    }
+  ]);
+
+  const totalSpent = Number(result[0]?.totalSpent || 0);
+
+  const user = await User.findById(userId);
+
+  if (!user) return;
+
+  if (!user.membership) {
+    user.membership = {
+      isActive: true,
+      level: 'standard',
+      discountPercentage: 5,
+      totalSpent: 0
+    };
+  }
+
+  user.membership.totalSpent = totalSpent;
+
+  if (totalSpent >= 50000) {
+    user.membership.level = 'vip';
+    user.membership.discountPercentage = 20;
+  } else if (totalSpent >= 25000) {
+    user.membership.level = 'gold';
+    user.membership.discountPercentage = 15;
+  } else if (totalSpent >= 10000) {
+    user.membership.level = 'silver';
+    user.membership.discountPercentage = 10;
+  } else {
+    user.membership.level = 'standard';
+    user.membership.discountPercentage = 5;
+  }
+
+  await user.save();
+};
+
 // Admin: Get all orders
 const getOrders = async (req, res) => {
   try {
@@ -32,6 +85,23 @@ const getOrderById = async (req, res) => {
   }
 };
 
+// Customer: Get only their own orders
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({
+      userId: req.user.id
+    })
+      .populate('products.productId')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      orders
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Customer: Create order
 const createOrder = async (req, res) => {
   const reservedProducts = [];
@@ -51,7 +121,6 @@ const createOrder = async (req, res) => {
       return res.status(404).json({ message: 'Customer not found' });
     }
 
-    // Combine repeated product IDs
     const quantities = new Map();
 
     for (const item of products) {
@@ -70,7 +139,6 @@ const createOrder = async (req, res) => {
     let subtotal = 0;
     const orderProducts = [];
 
-    // Validate and reserve stock
     for (const [productId, quantity] of quantities) {
       const product = await Product.findOneAndUpdate(
         {
@@ -106,8 +174,10 @@ const createOrder = async (req, res) => {
       ? (user.membership.discountPercentage || 5)
       : 0;
 
-    if (![5, 10, 15, 20].includes(discountPercentage) &&
-        discountPercentage !== 0) {
+    if (
+      ![5, 10, 15, 20].includes(discountPercentage) &&
+      discountPercentage !== 0
+    ) {
       throw new Error('Invalid membership discount');
     }
 
@@ -139,7 +209,6 @@ const createOrder = async (req, res) => {
     });
 
   } catch (error) {
-    // Restore stock if order creation fails
     for (const item of reservedProducts) {
       await Product.updateOne(
         { _id: item.productId },
@@ -151,7 +220,7 @@ const createOrder = async (req, res) => {
   }
 };
 
-// Admin: Update order status and membership
+// Admin: Update order status and recalculate membership
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -160,6 +229,7 @@ const updateOrderStatus = async (req, res) => {
       'Pending',
       'Processing',
       'Completed',
+      'Delivered',
       'Cancelled'
     ];
 
@@ -175,48 +245,12 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    if (status === 'Completed' && !order.loyaltyCredited) {
-      const user = await User.findById(order.userId);
-
-      if (!user) {
-        return res.status(404).json({
-          message: 'Customer not found'
-        });
-      }
-
-      if (!user.membership) {
-        user.membership = {
-          isActive: true,
-          level: 'standard',
-          discountPercentage: 5,
-          totalSpent: 0
-        };
-      }
-
-      user.membership.totalSpent += order.totalAmount;
-
-      const spent = user.membership.totalSpent;
-
-      if (spent >= 50000) {
-        user.membership.level = 'vip';
-        user.membership.discountPercentage = 20;
-      } else if (spent >= 25000) {
-        user.membership.level = 'gold';
-        user.membership.discountPercentage = 15;
-      } else if (spent >= 10000) {
-        user.membership.level = 'silver';
-        user.membership.discountPercentage = 10;
-      } else {
-        user.membership.level = 'standard';
-        user.membership.discountPercentage = 5;
-      }
-
-      await user.save();
-      order.loyaltyCredited = true;
-    }
-
     order.status = status;
     await order.save();
+
+    // Recalculate from all completed orders.
+    // This handles Completed -> Cancelled and other status changes too.
+    await syncMembership(order.userId);
 
     res.status(200).json({
       message: 'Order status updated successfully',
@@ -237,6 +271,9 @@ const deleteOrder = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
+    // Recalculate membership if the deleted order was completed
+    await syncMembership(order.userId);
+
     res.status(200).json({
       message: 'Order deleted successfully'
     });
@@ -248,6 +285,7 @@ const deleteOrder = async (req, res) => {
 module.exports = {
   getOrders,
   getOrderById,
+  getMyOrders,
   createOrder,
   updateOrderStatus,
   deleteOrder

@@ -22,6 +22,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Accessories from './pages/Accessories';
 import DentPaint from './pages/DentPaint';
+import MembershipDashboard from './pages/MembershipDashboard';
 
 function App() {
   const currentPath = window.location.pathname;
@@ -34,7 +35,9 @@ function App() {
     );
 
     if (!('IntersectionObserver' in window)) {
-      elements.forEach((element) => element.classList.add('moto-is-visible'));
+      elements.forEach((element) =>
+        element.classList.add('moto-is-visible')
+      );
       return;
     }
 
@@ -66,6 +69,11 @@ function App() {
         <Login />
       ) : currentPath === '/register' ? (
         <Register />
+      ) : currentPath === '/membership' ? (
+        <>
+          <MembershipDashboard />
+          <Footer />
+        </>
       ) : currentPath === '/accessories' ? (
         <>
           <Accessories />
