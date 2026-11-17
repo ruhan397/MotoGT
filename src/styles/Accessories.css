@@ -6,7 +6,7 @@
     rgba(0, 0, 0, 0.78),
     rgba(0, 0, 0, 0.78)
   ),
-  url("../assets/BGMGT2.jpeg");
+  url("../assets/BGMGT5.jpeg");
 
 background-size: cover;
 background-position: center;
@@ -16,8 +16,8 @@ background-repeat: no-repeat;
 
 .accessories-heading {
   text-align: center;
-  margin-bottom: 55px;
-  transform: translateY(-40px);
+  margin-bottom: -15px;
+  transform: translateY(-70px);
 }
 
 .accessories-heading .eyebrow {
@@ -1229,7 +1229,7 @@ background-repeat: no-repeat;
 }
 
 .accessories-heading {
-  margin-bottom: 0 !important;
+  margin-bottom: -20px !important;
   padding-bottom: 0 !important;
 }
 
@@ -1247,4 +1247,38 @@ background-repeat: no-repeat;
 .accessories-search-wrap input {
   height: 38px;
   font-size: 12px;
+}
+
+/* Final Accessories Heading Spacing Fix */
+
+.accessories-heading .eyebrow {
+  margin-top: 20px !important;
+  margin-bottom: 12px !important;
+}
+
+.accessories-heading h1 {
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  transform: none !important;
+}
+
+.accessories-heading p:not(.eyebrow) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  transform: none !important;
+}
+
+.accessories-page .accessories-cart-toggle {
+  margin-top: 30px !important;
+  margin-bottom: 0 !important;
+}
+
+.accessories-heading {
+  margin-bottom: -25px !important;
+  padding-bottom: 0 !important;
+}
+
+.accessories-search-wrap {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }

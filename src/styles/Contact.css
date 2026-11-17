@@ -2,13 +2,17 @@
 .contact-section {
   padding: 75px 7% 90px;
   text-align: center;
-  background:
-  radial-gradient(
-    ellipse at 50% 45%,
-    rgba(198, 167, 106, 0.09) 0%,
-    rgba(26, 27, 23, 0.4) 38%,
-    #111210 100%
-  );
+  position: relative;
+  isolation: isolate;
+
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78)),
+    url('../assets/BGMGT5.jpeg');
+
+  background-size: cover;
+  background-position: center 90%;
+  background-repeat: no-repeat;
+
   border-top: 1px solid #ffffff12;
 }
 

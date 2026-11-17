@@ -1,7 +1,8 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/DentPaint.css";
 import paintImage from "../assets/DPAINT2.jpeg";
+import { apiFetch } from "../utils/api";
 
 const services = [
   {
@@ -40,12 +41,135 @@ const services = [
 ];
 
 function DentPaint() {
-  const [submitted, setSubmitted] = useState(false);
   const [activeTab, setActiveTab] = useState("services");
 
-  const handleSubmit = (event) => {
+  const [formData, setFormData] = useState({
+    phone: "",
+    vehicleModel: "",
+    service: "",
+    preferredStartDate: "",
+    problemDescription: "",
+  });
+
+  const [availableDates, setAvailableDates] = useState([]);
+  const [loadingDates, setLoadingDates] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+
+  const token = localStorage.getItem("motogtToken");
+
+  useEffect(() => {
+    const loadAvailableDates = async () => {
+      if (!token) {
+        setLoadingDates(false);
+        return;
+      }
+
+      try {
+        const response = await apiFetch("appointments/available-dates", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Unable to load available dates."
+          );
+        }
+
+        const dates = Array.isArray(data)
+          ? data
+          : data.availableDates || data.dates || [];
+
+        setAvailableDates(
+          dates
+            .map((item) =>
+              typeof item === "string" ? item : item.date
+            )
+            .filter(Boolean)
+        );
+      } catch (error) {
+        setMessage(error.message || "Unable to load available dates.");
+        setMessageType("error");
+      } finally {
+        setLoadingDates(false);
+      }
+    };
+
+    loadAvailableDates();
+  }, [token]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setSubmitted(true);
+
+    setMessage("");
+    setMessageType("");
+
+    if (!token) {
+      setMessage("Please log in to book an appointment.");
+      setMessageType("error");
+      return;
+    }
+
+    if (!availableDates.includes(formData.preferredStartDate)) {
+      setMessage("Please select an available appointment date.");
+      setMessageType("error");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      const response = await apiFetch("appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Unable to submit your appointment request."
+        );
+      }
+
+      setMessage(
+        "Your appointment request has been submitted successfully. Your request is now Pending and will be reviewed by the MotoGT team."
+      );
+      setMessageType("success");
+
+      setFormData({
+        phone: "",
+        vehicleModel: "",
+        service: "",
+        preferredStartDate: "",
+        problemDescription: "",
+      });
+    } catch (error) {
+      setMessage(
+        error.message || "Something went wrong. Please try again."
+      );
+      setMessageType("error");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -72,9 +196,13 @@ function DentPaint() {
         </div>
       </section>
 
-            {/* Dent & Paint Information Tabs */}
-            <section className="dp-information" id="dp-services">
-        <div className="dp-tabs" role="tablist" aria-label="Dent and Paint information">
+      {/* Dent & Paint Information Tabs */}
+      <section className="dp-information" id="dp-services">
+        <div
+          className="dp-tabs"
+          role="tablist"
+          aria-label="Dent and Paint information"
+        >
           <button
             type="button"
             className={activeTab === "services" ? "dp-tab active" : "dp-tab"}
@@ -105,15 +233,6 @@ function DentPaint() {
             Our Work Process
           </button>
 
-          <button
-            type="button"
-            className={activeTab === "why" ? "dp-tab active" : "dp-tab"}
-            onClick={() => setActiveTab("why")}
-            role="tab"
-            aria-selected={activeTab === "why"}
-          >
-            Why Choose MotoGT
-          </button>
         </div>
 
         {/* What We Offer */}
@@ -255,58 +374,10 @@ function DentPaint() {
           </section>
         )}
 
-        {/* Why Choose MotoGT */}
-        {activeTab === "why" && (
-          <section className="dp-why-choose">
-            <div className="dp-section-heading">
-              <p className="dp-eyebrow">THE MOTOGT DIFFERENCE</p>
-              <h2>
-                Why choose
-                <em> MotoGT?</em>
-              </h2>
-              <p>
-                Your vehicle deserves attention, precision
-                and care at every stage.
-              </p>
-            </div>
-
-            <div className="dp-why-grid">
-              <article className="dp-why-card">
-                <span className="dp-why-icon">✦</span>
-                <h3>Attention to Detail</h3>
-                <p>
-                  We focus on every visible detail to achieve a clean and refined finish.
-                </p>
-              </article>
-
-              <article className="dp-why-card">
-                <span className="dp-why-icon">◇</span>
-                <h3>Professional Care</h3>
-                <p>
-                  Each vehicle receives careful inspection and a service approach suited to its needs.
-                </p>
-              </article>
-
-              <article className="dp-why-card">
-                <span className="dp-why-icon">◎</span>
-                <h3>Quality Materials</h3>
-                <p>
-                  We aim to use suitable materials for dependable repair and finishing results.
-                </p>
-              </article>
-
-              <article className="dp-why-card">
-                <span className="dp-why-icon">✓</span>
-                <h3>Customer Satisfaction</h3>
-                <p>
-                  We value clear communication and your satisfaction throughout the service.
-                </p>
-              </article>
-            </div>
-          </section>
-        )}
+        
       </section>
 
+      {/* Appointment Booking */}
       <section className="dp-booking" id="dp-booking">
         <div className="dp-booking-heading">
           <p className="dp-eyebrow">LET'S GET STARTED</p>
@@ -320,60 +391,121 @@ function DentPaint() {
         </div>
 
         <form className="dp-booking-form" onSubmit={handleSubmit}>
+          <p className="dp-form-note">
+            Your name and email will be taken from your MotoGT account.
+          </p>
+
           <div className="dp-form-grid">
             <label>
-              Full Name
-              <input type="text" placeholder="Your full name" required />
-            </label>
-
-            <label>
               Phone Number
-              <input type="tel" placeholder="Your phone number" required />
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Your phone number"
+                required
+              />
             </label>
 
             <label>
               Vehicle Model
-              <input type="text" placeholder="e.g. Toyota Axio" required />
+              <input
+                type="text"
+                name="vehicleModel"
+                value={formData.vehicleModel}
+                onChange={handleChange}
+                placeholder="e.g. Toyota Axio"
+                required
+              />
             </label>
 
             <label>
               Required Service
-              <select defaultValue="" required>
-                <option value="" disabled>Select a service</option>
-                <option>Dent Repair</option>
-                <option>Scratch Removal</option>
-                <option>Body Painting</option>
+              <select
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  Select a service
+                </option>
+                <option value="Dent Repair">Dent Repair</option>
+                <option value="Scratch Removal">Scratch Removal</option>
+                <option value="Body Painting">Body Painting</option>
               </select>
             </label>
 
             <label>
               Preferred Date
-              <input type="date" required />
+              <select
+                name="preferredStartDate"
+                value={formData.preferredStartDate}
+                onChange={handleChange}
+                required
+                disabled={loadingDates || availableDates.length === 0}
+              >
+                <option value="">
+                  {loadingDates
+                    ? "Loading available dates..."
+                    : availableDates.length === 0
+                      ? "No dates currently available"
+                      : "Select an available date"}
+                </option>
+
+                {availableDates.map((date) => (
+                  <option value={date} key={date}>
+                    {new Date(`${date}T00:00:00`).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      }
+                    )}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <label className="dp-full-width">
               Describe the Problem
               <textarea
+                name="problemDescription"
                 rows="4"
+                value={formData.problemDescription}
+                onChange={handleChange}
                 placeholder="Tell us about your vehicle and the work required..."
               />
             </label>
           </div>
 
-          <button type="submit" className="dp-button">
-            Preview Appointment Request ↗
+          <button
+            type="submit"
+            className="dp-button"
+            disabled={submitting || loadingDates || availableDates.length === 0}
+          >
+            {submitting
+              ? "Submitting Request..."
+              : "Submit Appointment Request ↗"}
           </button>
 
-          {submitted && (
-            <p className="dp-preview-message">
-              Appointment form preview completed.
-              Booking requests are not saved yet.
-              The backend booking system will be connected in a later update.
+          {message && (
+            <p
+              className="dp-preview-message"
+              role="status"
+              style={{
+                color: messageType === "success" ? "#4caf80" : "#d97777",
+              }}
+            >
+              {message}
             </p>
           )}
 
           <p className="dp-form-note">
-            Appointment booking is currently a frontend preview.
+            Your appointment will remain Pending until reviewed by the MotoGT admin.
+            Final approval depends on workshop capacity and the required work duration.
           </p>
         </form>
       </section>

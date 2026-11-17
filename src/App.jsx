@@ -23,6 +23,7 @@ import Register from './pages/Register';
 import Accessories from './pages/Accessories';
 import DentPaint from './pages/DentPaint';
 import MembershipDashboard from './pages/MembershipDashboard';
+import About from './pages/About';
 
 function App() {
   const currentPath = window.location.pathname;
@@ -82,6 +83,11 @@ function App() {
       ) : currentPath === '/dent-paint' ? (
         <>
           <DentPaint />
+          <Footer />
+        </>
+      ) : currentPath === '/about' ? (
+        <>
+          <About />
           <Footer />
         </>
       ) : (

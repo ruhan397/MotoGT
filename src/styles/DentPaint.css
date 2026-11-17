@@ -26,7 +26,7 @@
   
   .dp-eyebrow {
     color: #c6a76a;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
     margin-bottom: 20px;
@@ -49,7 +49,7 @@
   .dp-hero h1 em,
   .dp-section-heading h2 em,
   .dp-booking-heading h2 em {
-    color: #c6a76a;
+    color: #FF0000;
     font-weight: 500;
   }
   
@@ -99,7 +99,7 @@
     padding: 85px 7%;
     background:
       linear-gradient(rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.82)),
-      url("../assets/BGMGT2.jpeg") center / cover no-repeat;
+      url("../assets/BGMGT5.jpeg") center / cover no-repeat;
   }
   
   .dp-section-heading {
@@ -289,8 +289,8 @@
   isolation: isolate;
   background:
     linear-gradient(
-      rgba(0, 0, 0, 0.62),
-      rgba(0, 0, 0, 0.72)
+      rgba(0, 0, 0, 0.82),
+      rgba(0, 0, 0, 0.88)
     ),
     url("../assets/DentPaintHero.jpeg") center / cover no-repeat;
 }
@@ -329,7 +329,7 @@
       rgba(0, 0, 0, 0.82),
       rgba(0, 0, 0, 0.82)
     ),
-    url("../assets/BGMGT2.jpeg") center / cover no-repeat;
+    url("../assets/BGMGT5.jpeg") center / cover no-repeat;
 }
 /* Preview Appointment Request - Premium Gold Button */
 .dp-booking-form > .dp-button {

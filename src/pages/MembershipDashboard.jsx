@@ -164,13 +164,40 @@ function MembershipDashboard() {
         </button>
 
         <header className="dashboard-header">
-          <p className="dashboard-eyebrow">MOTOGT MEMBERSHIP</p>
-          <h1>My Membership</h1>
-          <p>
-            Welcome back, {user.fullName}. Track your rewards and
-            purchase history.
-          </p>
-        </header>
+  <div className="dashboard-header-top">
+    <div>
+      <p className="dashboard-eyebrow">MOTOGT MEMBERSHIP</p>
+      <h1>My Membership</h1>
+      <p>
+        Track your rewards and
+        purchase history.
+      </p>
+    </div>
+
+    <div className="dashboard-member-profile">
+    <span className="dashboard-profile-icon">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="8" r="4" />
+    <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
+  </svg>
+</span>
+      <div>
+        <span>SIGNED IN AS</span>
+        <strong>{user.fullName}</strong>
+      </div>
+    </div>
+  </div>
+</header>
 
         <section className="dashboard-membership-card">
           <div>
@@ -178,7 +205,6 @@ function MembershipDashboard() {
               CURRENT MEMBERSHIP
             </span>
             <h2>{levelLabel}</h2>
-            <p>{user.fullName}</p>
           </div>
 
           <div className="dashboard-discount">

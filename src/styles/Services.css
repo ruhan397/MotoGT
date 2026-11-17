@@ -85,9 +85,9 @@ text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
   isolation: isolate;
   background-image:
     linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78)),
-    url('../assets/BGMGT2.jpeg');
+    url('../assets/BGMGT6.jpeg');
   background-size: cover;
-  background-position: center;
+  background-position: center 90%;
   background-repeat: no-repeat;
 }
 

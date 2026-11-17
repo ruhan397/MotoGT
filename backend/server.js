@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require("./routes/authRoutes");
+const appointmentRoutes = require('./routes/appointmentRoutes');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/users", userRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

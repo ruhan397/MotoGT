@@ -356,3 +356,65 @@
 .dashboard-order-info strong {
   font-size: 15px;
 }
+
+/* Member Profile - Dashboard Header */
+
+.dashboard-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+}
+
+.dashboard-member-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border: 1px solid rgba(198, 167, 106, 0.3);
+  border-radius: 8px;
+  background: rgba(25, 26, 24, 0.65);
+  flex-shrink: 0;
+}
+
+.dashboard-profile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(198, 167, 106, 0.13);
+  color: #d9b875;
+  font-size: 23px;
+}
+
+.dashboard-member-profile div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dashboard-member-profile div span {
+  color: #c6a76a;
+  font-size: 9px;
+  letter-spacing: 1.8px;
+}
+
+.dashboard-member-profile strong {
+  color: #f4f0e8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 650px) {
+  .dashboard-header-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .dashboard-member-profile {
+    width: fit-content;
+  }
+}
