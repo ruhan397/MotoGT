@@ -1251,6 +1251,13 @@ background-repeat: no-repeat;
 
 /* Final Accessories Heading Spacing Fix */
 
+.accessories-heading {
+  transform: translateY(-20px);
+  margin-bottom: -25px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .accessories-heading .eyebrow {
   margin-top: 20px !important;
   margin-bottom: 12px !important;
@@ -1273,12 +1280,21 @@ background-repeat: no-repeat;
   margin-bottom: 0 !important;
 }
 
-.accessories-heading {
-  margin-bottom: -25px !important;
-  padding-bottom: 0 !important;
-}
-
 .accessories-search-wrap {
   margin-top: 0 !important;
   padding-top: 0 !important;
+}
+
+/* Move Accessories Content Below Cart Down */
+
+.accessories-search-wrap,
+.accessories-category-filter,
+.accessories-product-grid {
+  transform: translateY(30px);
+}
+
+.accessories-search-wrap input {
+  height: 15px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
 }

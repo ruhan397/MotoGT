@@ -80,3 +80,36 @@
       flex-wrap: wrap;
     }
   }
+
+  .admin-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  
+  .admin-logout-button {
+    padding: 10px 18px;
+    border: 1px solid var(--admin-gold);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--admin-gold);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  
+  .admin-logout-button:hover {
+    background: var(--admin-gold);
+    color: #111210;
+  }
+  
+  @media (max-width: 760px) {
+    .admin-header-actions {
+      gap: 12px;
+    }
+  
+    .admin-logout-button {
+      padding: 8px 12px;
+    }
+  }

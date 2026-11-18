@@ -168,7 +168,11 @@ const createAppointment = async (req, res) => {
     }
 
     const settings = await getWorkshopSettings();
-
+    console.log('WORKSHOP SETTINGS:', {
+      maxVehicles: settings.maxVehicles,
+      dailyWorkCapacity: settings.dailyWorkCapacity,
+      approvalLock: settings.approvalLock
+    });
     const capacity = await checkCapacity(
       preferredStartDate,
       1,

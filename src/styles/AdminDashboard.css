@@ -796,3 +796,20 @@
   z-index: 2;
   pointer-events: none;
 }
+
+.appointment-admin-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.appointment-admin-actions select,
+.appointment-admin-actions textarea {
+  margin-bottom: 6px;
+}
+
+.appointment-admin-actions button {
+  margin-top: 4px;
+}

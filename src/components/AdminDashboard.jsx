@@ -9,6 +9,11 @@ import '../styles/admin/AdminContent.css';
 import '../styles/admin/AdminResponsive.css';
 
 function AdminDashboard() {
+  const handleAdminLogout = () => {
+    localStorage.removeItem('motogtAdminToken');
+    localStorage.removeItem('motogtAdminUser');
+    window.location.replace('/admin/login');
+  };
   const [activeTab, setActiveTab] = useState('Overview');
 
   const [products, setProducts] = useState([]);
@@ -39,6 +44,12 @@ const [orders, setOrders] = useState([]);
 const [ordersLoading, setOrdersLoading] = useState(false);
 const [ordersError, setOrdersError] = useState("");
 const [orderUpdatingId, setOrderUpdatingId] = useState(null);
+const [appointments, setAppointments] = useState([]);
+const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+const [appointmentsError, setAppointmentsError] = useState('');
+const [appointmentUpdatingId, setAppointmentUpdatingId] = useState(null);
+const [appointmentDuration, setAppointmentDuration] = useState({});
+const [appointmentNotes, setAppointmentNotes] = useState({});
 
 
 const fetchOrders = async () => {
@@ -65,6 +76,132 @@ const fetchOrders = async () => {
     setOrdersError(error.message);
   } finally {
     setOrdersLoading(false);
+  }
+};
+
+const fetchAppointments = async () => {
+  setAppointmentsLoading(true);
+  setAppointmentsError('');
+
+  try {
+    const token = localStorage.getItem('motogtAdminToken');
+
+    const response = await apiFetch('/appointments/admin/all', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json().catch(() => []);
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not load appointments');
+    }
+
+    setAppointments(Array.isArray(data) ? data : []);
+  } catch (error) {
+    setAppointmentsError(error.message);
+  } finally {
+    setAppointmentsLoading(false);
+  }
+};
+
+const handleApproveAppointment = async (appointmentId) => {
+  setAppointmentUpdatingId(appointmentId);
+
+  try {
+    const token = localStorage.getItem('motogtAdminToken');
+
+    const response = await apiFetch(
+      `/appointments/admin/${appointmentId}/approve`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          durationDays: Number(appointmentDuration[appointmentId] || 2),
+          adminNote: appointmentNotes[appointmentId] || '',
+        }),
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not approve appointment');
+    }
+
+    await fetchAppointments();
+  } catch (error) {
+    setAppointmentsError(error.message);
+  } finally {
+    setAppointmentUpdatingId(null);
+  }
+};
+
+const handleRejectAppointment = async (appointmentId) => {
+  setAppointmentUpdatingId(appointmentId);
+
+  try {
+    const token = localStorage.getItem('motogtAdminToken');
+
+    const response = await apiFetch(
+      `/appointments/admin/${appointmentId}/reject`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          adminNote: appointmentNotes[appointmentId] || '',
+        }),
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not reject appointment');
+    }
+
+    await fetchAppointments();
+  } catch (error) {
+    setAppointmentsError(error.message);
+  } finally {
+    setAppointmentUpdatingId(null);
+  }
+};
+
+const handleCompleteAppointment = async (appointmentId) => {
+  setAppointmentUpdatingId(appointmentId);
+
+  try {
+    const token = localStorage.getItem('motogtAdminToken');
+
+    const response = await apiFetch(
+      `/appointments/admin/${appointmentId}/complete`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not complete appointment');
+    }
+
+    await fetchAppointments();
+  } catch (error) {
+    setAppointmentsError(error.message);
+  } finally {
+    setAppointmentUpdatingId(null);
   }
 };
 
@@ -249,6 +386,7 @@ const handleDeleteProduct = async (productId) => {
     'Overview',
     'Products',
     'Orders',
+    'Appointments',
     'Enquiries',
   ];
 
@@ -311,7 +449,13 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
               className={`admin-menu-item ${
                 activeTab === item ? 'active' : ''
               }`}
-              onClick={() => setActiveTab(item)}
+              onClick={() => {
+                setActiveTab(item);
+              
+                if (item === 'Appointments') {
+                  fetchAppointments();
+                }
+              }}
             >
               {item}
             </button>
@@ -324,20 +468,30 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
       </aside>
 
       <main className="admin-main">
-        <header className="admin-header">
-          <div>
-            <p className="admin-eyebrow">MANAGEMENT</p>
-            <h1>{activeTab}</h1>
-          </div>
+      <header className="admin-header">
+  <div>
+    <p className="admin-eyebrow">MANAGEMENT</p>
+    <h1>{activeTab}</h1>
+  </div>
 
-          <div className="admin-profile">
-            <span className="admin-avatar">A</span>
-            <div>
-              <strong>Administrator</strong>
-              <p>Admin Account</p>
-            </div>
-          </div>
-        </header>
+  <div className="admin-header-actions">
+    <div className="admin-profile">
+      <span className="admin-avatar">A</span>
+      <div>
+        <strong>Administrator</strong>
+        <p>Admin Account</p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      className="admin-logout-button"
+      onClick={handleAdminLogout}
+    >
+      Logout
+    </button>
+  </div>
+</header>
 
         
 {activeTab === 'Overview' && (
@@ -724,6 +878,119 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
         </select>
 
         {orderUpdatingId === order._id && <span>Updating...</span>}
+      </div>
+    ))}
+  </section>
+)}
+
+{activeTab === 'Appointments' && (
+  <section className="admin-content-card">
+    <h2>Appointment Management</h2>
+    <p>Review and manage customer appointment requests.</p>
+
+    <button
+      className="admin-action-button"
+      onClick={fetchAppointments}
+      disabled={appointmentsLoading}
+    >
+      {appointmentsLoading ? 'Loading...' : 'Refresh Appointments'}
+    </button>
+
+    {appointmentsError && <p>{appointmentsError}</p>}
+
+    {appointmentsLoading && <p>Loading appointment requests...</p>}
+
+    {!appointmentsLoading && !appointmentsError && appointments.length === 0 && (
+      <p>No appointment requests found.</p>
+    )}
+
+    {!appointmentsLoading && appointments.map((appointment) => (
+      <div className="admin-table-row" key={appointment._id}>
+        <div>
+          <strong>{appointment.customerName}</strong>
+          <p>Email: {appointment.email}</p>
+          <p>Phone: {appointment.phone}</p>
+          <p>Vehicle: {appointment.vehicleModel}</p>
+          <p>Service: {appointment.service}</p>
+          <p>Problem: {appointment.problemDescription || 'Not specified'}</p>
+          <p>
+            Preferred Date: {appointment.preferredStartDate}
+          </p>
+          <p>
+            Duration: {appointment.durationDays || 'Not assigned'}
+          </p>
+          <p>
+            End Date: {appointment.endDate || 'Not assigned'}
+          </p>
+          <p>
+            Status: <strong>{appointment.status}</strong>
+          </p>
+          {appointment.adminNote && (
+            <p>Admin Note: {appointment.adminNote}</p>
+          )}
+
+{appointment.status === 'Pending' && (
+  <div className="appointment-admin-actions">
+
+    <label>Workshop Duration</label>
+    <select
+      value={appointmentDuration[appointment._id] || '2'}
+      onChange={(e) =>
+        setAppointmentDuration((prev) => ({
+          ...prev,
+          [appointment._id]: e.target.value,
+        }))
+      }
+    >
+      <option value="2">2 Working Days</option>
+      <option value="3">3 Working Days</option>
+      <option value="4">4 Working Days</option>
+    </select>
+
+    <textarea
+      placeholder="Admin Note (optional)"
+      value={appointmentNotes[appointment._id] || ''}
+      onChange={(e) =>
+        setAppointmentNotes((prev) => ({
+          ...prev,
+          [appointment._id]: e.target.value,
+        }))
+      }
+    />
+
+    <button
+      className="admin-action-button"
+      disabled={appointmentUpdatingId === appointment._id}
+      onClick={() => handleApproveAppointment(appointment._id)}
+    >
+      {appointmentUpdatingId === appointment._id
+        ? 'Processing...'
+        : 'Approve'}
+    </button>
+
+    <button
+      className="admin-action-button"
+      disabled={appointmentUpdatingId === appointment._id}
+      onClick={() => handleRejectAppointment(appointment._id)}
+    >
+      Reject
+    </button>
+  </div>
+)}
+
+{appointment.status === 'Approved' && (
+  <button
+    className="admin-action-button"
+    disabled={appointmentUpdatingId === appointment._id}
+    onClick={() => handleCompleteAppointment(appointment._id)}
+  >
+    {appointmentUpdatingId === appointment._id
+      ? 'Processing...'
+      : 'Mark as Completed'}
+  </button>
+)}
+
+        </div>
       </div>
     ))}
   </section>

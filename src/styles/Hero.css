@@ -37,8 +37,8 @@
   background:
     linear-gradient(
       180deg,
-      rgba(17, 18, 16, 0.86),
-      rgba(17, 18, 16, 0.82),
+      rgba(17, 18, 16, 0.70),
+      rgba(17, 18, 16, 0.78),
       rgba(17, 18, 16, 0.90)
     ),
     url('../assets/BMGTL2.jpeg');
@@ -47,7 +47,7 @@
   background-position: left center;
   background-repeat: no-repeat;
 
-  filter: blur(1.5px);
+  filter: blur(1.2px) brightness(1.12) contrast(1.00);
   animation: motoHeroBackground 1.4s ease-out both;
 }
 
