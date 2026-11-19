@@ -10,12 +10,12 @@ const {
   getOrderById,
   getMyOrders,
   createOrder,
+  confirmDemoPayment,
   updateOrderStatus,
   deleteOrder
 } = require('../controllers/orderController');
 
 // Customer: Get their own order history
-// Keep this route before /:id
 router.get('/my-orders', protect, getMyOrders);
 
 // Admin: Get all orders
@@ -23,6 +23,9 @@ router.get('/', protect, adminOnly, getOrders);
 
 // Customer: Create order
 router.post('/', protect, createOrder);
+
+// Customer: Confirm demo payment
+router.post('/:id/demo-payment', protect, confirmDemoPayment);
 
 // Admin: Get single order
 router.get('/:id', protect, adminOnly, getOrderById);

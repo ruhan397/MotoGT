@@ -23,7 +23,6 @@ const syncMembership = async (userId) => {
   ]);
 
   const totalSpent = Number(result[0]?.totalSpent || 0);
-
   const user = await User.findById(userId);
 
   if (!user) return;
@@ -94,9 +93,7 @@ const getMyOrders = async (req, res) => {
       .populate('products.productId')
       .sort({ createdAt: -1 });
 
-    res.status(200).json({
-      orders
-    });
+    res.status(200).json({ orders });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -107,7 +104,20 @@ const createOrder = async (req, res) => {
   const reservedProducts = [];
 
   try {
-    const { products, address } = req.body;
+    const { products, address, paymentMethod = 'COD' } = req.body;
+
+    const allowedPaymentMethods = [
+      'COD',
+      'bKash',
+      'Nagad',
+      'Card'
+    ];
+
+    if (!allowedPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        message: 'Invalid payment method'
+      });
+    }
 
     if (!address?.trim() || !Array.isArray(products) || !products.length) {
       return res.status(400).json({
@@ -118,7 +128,9 @@ const createOrder = async (req, res) => {
     const user = await User.findById(req.user.id);
 
     if (!user) {
-      return res.status(404).json({ message: 'Customer not found' });
+      return res.status(404).json({
+        message: 'Customer not found'
+      });
     }
 
     const quantities = new Map();
@@ -200,6 +212,8 @@ const createOrder = async (req, res) => {
       discountPercentage,
       discountAmount,
       totalAmount,
+      paymentMethod,
+      paymentStatus: 'Pending',
       status: 'Pending'
     });
 
@@ -216,6 +230,46 @@ const createOrder = async (req, res) => {
       ).catch(() => {});
     }
 
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Customer: Confirm a demo online payment
+const confirmDemoPayment = async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      userId: req.user.id
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        message: 'Order not found'
+      });
+    }
+
+    if (order.paymentMethod === 'COD') {
+      return res.status(400).json({
+        message: 'Cash on Delivery does not require online payment'
+      });
+    }
+
+    if (order.paymentStatus !== 'Pending') {
+      return res.status(400).json({
+        message: 'This payment has already been processed'
+      });
+    }
+
+    // Demo simulation only. No real money is transferred.
+    order.paymentStatus = 'Paid';
+    await order.save();
+
+    res.status(200).json({
+      message: 'Demo payment successful',
+      order
+    });
+
+  } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
@@ -242,14 +296,14 @@ const updateOrderStatus = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({
+        message: 'Order not found'
+      });
     }
 
     order.status = status;
     await order.save();
 
-    // Recalculate from all completed orders.
-    // This handles Completed -> Cancelled and other status changes too.
     await syncMembership(order.userId);
 
     res.status(200).json({
@@ -268,10 +322,11 @@ const deleteOrder = async (req, res) => {
     const order = await Order.findByIdAndDelete(req.params.id);
 
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({
+        message: 'Order not found'
+      });
     }
 
-    // Recalculate membership if the deleted order was completed
     await syncMembership(order.userId);
 
     res.status(200).json({
@@ -287,6 +342,7 @@ module.exports = {
   getOrderById,
   getMyOrders,
   createOrder,
+  confirmDemoPayment,
   updateOrderStatus,
   deleteOrder
 };

@@ -1298,3 +1298,574 @@ background-repeat: no-repeat;
   padding-top: 8px !important;
   padding-bottom: 8px !important;
 }
+
+
+/* =================================
+   MOTOGT DEMO PAYMENT GATEWAY
+================================= */
+
+.accessories-checkout-form select {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 11px 13px;
+
+  background: #22231f;
+  color: #f4f0e8;
+
+  border: 1px solid rgba(198, 167, 106, 0.4);
+  border-radius: 6px;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  outline: none;
+  cursor: pointer;
+
+  transition: border-color 0.25s ease,
+              box-shadow 0.25s ease;
+}
+
+.accessories-checkout-form select:focus {
+  border-color: #d9b875;
+  box-shadow: 0 0 0 3px rgba(198, 167, 106, 0.12);
+}
+
+.accessories-checkout-form select option {
+  background: #22231f;
+  color: #f4f0e8;
+}
+
+.accessories-checkout-form select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Demo Payment Notice */
+
+.accessories-checkout-form .accessories-payment-note {
+  margin: 2px 0 5px;
+  padding: 11px 13px;
+
+  color: #d9b875;
+  background: rgba(198, 167, 106, 0.08);
+
+  border: 1px solid rgba(198, 167, 106, 0.25);
+  border-radius: 6px;
+
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* Demo Payment Confirmation Panel */
+
+.accessories-demo-payment {
+  margin-top: 22px;
+  padding: 19px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(198, 167, 106, 0.12),
+    rgba(25, 26, 22, 0.95)
+  );
+
+  border: 1px solid rgba(198, 167, 106, 0.45);
+  border-radius: 10px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.accessories-demo-payment h3 {
+  margin: 0 0 15px;
+
+  color: #d9b875;
+  font-family: "Playfair Display", serif;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.accessories-demo-payment p {
+  margin: 9px 0;
+
+  color: #aaa79f;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.accessories-demo-payment p strong {
+  color: #f4f0e8;
+}
+
+.accessories-demo-payment button {
+  width: 100%;
+  min-height: 43px;
+  margin-top: 12px;
+  padding: 11px 15px;
+
+  background: #c6a76a;
+  color: #111210;
+
+  border: 1px solid #c6a76a;
+  border-radius: 6px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.accessories-demo-payment button:hover:not(:disabled) {
+  background: #d9b875;
+  border-color: #d9b875;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(198, 167, 106, 0.2);
+}
+
+.accessories-demo-payment button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .accessories-demo-payment {
+    padding: 15px;
+  }
+
+  .accessories-demo-payment h3 {
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accessories-checkout-form select,
+  .accessories-demo-payment button {
+    transition: none;
+  }
+}
+
+/* Premium Payment Method Dropdown */
+
+.accessories-checkout-form select {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 42px 12px 15px;
+
+  color: #f4f0e8;
+  background-color: #20211d;
+
+  border: 1px solid rgba(198, 167, 106, 0.55);
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  outline: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d9b875' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px;
+
+  transition: border-color 0.25s ease,
+              box-shadow 0.25s ease,
+              background-color 0.25s ease;
+}
+
+.accessories-checkout-form select:hover {
+  border-color: #d9b875;
+  background-color: #252620;
+}
+
+.accessories-checkout-form select:focus {
+  border-color: #d9b875;
+  box-shadow: 0 0 0 3px rgba(198, 167, 106, 0.12);
+}
+
+.accessories-checkout-form select option {
+  background: #20211d;
+  color: #f4f0e8;
+  padding: 12px;
+}
+
+.accessories-checkout-form select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   MOTOGT ACCESSORIES - FINAL CSS OVERRIDES
+   Grid Layout + Responsive + Payment UI
+========================================= */
+
+/* Product Grid - Desktop */
+.accessories-page .accessories-product-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin: 28px auto 45px;
+  align-items: stretch;
+}
+
+/* Product Card */
+.accessories-page .accessories-product-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+/* Product Image */
+.accessories-page .accessories-product-image {
+  position: relative;
+  display: flex;
+  flex: 0 0 145px;
+  width: 100%;
+  height: 145px;
+  min-height: 145px;
+  padding: 8px;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.accessories-page .accessories-product-image img {
+  display: block;
+  position: static;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* Product Information */
+.accessories-page .accessories-product-info {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  min-width: 0;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.accessories-page .accessories-product-info h3 {
+  margin: 7px 0 5px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.accessories-page .product-brand {
+  margin: 0;
+  font-size: 11px;
+}
+
+.accessories-page .product-description {
+  display: none;
+}
+
+/* Price and Stock */
+.accessories-page .product-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.accessories-page .product-card-bottom strong {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.accessories-page .product-stock {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+/* Add to Cart */
+.accessories-page .accessories-product-card .accessories-add-button {
+  width: 100%;
+  min-height: 36px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/* Tablet - 4 Products */
+@media (max-width: 1100px) {
+  .accessories-page .accessories-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Small Tablet - 3 Products */
+@media (max-width: 850px) {
+  .accessories-page .accessories-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+/* Mobile - 2 Products */
+@media (max-width: 600px) {
+  .accessories-page .accessories-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .accessories-page .accessories-product-image {
+    flex-basis: 120px;
+    height: 120px;
+    min-height: 120px;
+  }
+
+  .accessories-page .accessories-product-info {
+    padding: 10px;
+  }
+
+  .accessories-page .accessories-product-info h3 {
+    font-size: 12px;
+  }
+
+  .accessories-page .product-card-bottom strong {
+    font-size: 13px;
+  }
+
+  .accessories-page .accessories-product-card .accessories-add-button {
+    min-height: 33px;
+    font-size: 11px;
+  }
+}
+
+/* Keep Search and Category Filter Alignment */
+.accessories-page .accessories-search-wrap,
+.accessories-page .accessories-category-filter,
+.accessories-page .accessories-product-grid {
+  position: relative;
+  z-index: 1;
+}
+
+/* Payment Method Selection Cards */
+.accessories-payment-label {
+  display: block;
+  margin: 12px 0 9px;
+  color: #d9b875;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.accessories-payment-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.accessories-payment-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 66px;
+  padding: 11px;
+  box-sizing: border-box;
+  background: #20211d;
+  color: #f4f0e8;
+  border: 1px solid rgba(198, 167, 106, 0.28);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.25s ease,
+              background 0.25s ease,
+              transform 0.25s ease;
+}
+
+.accessories-payment-option:hover {
+  border-color: #d9b875;
+  transform: translateY(-2px);
+}
+
+.accessories-payment-option.selected {
+  border-color: #d9b875;
+  background: rgba(198, 167, 106, 0.12);
+  box-shadow: 0 0 0 1px rgba(217, 184, 117, 0.12);
+}
+
+.payment-option-logo {
+  display: flex;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.payment-option-logo img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.cod-logo,
+.card-logo {
+  color: #22231f;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.bkash-logo {
+  background: #e2136e;
+}
+
+.nagad-logo {
+  background: #f58220;
+}
+
+.payment-option-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.payment-option-copy strong {
+  color: #f4f0e8;
+  font-size: 12px;
+}
+
+.payment-option-copy span {
+  color: #aaa79f;
+  font-size: 10px;
+}
+
+.payment-option-check {
+  flex: 0 0 auto;
+  color: #d9b875;
+  font-size: 15px;
+}
+
+.visa-mark {
+  color: #1434cb;
+  font-size: 15px;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.mastercard-mark {
+  color: #e53935;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* Payment Cards - Small Screens */
+@media (max-width: 420px) {
+  .accessories-payment-options {
+    gap: 8px;
+  }
+
+  .accessories-payment-option {
+    gap: 7px;
+    padding: 8px;
+    min-height: 60px;
+  }
+
+  .payment-option-logo {
+    flex-basis: 34px;
+    width: 34px;
+    height: 30px;
+  }
+
+  .payment-option-copy strong {
+    font-size: 11px;
+  }
+
+  .payment-option-copy span {
+    font-size: 9px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .accessories-payment-option {
+    transition: none;
+  }
+}
+
+/* Payment Logo Final Fix */
+
+.accessories-payment-option .payment-option-logo img {
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  object-fit: contain;
+}
+
+.accessories-payment-option .cod-logo {
+  background: #fff;
+  color: #20211d;
+}
+
+.accessories-payment-option .cod-icon {
+  width: 29px;
+  height: 29px;
+}
+
+.accessories-payment-option .card-logo {
+  background: #fff;
+  padding: 5px;
+}
+
+.payment-card-brands {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+}
+
+.payment-card-brands .mastercard-mark {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 29px;
+  height: 20px;
+}
+
+.mastercard-circle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.mastercard-red {
+  left: 0;
+  background: #eb001b;
+}
+
+.mastercard-orange {
+  right: 0;
+  background: #f79e1b;
+  mix-blend-mode: multiply;
+}

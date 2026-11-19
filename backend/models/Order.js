@@ -49,6 +49,18 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  paymentMethod: {
+    type: String,
+    enum: ['COD', 'bKash', 'Nagad', 'Card'],
+    default: 'COD',
+    required: true
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Paid', 'Failed'],
+    default: 'Pending',
+    required: true
+  },
   status: {
     type: String,
     default: 'Pending'

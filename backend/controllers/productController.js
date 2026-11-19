@@ -10,8 +10,40 @@ const getProducts = async (req, res) => {
   }
 };
 
+// Search products directly from MongoDB
+const searchProducts = async (req, res) => {
+  try {
+    const { q = "", category = "" } = req.query;
+
+    const filter = {};
+
+    if (q.trim()) {
+      const safeQuery = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      filter.$or = [
+        { name: { $regex: safeQuery, $options: "i" } },
+        { brand: { $regex: safeQuery, $options: "i" } },
+        { category: { $regex: safeQuery, $options: "i" } },
+        { description: { $regex: safeQuery, $options: "i" } }
+      ];
+    }
+
+    if (category.trim() && category !== "All Products") {
+      filter.category = category.trim();
+    }
+
+    const products = await Product.find(filter).sort({ name: 1 });
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Get single product
 const getProductById = async (req, res) => {
+  console.log("⚠️ getProductById CALLED:", req.params.id);
   try {
     const product = await Product.findById(req.params.id);
 
@@ -155,6 +187,7 @@ const bulkImportProducts = async (req, res) => {
 
 module.exports = {
   getProducts,
+  searchProducts,
   getProductById,
   createProduct,
   updateProduct,

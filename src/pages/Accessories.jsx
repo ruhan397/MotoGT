@@ -1,6 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
+import bkashLogo from "../assets/bKash-Logo.png";
+import nagadLogo from "../assets/Nagad Icon.png";
 import "../styles/Accessories.css";
 
 function Accessories() {
@@ -11,10 +12,20 @@ function Accessories() {
   const [activeCategory, setActiveCategory] = useState("All Products");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
+
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [address, setAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [confirmingPayment, setConfirmingPayment] = useState(false);
+
+  const [pendingPaymentOrderId, setPendingPaymentOrderId] = useState("");
+  const [pendingPaymentMethod, setPendingPaymentMethod] = useState("");
+
   const [orderMessage, setOrderMessage] = useState("");
   const [orderError, setOrderError] = useState("");
 
@@ -45,6 +56,56 @@ function Accessories() {
   useEffect(() => {
     loadProducts();
   }, []);
+
+  // Search products directly from MongoDB
+  useEffect(() => {
+    let isActive = true;
+
+    const searchTimer = setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchError("");
+
+      try {
+        const params = new URLSearchParams({
+          q: searchQuery.trim(),
+          category:
+            activeCategory === "All Products"
+              ? ""
+              : activeCategory,
+        });
+
+        const response = await apiFetch(
+          `/products/search?${params.toString()}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Could not search products.");
+        }
+
+        const data = await response.json();
+
+        if (isActive) {
+          setSearchResults(data);
+        }
+      } catch (err) {
+        if (isActive) {
+          setSearchResults([]);
+          setSearchError(
+            err.message || "Unable to search products."
+          );
+        }
+      } finally {
+        if (isActive) {
+          setSearchLoading(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      isActive = false;
+      clearTimeout(searchTimer);
+    };
+  }, [searchQuery, activeCategory]);
 
   // Load customer membership
   useEffect(() => {
@@ -115,30 +176,8 @@ function Accessories() {
     ).sort(),
   ];
 
-  // Search and category filtering
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      activeCategory === "All Products" ||
-      product.category === activeCategory;
-
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    const searchableText = [
-      product.name,
-      product.brand,
-      product.category,
-      product.description,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-    return (
-      matchesCategory &&
-      searchableText.includes(normalizedQuery)
-    );
-  });
-
+  // Products returned directly from MongoDB search
+  const filteredProducts = searchResults;
   const totalProducts = filteredProducts.length;
 
   // Add product to cart
@@ -250,6 +289,13 @@ function Accessories() {
       return;
     }
 
+    if (pendingPaymentOrderId) {
+      setOrderError(
+        "Please complete your previous demo payment first."
+      );
+      return;
+    }
+
     setPlacingOrder(true);
 
     try {
@@ -261,6 +307,7 @@ function Accessories() {
         },
         body: JSON.stringify({
           address: address.trim(),
+          paymentMethod,
           products: cart.map((item) => ({
             productId: item.product._id,
             quantity: item.quantity,
@@ -276,11 +323,28 @@ function Accessories() {
         );
       }
 
-      setOrderMessage(
-        `Order placed successfully! Order ID: ${
-          data.order?._id || "Confirmed"
-        }. Payment: Cash on Delivery. Status: Pending.`
-      );
+      const orderId = data.order?._id;
+
+      if (!orderId) {
+        throw new Error(
+          "Order was created, but its ID was not returned."
+        );
+      }
+
+      // COD order
+      if (paymentMethod === "COD") {
+        setOrderMessage(
+          `Order placed successfully! Order ID: ${orderId}. Payment: Cash on Delivery. Payment Status: Pending. Order Status: Pending.`
+        );
+      } else {
+        // Online demo payment remains Pending until confirmation
+        setPendingPaymentOrderId(orderId);
+        setPendingPaymentMethod(paymentMethod);
+
+        setOrderMessage(
+          `Order created successfully! Order ID: ${orderId}. Your ${paymentMethod} demo payment is waiting for confirmation.`
+        );
+      }
 
       setCart([]);
       setAddress("");
@@ -292,6 +356,167 @@ function Accessories() {
     } finally {
       setPlacingOrder(false);
     }
+  };
+
+  // Confirm online demo payment
+  const confirmDemoPayment = async () => {
+    const token = localStorage.getItem("motogtToken");
+
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    if (!pendingPaymentOrderId) {
+      setOrderError("No pending demo payment was found.");
+      return;
+    }
+
+    setConfirmingPayment(true);
+    setOrderError("");
+
+    try {
+      const response = await apiFetch(
+        `/orders/${pendingPaymentOrderId}/demo-payment`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Demo payment could not be confirmed."
+        );
+      }
+
+      setOrderMessage(
+        `Demo payment successful! Order ID: ${pendingPaymentOrderId}. Payment Method: ${pendingPaymentMethod}. Payment Status: Paid.`
+      );
+
+      setPendingPaymentOrderId("");
+      setPendingPaymentMethod("");
+    } catch (err) {
+      setOrderError(
+        err.message ||
+          "Payment confirmation failed. Please try again."
+      );
+    } finally {
+      setConfirmingPayment(false);
+    }
+  };
+
+  const paymentOptions = [
+    {
+      value: "COD",
+      name: "Cash on Delivery",
+      detail: "Pay when your order arrives",
+      type: "cod",
+    },
+    {
+      value: "bKash",
+      name: "bKash",
+      detail: "Mobile financial service",
+      logo: bkashLogo,
+      type: "bkash",
+    },
+    {
+      value: "Nagad",
+      name: "Nagad",
+      detail: "Mobile financial service",
+      logo: nagadLogo,
+      type: "nagad",
+    },
+    {
+      value: "Card",
+      name: "Debit / Credit Card",
+      detail: "Visa and Mastercard",
+      type: "card",
+    },
+  ];
+
+  // Render the supplied local payment logos and the existing COD/Card marks
+  const renderPaymentMark = (option) => {
+    if (option.type === "cod") {
+      return (
+        <svg
+          className="cod-icon"
+          viewBox="0 0 48 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M4.5 12.5H28V32H4.5V12.5Z"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M28 20H36L43.5 27.5V32H28V20Z"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinejoin="round"
+          />
+          <circle
+            cx="13.5"
+            cy="34"
+            r="4.2"
+            fill="#24231F"
+            stroke="currentColor"
+            strokeWidth="2.6"
+          />
+          <circle
+            cx="36"
+            cy="34"
+            r="4.2"
+            fill="#24231F"
+            stroke="currentColor"
+            strokeWidth="2.6"
+          />
+          <path
+            d="M10 18H22M10 23H19"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+        </svg>
+      );
+    }
+
+    if (option.type === "bkash" || option.type === "nagad") {
+      return (
+        <img
+          className="official-payment-logo"
+          src={option.logo}
+          alt={`${option.name} logo`}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
+        />
+      );
+    }
+
+    return (
+      <span
+        className="payment-card-brands"
+        aria-label="Visa and Mastercard"
+      >
+        <span className="visa-mark">VISA</span>
+
+        <span className="mastercard-mark" aria-hidden="true">
+          <span className="mastercard-circle mastercard-red" />
+          <span className="mastercard-circle mastercard-orange" />
+        </span>
+      </span>
+    );
   };
 
   return (
@@ -359,11 +584,15 @@ function Accessories() {
           </label>
 
           <p className="accessories-search-count">
-            {searchQuery.trim()
-              ? `${totalProducts} matching product${
-                  totalProducts === 1 ? "" : "s"
-                }`
-              : `${totalProducts} products available`}
+            {searchLoading
+              ? "Searching products..."
+              : searchError
+                ? searchError
+                : searchQuery.trim()
+                  ? `${totalProducts} matching product${
+                      totalProducts === 1 ? "" : "s"
+                    }`
+                  : `${totalProducts} products available`}
           </p>
         </div>
       )}
@@ -400,87 +629,97 @@ function Accessories() {
       )}
 
       {/* Empty products */}
-      {!loading && !error && totalProducts === 0 && (
-        <p className="accessories-empty">
-          {searchQuery.trim()
-            ? "No products found. Try a different search."
-            : "No products found in this category."}
-        </p>
-      )}
+      {!loading &&
+        !error &&
+        !searchLoading &&
+        !searchError &&
+        totalProducts === 0 && (
+          <p className="accessories-empty">
+            {searchQuery.trim()
+              ? "No products found. Try a different search."
+              : "No products found in this category."}
+          </p>
+        )}
 
       {/* All products grid */}
-      {!loading && !error && totalProducts > 0 && (
-        <div className="accessories-product-grid">
-          {filteredProducts.map((product) => (
-            <article
-              className="accessories-product-card"
-              key={product._id}
-            >
-              <div className="accessories-product-image">
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="product-image-placeholder">
-                    MOTOGT
-                  </div>
-                )}
-              </div>
-
-              <div className="accessories-product-info">
-               
-
-                <h3>{product.name}</h3>
-
-                <p className="product-brand">
-                  {product.brand}
-                </p>
-
-                
-
-                <div className="product-card-bottom">
-                  <strong>
-                    ৳
-                    {Number(product.price).toLocaleString(
-                      "en-BD"
-                    )}
-                  </strong>
-
-                  <span
-                    className={
-                      Number(product.stock) > 0
-                        ? "product-stock available"
-                        : "product-stock unavailable"
-                    }
-                  >
-                    {Number(product.stock) > 0
-                      ? "In Stock"
-                      : "Out of Stock"}
-                  </span>
+      {!loading &&
+        !error &&
+        !searchLoading &&
+        totalProducts > 0 && (
+          <div className="accessories-product-grid">
+            {filteredProducts.map((product) => (
+              <article
+                className="accessories-product-card"
+                key={product._id}
+              >
+                <div className="accessories-product-image">
+                  {product.image ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="product-image-placeholder">
+                      MOTOGT
+                    </div>
+                  )}
                 </div>
 
-                <button
-                  className="accessories-add-button"
-                  onClick={() => addToCart(product)}
-                  disabled={Number(product.stock) < 1}
-                >
-                  {Number(product.stock) < 1
-                    ? "Out of Stock"
-                    : "Add to Cart"}
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
+                <div className="accessories-product-info">
+                  <h3>{product.name}</h3>
+
+                  <p className="product-brand">
+                    {product.brand}
+                  </p>
+
+                  <div className="product-card-bottom">
+                    <strong>
+                      ৳
+                      {Number(product.price).toLocaleString(
+                        "en-BD"
+                      )}
+                    </strong>
+
+                    <span
+                      className={
+                        Number(product.stock) > 0
+                          ? "product-stock available"
+                          : "product-stock unavailable"
+                      }
+                    >
+                      {Number(product.stock) > 0
+                        ? "In Stock"
+                        : "Out of Stock"}
+                    </span>
+                  </div>
+
+                  <button
+                    className="accessories-add-button"
+                    onClick={() => addToCart(product)}
+                    disabled={Number(product.stock) < 1}
+                  >
+                    {Number(product.stock) < 1
+                      ? "Out of Stock"
+                      : "Add to Cart"}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
 
       {/* Cart error */}
       {orderError && !cartOpen && (
         <p className="accessories-order-error">
           {orderError}
+        </p>
+      )}
+
+      {/* Order message */}
+      {orderMessage && !cartOpen && (
+        <p className="accessories-order-success">
+          {orderMessage}
         </p>
       )}
 
@@ -536,10 +775,10 @@ function Accessories() {
                         </span>
 
                         {product.description && (
-  <p className="accessories-cart-description">
-    {product.description}
-  </p>
-)}
+                          <p className="accessories-cart-description">
+                            {product.description}
+                          </p>
+                        )}
 
                         <div className="accessories-quantity-control">
                           <button
@@ -641,10 +880,45 @@ function Accessories() {
                     rows={3}
                   />
 
-                  <p>
-                    Payment Method:{" "}
-                    <strong>Cash on Delivery</strong>
-                  </p>
+                  <label className="accessories-payment-label">
+                    Payment Method
+                  </label>
+
+                  <div className="accessories-payment-options">
+                    {paymentOptions.map((option) => (
+                      <button
+                        type="button"
+                        key={option.value}
+                        className={`accessories-payment-option ${
+                          paymentMethod === option.value
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          setPaymentMethod(option.value)
+                        }
+                        disabled={placingOrder}
+                        aria-pressed={
+                          paymentMethod === option.value
+                        }
+                      >
+                        <span
+                          className={`payment-option-logo ${option.type}-logo`}
+                        >
+                          {renderPaymentMark(option)}
+                        </span>
+
+                        <span className="payment-option-copy">
+                          <strong>{option.name}</strong>
+                          <small>{option.detail}</small>
+                        </span>
+
+                        <span className="payment-option-check">
+                          {paymentMethod === option.value ? "✓" : ""}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
 
                   {orderError && (
                     <p className="accessories-order-error">
@@ -655,7 +929,9 @@ function Accessories() {
                   <button
                     type="submit"
                     disabled={
-                      placingOrder || cart.length === 0
+                      placingOrder ||
+                      cart.length === 0 ||
+                      Boolean(pendingPaymentOrderId)
                     }
                   >
                     {placingOrder
@@ -664,6 +940,41 @@ function Accessories() {
                   </button>
                 </form>
               </>
+            )}
+
+            {/* Demo payment confirmation */}
+            {pendingPaymentOrderId && (
+              <div className="accessories-demo-payment">
+                <h3>Demo Payment Confirmation</h3>
+
+                <p>
+                  Order ID: <strong>{pendingPaymentOrderId}</strong>
+                </p>
+
+                <p>
+                  Payment Method:{" "}
+                  <strong>{pendingPaymentMethod}</strong>
+                </p>
+
+                <p>
+                  Payment Status: <strong>Pending</strong>
+                </p>
+
+                <p>
+                  This is a simulated payment. Press the button
+                  below to confirm a successful demo transaction.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={confirmDemoPayment}
+                  disabled={confirmingPayment}
+                >
+                  {confirmingPayment
+                    ? "Confirming Payment..."
+                    : "Confirm Demo Payment"}
+                </button>
+              </div>
             )}
 
             {orderMessage && (
