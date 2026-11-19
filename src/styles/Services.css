@@ -760,3 +760,18 @@ text-shadow: 0 0 6px rgba(245, 213, 138, 0.18);
   margin-left: auto;
   margin-right: auto;
 }
+
+/* MotoGT - Seamless Hero & Quote Transition */
+
+.intro-strip {
+  position: relative;
+  border-top-color: rgba(255, 255, 255, 0.035);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+
+  background: linear-gradient(
+    180deg,
+    #111210 0%,
+    #111210 65%,
+    rgba(17, 18, 16, 0.98) 100%
+  );
+}

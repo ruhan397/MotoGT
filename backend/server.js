@@ -4,14 +4,20 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const authRoutes = require("./routes/authRoutes");
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const enquiryRoutes = require('./routes/enquiryRoutes');
 
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 
 const PORT = 5001;
 
@@ -26,6 +32,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/enquiries', enquiryRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

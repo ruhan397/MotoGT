@@ -11,7 +11,9 @@ function MembershipCard() {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem("motogtToken");
+    const token =
+  localStorage.getItem("motogtToken") ||
+  localStorage.getItem("motogtAdminToken");
     let cancelled = false;
 
     if (!token) {

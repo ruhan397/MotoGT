@@ -260,10 +260,8 @@
   display: inline-block;
   font-size: 0.65em;
   letter-spacing: 1.4px;
-  transform: scaleX(1.15) scaleY(1.12);
+  transform: scaleX(1.20) scaleY(1.16);
   transform-origin: center;
-  transform: scaleY(1.08);
-transform-origin: center;
 }
 
 /* =================================
@@ -375,4 +373,28 @@ transform-origin: center;
   .hero .hero-logo-card {
     transition: none !important;
   }
+}
+/* MotoGT - Seamless Hero Bottom Fade */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 110px;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(17, 18, 16, 0.45) 45%,
+    #111210 100%
+  );
 }

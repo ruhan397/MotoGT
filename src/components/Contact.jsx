@@ -1,5 +1,64 @@
 
+import React, { useState } from 'react';
+import { apiFetch } from '../utils/api';
+
 function Contact() {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+  });
+
+  const [submitting, setSubmitting] = useState(false);
+  const [formMessage, setFormMessage] = useState('');
+  const [formError, setFormError] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setFormMessage('');
+    setFormError(false);
+
+    try {
+      const response = await apiFetch('/enquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not submit your request.');
+      }
+
+      setFormMessage('Your enquiry has been submitted successfully!');
+      setFormData({
+        fullName: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+      });
+    } catch (error) {
+      setFormError(true);
+      setFormMessage(error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section className="contact-section" id="contact">
       <p className="eyebrow">LET'S TALK ABOUT YOUR CAR</p>
@@ -21,11 +80,9 @@ function Contact() {
             </h2>
 
             <p>Let's make it happen.</p>
-
             <span className="phone-line"></span>
           </div>
 
-          {/* Decorative WhatsApp Logo */}
           <div className="phone-whatsapp">
             <svg viewBox="0 0 32 32" aria-hidden="true">
               <path
@@ -49,6 +106,84 @@ function Contact() {
       >
         Get in Touch ⟫
       </a>
+
+      <div className="contact-form-wrapper">
+        <div className="contact-form-heading">
+          <p className="eyebrow">SEND AN ENQUIRY</p>
+          <h2>How can we help?</h2>
+          <p>
+            Tell us what you need and our team will get back to you.
+          </p>
+        </div>
+
+        <form className="contact-enquiry-form" onSubmit={handleSubmit}>
+          <div className="contact-form-grid">
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="text"
+              name="subject"
+              placeholder="Subject"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <textarea
+            name="message"
+            placeholder="Tell us about your requirements..."
+            value={formData.message}
+            onChange={handleChange}
+            rows="5"
+            required
+          />
+
+          <button
+            type="submit"
+            className="contact-submit-button"
+            disabled={submitting}
+          >
+            {submitting ? 'Submitting...' : 'Submit Request'}
+          </button>
+
+          {formMessage && (
+            <p
+              className={`contact-form-message ${
+                formError ? 'error' : 'success'
+              }`}
+              role="status"
+            >
+              {formMessage}
+            </p>
+          )}
+        </form>
+      </div>
     </section>
   );
 }

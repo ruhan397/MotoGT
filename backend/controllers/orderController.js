@@ -301,10 +301,27 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    order.status = status;
-    await order.save();
+    // Restore stock only when an order is cancelled for the first time
+if (status === 'Cancelled' && order.status !== 'Cancelled') {
+  for (const item of order.products) {
+    await Product.updateOne(
+      { _id: item.productId },
+      { $inc: { stock: item.quantity } }
+    );
+  }
+}
 
-    await syncMembership(order.userId);
+// Prevent cancelled orders from being reactivated
+if (order.status === 'Cancelled' && status !== 'Cancelled') {
+  return res.status(400).json({
+    message: 'Cancelled orders cannot be reactivated'
+  });
+}
+
+order.status = status;
+await order.save();
+
+await syncMembership(order.userId);
 
     res.status(200).json({
       message: 'Order status updated successfully',
@@ -315,11 +332,10 @@ const updateOrderStatus = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-// Admin: Delete order
+// Admin: Delete order and restore stock if not already cancelled
 const deleteOrder = async (req, res) => {
   try {
-    const order = await Order.findByIdAndDelete(req.params.id);
+    const order = await Order.findById(req.params.id);
 
     if (!order) {
       return res.status(404).json({
@@ -327,11 +343,24 @@ const deleteOrder = async (req, res) => {
       });
     }
 
+    // Restore stock only if it was not restored during cancellation
+    if (order.status !== 'Cancelled') {
+      for (const item of order.products) {
+        await Product.updateOne(
+          { _id: item.productId },
+          { $inc: { stock: item.quantity } }
+        );
+      }
+    }
+
+    await Order.findByIdAndDelete(req.params.id);
+
     await syncMembership(order.userId);
 
     res.status(200).json({
       message: 'Order deleted successfully'
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

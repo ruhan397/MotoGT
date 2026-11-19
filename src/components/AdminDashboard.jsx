@@ -14,373 +14,456 @@ function AdminDashboard() {
     localStorage.removeItem('motogtAdminUser');
     window.location.replace('/admin/login');
   };
+
   const [activeTab, setActiveTab] = useState('Overview');
 
   const [products, setProducts] = useState([]);
-const [productsLoading, setProductsLoading] = useState(true);
-const [productsError, setProductsError] = useState('');
-const [productsRetry, setProductsRetry] = useState(0);
-const [showAddProduct, setShowAddProduct] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState('');
+  const [productsRetry, setProductsRetry] = useState(0);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [updatingProduct, setUpdatingProduct] = useState(false);
+  const [deletingProductId, setDeletingProductId] = useState(null);
 
-const [editingProduct, setEditingProduct] = useState(null);
-const [updatingProduct, setUpdatingProduct] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    brand: '',
+    category: '',
+    price: '',
+    description: '',
+    image: '',
+    stock: '',
+  });
 
-const [deletingProductId, setDeletingProductId] = useState(null);
+  const [savingProduct, setSavingProduct] = useState(false);
+  const [productMessage, setProductMessage] = useState('');
 
-const [newProduct, setNewProduct] = useState({
-  name: "",
-  brand: "",
-  category: "",
-  price: "",
-  description: "",
-  image: "",
-  stock: "",
-});
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState('');
+  const [orderUpdatingId, setOrderUpdatingId] = useState(null);
 
-const [savingProduct, setSavingProduct] = useState(false);
-const [productMessage, setProductMessage] = useState("");
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+  const [appointmentsError, setAppointmentsError] = useState('');
+  const [appointmentUpdatingId, setAppointmentUpdatingId] = useState(null);
+  const [appointmentDuration, setAppointmentDuration] = useState({});
+  const [appointmentNotes, setAppointmentNotes] = useState({});
 
-const [orders, setOrders] = useState([]);
-const [ordersLoading, setOrdersLoading] = useState(false);
-const [ordersError, setOrdersError] = useState("");
-const [orderUpdatingId, setOrderUpdatingId] = useState(null);
-const [appointments, setAppointments] = useState([]);
-const [appointmentsLoading, setAppointmentsLoading] = useState(false);
-const [appointmentsError, setAppointmentsError] = useState('');
-const [appointmentUpdatingId, setAppointmentUpdatingId] = useState(null);
-const [appointmentDuration, setAppointmentDuration] = useState({});
-const [appointmentNotes, setAppointmentNotes] = useState({});
+  // Enquiries states
+  const [enquiries, setEnquiries] = useState([]);
+  const [enquiriesLoading, setEnquiriesLoading] = useState(false);
+  const [enquiriesError, setEnquiriesError] = useState('');
+  const [enquiryUpdatingId, setEnquiryUpdatingId] = useState(null);
 
-
-const fetchOrders = async () => {
-  setOrdersLoading(true);
-  setOrdersError("");
-
-  try {
-    const token = localStorage.getItem("motogtAdminToken");
-
-    const response = await apiFetch("/orders", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json().catch(() => []);
-
-    if (!response.ok) {
-      throw new Error(data.message || "Could not load orders");
-    }
-
-    setOrders(data);
-  } catch (error) {
-    setOrdersError(error.message);
-  } finally {
-    setOrdersLoading(false);
-  }
-};
-
-const fetchAppointments = async () => {
-  setAppointmentsLoading(true);
-  setAppointmentsError('');
-
-  try {
-    const token = localStorage.getItem('motogtAdminToken');
-
-    const response = await apiFetch('/appointments/admin/all', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json().catch(() => []);
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Could not load appointments');
-    }
-
-    setAppointments(Array.isArray(data) ? data : []);
-  } catch (error) {
-    setAppointmentsError(error.message);
-  } finally {
-    setAppointmentsLoading(false);
-  }
-};
-
-const handleApproveAppointment = async (appointmentId) => {
-  setAppointmentUpdatingId(appointmentId);
-
-  try {
-    const token = localStorage.getItem('motogtAdminToken');
-
-    const response = await apiFetch(
-      `/appointments/admin/${appointmentId}/approve`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          durationDays: Number(appointmentDuration[appointmentId] || 2),
-          adminNote: appointmentNotes[appointmentId] || '',
-        }),
-      }
-    );
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Could not approve appointment');
-    }
-
-    await fetchAppointments();
-  } catch (error) {
-    setAppointmentsError(error.message);
-  } finally {
-    setAppointmentUpdatingId(null);
-  }
-};
-
-const handleRejectAppointment = async (appointmentId) => {
-  setAppointmentUpdatingId(appointmentId);
-
-  try {
-    const token = localStorage.getItem('motogtAdminToken');
-
-    const response = await apiFetch(
-      `/appointments/admin/${appointmentId}/reject`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          adminNote: appointmentNotes[appointmentId] || '',
-        }),
-      }
-    );
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Could not reject appointment');
-    }
-
-    await fetchAppointments();
-  } catch (error) {
-    setAppointmentsError(error.message);
-  } finally {
-    setAppointmentUpdatingId(null);
-  }
-};
-
-const handleCompleteAppointment = async (appointmentId) => {
-  setAppointmentUpdatingId(appointmentId);
-
-  try {
-    const token = localStorage.getItem('motogtAdminToken');
-
-    const response = await apiFetch(
-      `/appointments/admin/${appointmentId}/complete`,
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Could not complete appointment');
-    }
-
-    await fetchAppointments();
-  } catch (error) {
-    setAppointmentsError(error.message);
-  } finally {
-    setAppointmentUpdatingId(null);
-  }
-};
-
-const handleOrderStatusChange = async (orderId, status) => {
-  setOrderUpdatingId(orderId);
-
-  try {
-    const token = localStorage.getItem("motogtAdminToken");
-
-    const response = await apiFetch(`/orders/${orderId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data.message || "Could not update order");
-    }
-
-    await fetchOrders();
-  } catch (error) {
-    setOrdersError(error.message);
-  } finally {
-    setOrderUpdatingId(null);
-  }
-};
-
-
-useEffect(() => {
-  const fetchProducts = async () => {
-    setProductsLoading(true);
-    setProductsError('');
+  // Fetch Orders
+  const fetchOrders = async () => {
+    setOrdersLoading(true);
+    setOrdersError('');
 
     try {
-      const response = await apiFetch("/products");
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch('/orders', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json().catch(() => []);
 
       if (!response.ok) {
-        throw new Error('Could not load products');
+        throw new Error(data.message || 'Could not load orders');
       }
 
-      const data = await response.json().catch(() => ({}));
-      setProducts(data);
+      setOrders(Array.isArray(data) ? data : []);
     } catch (error) {
-      setProductsError(error.message);
+      setOrdersError(error.message);
     } finally {
-      setProductsLoading(false);
+      setOrdersLoading(false);
     }
   };
 
-  fetchProducts();
-}, [productsRetry]);
+  // Fetch Appointments
+  const fetchAppointments = async () => {
+    setAppointmentsLoading(true);
+    setAppointmentsError('');
 
-const handleAddProduct = async (e) => {
-  e.preventDefault();
-  setSavingProduct(true);
-  setProductMessage("");
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
 
-  try {
-    const token = localStorage.getItem("motogtAdminToken");
-
-    const response = await apiFetch("/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        ...newProduct,
-        price: Number(newProduct.price),
-        stock: Number(newProduct.stock),
-      }),
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to add product");
-    }
-
-    setProducts((prev) => [...prev, data]);
-    setProductMessage("Product added successfully!");
-    setShowAddProduct(false);
-  } catch (error) {
-    setProductMessage(error.message);
-  } finally {
-    setSavingProduct(false);
-  }
-};
-
-const handleUpdateProduct = async (e) => {
-  e.preventDefault();
-  setUpdatingProduct(true);
-  setProductMessage("");
-
-  try {
-    const token = localStorage.getItem("motogtAdminToken");
-
-    const response = await apiFetch(
-      `/products/${editingProduct._id}`,
-      {
-        method: "PUT",
+      const response = await apiFetch('/appointments/admin/all', {
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json().catch(() => []);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not load appointments');
+      }
+
+      setAppointments(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setAppointmentsError(error.message);
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  };
+
+  // Fetch Customer Enquiries
+  const fetchEnquiries = async () => {
+    setEnquiriesLoading(true);
+    setEnquiriesError('');
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch('/enquiries', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json().catch(() => []);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not load enquiries');
+      }
+
+      setEnquiries(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setEnquiriesError(error.message);
+    } finally {
+      setEnquiriesLoading(false);
+    }
+  };
+
+  // Update Enquiry Status
+  const handleEnquiryStatusChange = async (enquiryId, status) => {
+    setEnquiryUpdatingId(enquiryId);
+    setEnquiriesError('');
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch(
+        `/enquiries/${enquiryId}/status`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not update enquiry');
+      }
+
+      setEnquiries((previousEnquiries) =>
+        previousEnquiries.map((enquiry) =>
+          enquiry._id === enquiryId
+            ? { ...enquiry, status: data.enquiry.status }
+            : enquiry
+        )
+      );
+    } catch (error) {
+      setEnquiriesError(error.message);
+    } finally {
+      setEnquiryUpdatingId(null);
+    }
+  };
+
+  // Approve Appointment
+  const handleApproveAppointment = async (appointmentId) => {
+    setAppointmentUpdatingId(appointmentId);
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch(
+        `/appointments/admin/${appointmentId}/approve`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            durationDays: Number(appointmentDuration[appointmentId] || 2),
+            adminNote: appointmentNotes[appointmentId] || '',
+          }),
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not approve appointment');
+      }
+
+      await fetchAppointments();
+    } catch (error) {
+      setAppointmentsError(error.message);
+    } finally {
+      setAppointmentUpdatingId(null);
+    }
+  };
+
+  // Reject Appointment
+  const handleRejectAppointment = async (appointmentId) => {
+    setAppointmentUpdatingId(appointmentId);
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch(
+        `/appointments/admin/${appointmentId}/reject`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            adminNote: appointmentNotes[appointmentId] || '',
+          }),
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not reject appointment');
+      }
+
+      await fetchAppointments();
+    } catch (error) {
+      setAppointmentsError(error.message);
+    } finally {
+      setAppointmentUpdatingId(null);
+    }
+  };
+
+  // Complete Appointment
+  const handleCompleteAppointment = async (appointmentId) => {
+    setAppointmentUpdatingId(appointmentId);
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch(
+        `/appointments/admin/${appointmentId}/complete`,
+        {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not complete appointment');
+      }
+
+      await fetchAppointments();
+    } catch (error) {
+      setAppointmentsError(error.message);
+    } finally {
+      setAppointmentUpdatingId(null);
+    }
+  };
+
+  // Update Order Status
+  const handleOrderStatusChange = async (orderId, status) => {
+    setOrderUpdatingId(orderId);
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch(`/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not update order');
+      }
+
+      await fetchOrders();
+    } catch (error) {
+      setOrdersError(error.message);
+    } finally {
+      setOrderUpdatingId(null);
+    }
+  };
+
+  // Load Products and Enquiries
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setProductsLoading(true);
+      setProductsError('');
+
+      try {
+        const response = await apiFetch('/products');
+
+        if (!response.ok) {
+          throw new Error('Could not load products');
+        }
+
+        const data = await response.json().catch(() => []);
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setProductsError(error.message);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+    fetchEnquiries();
+  }, [productsRetry]);
+
+  // Add Product
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    setSavingProduct(true);
+    setProductMessage('');
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch('/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...editingProduct,
-          price: Number(editingProduct.price),
-          stock: Number(editingProduct.stock),
+          ...newProduct,
+          price: Number(newProduct.price),
+          stock: Number(newProduct.stock),
         }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to add product');
       }
-    );
 
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to update product");
+      setProducts((previousProducts) => [...previousProducts, data]);
+      setProductMessage('Product added successfully!');
+      setShowAddProduct(false);
+    } catch (error) {
+      setProductMessage(error.message);
+    } finally {
+      setSavingProduct(false);
     }
+  };
 
-    setProducts((prev) =>
-      prev.map((product) =>
-        product._id === editingProduct._id ? data : product
-      )
-    );
+  // Update Product
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+    setUpdatingProduct(true);
+    setProductMessage('');
 
-    setProductMessage("Product updated successfully!");
-    setEditingProduct(null);
-  } catch (error) {
-    setProductMessage(error.message);
-  } finally {
-    setUpdatingProduct(false);
-  }
-};
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
 
-const handleDeleteProduct = async (productId) => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this product?"
-  );
+      const response = await apiFetch(
+        `/products/${editingProduct._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ...editingProduct,
+            price: Number(editingProduct.price),
+            stock: Number(editingProduct.stock),
+          }),
+        }
+      );
 
-  if (!confirmed) return;
+      const data = await response.json().catch(() => ({}));
 
-  setDeletingProductId(productId);
-  setProductMessage("");
-
-  try {
-    const token = localStorage.getItem("motogtAdminToken");
-
-    const response = await apiFetch(
-      `/products/${productId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update product');
       }
-    );
 
-    const data = await response.json().catch(() => ({}));
+      setProducts((previousProducts) =>
+        previousProducts.map((product) =>
+          product._id === editingProduct._id ? data : product
+        )
+      );
 
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to delete product");
+      setProductMessage('Product updated successfully!');
+      setEditingProduct(null);
+    } catch (error) {
+      setProductMessage(error.message);
+    } finally {
+      setUpdatingProduct(false);
     }
+  };
 
-    setProducts((prev) =>
-      prev.filter((product) => product._id !== productId)
+  // Delete Product
+  const handleDeleteProduct = async (productId) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this product?'
     );
 
-    setProductMessage("Product deleted successfully!");
-  } catch (error) {
-    setProductMessage(error.message);
-  } finally {
-    setDeletingProductId(null);
-  }
-};
+    if (!confirmed) return;
+
+    setDeletingProductId(productId);
+    setProductMessage('');
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch(
+        `/products/${productId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to delete product');
+      }
+
+      setProducts((previousProducts) =>
+        previousProducts.filter((product) => product._id !== productId)
+      );
+
+      setProductMessage('Product deleted successfully!');
+    } catch (error) {
+      setProductMessage(error.message);
+    } finally {
+      setDeletingProductId(null);
+    }
+  };
 
   const menuItems = [
     'Overview',
@@ -390,15 +473,10 @@ const handleDeleteProduct = async (productId) => {
     'Enquiries',
   ];
 
-  const totalStock = products.reduce(
-    (total, product) => total + Number(product.stock || 0),
-    0
-  );
-
   const stats = [
     {
       label: 'Total Products',
-value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
+      value: productsLoading ? '...' : products.length.toLocaleString('en-BD'),
       icon: (
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M3 7L12 3L21 7L12 11L3 7Z" />
@@ -410,7 +488,7 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
     },
     {
       label: 'Total Orders',
-      value: '12',
+      value: ordersLoading ? '...' : orders.length.toLocaleString('en-BD'),
       icon: (
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M5 3H16L20 7V21H5V3Z" />
@@ -421,7 +499,9 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
     },
     {
       label: 'New Enquiries',
-      value: '08',
+      value: enquiriesLoading
+        ? '...'
+        : enquiries.filter((enquiry) => enquiry.status === 'New').length.toLocaleString('en-BD'),
       icon: (
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M4 5H20V17H9L4 21V5Z" />
@@ -434,11 +514,9 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
   return (
     <div className="admin-dashboard">
       <aside className="admin-sidebar">
-        
-      <div className="admin-logo">
-  <img src={motoLogo} alt="MotoGT Logo" />
-</div>
-
+        <div className="admin-logo">
+          <img src={motoLogo} alt="MotoGT Logo" />
+        </div>
 
         <p className="admin-label">MANAGEMENT</p>
 
@@ -451,9 +529,17 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
               }`}
               onClick={() => {
                 setActiveTab(item);
-              
+
                 if (item === 'Appointments') {
                   fetchAppointments();
+                }
+
+                if (item === 'Orders') {
+                  fetchOrders();
+                }
+
+                if (item === 'Enquiries') {
+                  fetchEnquiries();
                 }
               }}
             >
@@ -468,535 +554,612 @@ value: productsLoading ? '...' : totalStock.toLocaleString('en-BD'),
       </aside>
 
       <main className="admin-main">
-      <header className="admin-header">
-  <div>
-    <p className="admin-eyebrow">MANAGEMENT</p>
-    <h1>{activeTab}</h1>
-  </div>
-
-  <div className="admin-header-actions">
-    <div className="admin-profile">
-      <span className="admin-avatar">A</span>
-      <div>
-        <strong>Administrator</strong>
-        <p>Admin Account</p>
-      </div>
-    </div>
-
-    <button
-      type="button"
-      className="admin-logout-button"
-      onClick={handleAdminLogout}
-    >
-      Logout
-    </button>
-  </div>
-</header>
-
-        
-{activeTab === 'Overview' && (
-  <>
-    <section className="admin-welcome">
-      <p>WELCOME BACK</p>
-      <h2>Better business begins here.</h2>
-      <span>
-        Manage MotoGT accessories, customer orders and dent &amp; paint enquiries
-        from one place.
-      </span>
-    </section>
-
-    <section className="admin-stats">
-      {stats.map((stat) => (
-        <article
-        className={`admin-stat-card ${
-          stat.label === 'Total Products'
-            ? 'products-card'
-            : stat.label === 'Total Orders'
-            ? 'orders-card'
-            : 'enquiries-card'
-        }`}
-        key={stat.label}
-      >
-          <div className="admin-stat-top">
-            <span>{stat.label}</span>
-            <span className="admin-stat-icon">
-  {stat.icon}
-</span>
-          </div>
-          <h3>{stat.value}</h3>
-          <p>
-  {stat.label === 'Total Products'
-    ? 'Total units in stock'
-    : 'Demo data'}
-</p>
-        </article>
-      ))}
-    </section>
-
-    <section className="admin-lower-grid">
-      <article className="admin-activity-panel">
-        <div className="admin-panel-heading">
+        <header className="admin-header">
           <div>
-            <p className="admin-eyebrow">WORKSHOP OVERVIEW</p>
-            <h2>Business activity</h2>
+            <p className="admin-eyebrow">MANAGEMENT</p>
+            <h1>{activeTab}</h1>
           </div>
-          <span className="admin-live-dot">DEMO</span>
-        </div>
 
-        <div className="admin-activity-item">
-          <span className="admin-activity-mark">01</span>
-          <div>
-            <strong>Car Accessories</strong>
-            <p>Product catalogue management</p>
+          <div className="admin-header-actions">
+            <div className="admin-profile">
+              <span className="admin-avatar">A</span>
+              <div>
+                <strong>Administrator</strong>
+                <p>Admin Account</p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="admin-logout-button"
+              onClick={handleAdminLogout}
+            >
+              Logout
+            </button>
           </div>
-          <span className="admin-activity-arrow">↗</span>
-        </div>
+        </header>
 
-        <div className="admin-activity-item">
-          <span className="admin-activity-mark">02</span>
-          <div>
-            <strong>Dent &amp; Paint</strong>
-            <p>Service enquiry management</p>
-          </div>
-          <span className="admin-activity-arrow">↗</span>
-        </div>
+        {/* OVERVIEW */}
+        {activeTab === 'Overview' && (
+          <>
+            <section className="admin-welcome">
+              <p>WELCOME BACK</p>
+              <h2>Better business begins here.</h2>
+              <span>
+                Manage MotoGT accessories, customer orders and dent &amp; paint enquiries
+                from one place.
+              </span>
+            </section>
 
-        <div className="admin-activity-item">
-          <span className="admin-activity-mark">03</span>
-          <div>
-            <strong>Customer Orders</strong>
-            <p>Order review and tracking</p>
-          </div>
-          <span className="admin-activity-arrow">↗</span>
-        </div>
-      </article>
+            <section className="admin-stats">
+              {stats.map((stat) => (
+                <article
+                  className={`admin-stat-card ${
+                    stat.label === 'Total Products'
+                      ? 'products-card'
+                      : stat.label === 'Total Orders'
+                      ? 'orders-card'
+                      : 'enquiries-card'
+                  }`}
+                  key={stat.label}
+                >
+                  <div className="admin-stat-top">
+                    <span>{stat.label}</span>
+                    <span className="admin-stat-icon">
+                      {stat.icon}
+                    </span>
+                  </div>
 
-    </section>
-  </>
-)}
+                  <h3>{stat.value}</h3>
 
+                  <p>
+                    {stat.label === 'Total Products'
+                      ? 'Total products listed'
+                      : stat.label === 'Total Orders'
+                      ? 'Customer orders'
+                      : 'New customer enquiries'}
+                  </p>
+                </article>
+              ))}
+            </section>
 
-{activeTab === 'Products' && (
-  <section className="admin-content-card">
-    <h2>Product Management</h2>
+            <section className="admin-lower-grid">
+              <article className="admin-activity-panel">
+                <div className="admin-panel-heading">
+                  <div>
+                    <p className="admin-eyebrow">WORKSHOP OVERVIEW</p>
+                    <h2>Business activity</h2>
+                  </div>
+                  <span className="admin-live-dot">DEMO</span>
+                </div>
 
-    <button
-  className="admin-action-button"
-  onClick={() => setShowAddProduct(true)}
->
-  + Add Product
-</button>
+                <div className="admin-activity-item">
+                  <span className="admin-activity-mark">01</span>
+                  <div>
+                    <strong>Car Accessories</strong>
+                    <p>Product catalogue management</p>
+                  </div>
+                  <span className="admin-activity-arrow">↗</span>
+                </div>
 
-{showAddProduct && (
-  <div className="admin-content-card">
-    <h2>Add New Product</h2>
-    <p>Enter the details of your new product.</p>
+                <div className="admin-activity-item">
+                  <span className="admin-activity-mark">02</span>
+                  <div>
+                    <strong>Dent &amp; Paint</strong>
+                    <p>Service enquiry management</p>
+                  </div>
+                  <span className="admin-activity-arrow">↗</span>
+                </div>
 
-    <form onSubmit={handleAddProduct}>
-      <input
-        type="text"
-        placeholder="Product Name"
-        value={newProduct.name}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, name: e.target.value })
-        }
-        required
-      />
+                <div className="admin-activity-item">
+                  <span className="admin-activity-mark">03</span>
+                  <div>
+                    <strong>Customer Orders</strong>
+                    <p>Order review and tracking</p>
+                  </div>
+                  <span className="admin-activity-arrow">↗</span>
+                </div>
+              </article>
+            </section>
+          </>
+        )}
 
-      <input
-        type="text"
-        placeholder="Brand"
-        value={newProduct.brand}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, brand: e.target.value })
-        }
-        required
-      />
+        {/* PRODUCTS */}
+        {activeTab === 'Products' && (
+          <section className="admin-content-card">
+            <h2>Product Management</h2>
 
-      <input
-        type="text"
-        placeholder="Category"
-        value={newProduct.category}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, category: e.target.value })
-        }
-        required
-      />
+            <button
+              className="admin-action-button"
+              onClick={() => setShowAddProduct(true)}
+            >
+              + Add Product
+            </button>
 
-      <input
-        type="number"
-        placeholder="Price"
-        min="0"
-        value={newProduct.price}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, price: e.target.value })
-        }
-        required
-      />
+            {showAddProduct && (
+              <div className="admin-content-card">
+                <h2>Add New Product</h2>
+                <p>Enter the details of your new product.</p>
 
-      <textarea
-        placeholder="Product Description"
-        value={newProduct.description}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, description: e.target.value })
-        }
-      />
+                <form onSubmit={handleAddProduct}>
+                  <input
+                    type="text"
+                    placeholder="Product Name"
+                    value={newProduct.name}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, name: e.target.value })
+                    }
+                    required
+                  />
 
-      <input
-        type="text"
-        placeholder="Image URL"
-        value={newProduct.image}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, image: e.target.value })
-        }
-      />
+                  <input
+                    type="text"
+                    placeholder="Brand"
+                    value={newProduct.brand}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, brand: e.target.value })
+                    }
+                    required
+                  />
 
-      <input
-        type="number"
-        placeholder="Stock Quantity"
-        min="0"
-        value={newProduct.stock}
-        onChange={(e) =>
-          setNewProduct({ ...newProduct, stock: e.target.value })
-        }
-      />
+                  <input
+                    type="text"
+                    placeholder="Category"
+                    value={newProduct.category}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, category: e.target.value })
+                    }
+                    required
+                  />
 
-      <button
-        type="submit"
-        className="admin-action-button"
-        disabled={savingProduct}
-      >
-        {savingProduct ? "Saving..." : "Save Product"}
-      </button>
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    min="0"
+                    value={newProduct.price}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, price: e.target.value })
+                    }
+                    required
+                  />
 
-      <button
-        type="button"
-        className="admin-action-button"
-        onClick={() => setShowAddProduct(false)}
-      >
-        Close Form
-      </button>
-    </form>
-  </div>
-)}
+                  <textarea
+                    placeholder="Product Description"
+                    value={newProduct.description}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, description: e.target.value })
+                    }
+                  />
 
-{productMessage && <p>{productMessage}</p>}
+                  <input
+                    type="text"
+                    placeholder="Image URL"
+                    value={newProduct.image}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, image: e.target.value })
+                    }
+                  />
 
-    <p>Manage car accessories and product listings.</p>
+                  <input
+                    type="number"
+                    placeholder="Stock Quantity"
+                    min="0"
+                    value={newProduct.stock}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, stock: e.target.value })
+                    }
+                  />
 
-    {productsLoading && <p>Loading products...</p>}
+                  <button
+                    type="submit"
+                    className="admin-action-button"
+                    disabled={savingProduct}
+                  >
+                    {savingProduct ? 'Saving...' : 'Save Product'}
+                  </button>
 
-    {productsError && (
-      <div>
-        <p>{productsError}</p>
-        <button
-          className="admin-action-button"
-          onClick={() => setProductsRetry((count) => count + 1)}
-        >
-          Try Again
-        </button>
-      </div>
-    )}
+                  <button
+                    type="button"
+                    className="admin-action-button"
+                    onClick={() => setShowAddProduct(false)}
+                  >
+                    Close Form
+                  </button>
+                </form>
+              </div>
+            )}
 
-    {!productsLoading && !productsError && products.length === 0 && (
-      <p>No products found.</p>
-    )}
+            {productMessage && <p>{productMessage}</p>}
 
-{editingProduct && (
-  <div className="admin-content-card">
-    <h2>Edit Product</h2>
+            <p>Manage car accessories and product listings.</p>
 
-    <form onSubmit={handleUpdateProduct}>
-      <input
-        type="text"
-        placeholder="Product Name"
-        value={editingProduct.name}
-        onChange={(e) =>
-          setEditingProduct({ ...editingProduct, name: e.target.value })
-        }
-        required
-      />
+            {productsLoading && <p>Loading products...</p>}
 
-      <input
-        type="text"
-        placeholder="Brand"
-        value={editingProduct.brand}
-        onChange={(e) =>
-          setEditingProduct({ ...editingProduct, brand: e.target.value })
-        }
-        required
-      />
+            {productsError && (
+              <div>
+                <p>{productsError}</p>
+                <button
+                  className="admin-action-button"
+                  onClick={() => setProductsRetry((count) => count + 1)}
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
 
-      <input
-        type="text"
-        placeholder="Category"
-        value={editingProduct.category}
-        onChange={(e) =>
-          setEditingProduct({ ...editingProduct, category: e.target.value })
-        }
-        required
-      />
+            {!productsLoading && !productsError && products.length === 0 && (
+              <p>No products found.</p>
+            )}
 
-      <input
-        type="number"
-        placeholder="Price"
-        min="0"
-        value={editingProduct.price}
-        onChange={(e) =>
-          setEditingProduct({ ...editingProduct, price: e.target.value })
-        }
-        required
-      />
+            {editingProduct && (
+              <div className="admin-content-card">
+                <h2>Edit Product</h2>
 
-      <textarea
-        placeholder="Product Description"
-        value={editingProduct.description || ""}
-        onChange={(e) =>
-          setEditingProduct({ ...editingProduct, description: e.target.value })
-        }
-      />
+                <form onSubmit={handleUpdateProduct}>
+                  <input
+                    type="text"
+                    placeholder="Product Name"
+                    value={editingProduct.name}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, name: e.target.value })
+                    }
+                    required
+                  />
 
-      <input
-        type="text"
-        placeholder="Image URL"
-        value={editingProduct.image || ""}
-        onChange={(e) =>
-          setEditingProduct({ ...editingProduct, image: e.target.value })
-        }
-      />
+                  <input
+                    type="text"
+                    placeholder="Brand"
+                    value={editingProduct.brand}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, brand: e.target.value })
+                    }
+                    required
+                  />
 
-      <input
-        type="number"
-        placeholder="Stock Quantity"
-        min="0"
-        value={editingProduct.stock ?? 0}
-        onChange={(e) =>
-          setEditingProduct({ ...editingProduct, stock: e.target.value })
-        }
-      />
+                  <input
+                    type="text"
+                    placeholder="Category"
+                    value={editingProduct.category}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, category: e.target.value })
+                    }
+                    required
+                  />
 
-      <button
-        type="submit"
-        className="admin-action-button"
-        disabled={updatingProduct}
-      >
-        {updatingProduct ? "Updating..." : "Update Product"}
-      </button>
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    min="0"
+                    value={editingProduct.price}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, price: e.target.value })
+                    }
+                    required
+                  />
 
-      <button
-        type="button"
-        className="admin-action-button"
-        onClick={() => setEditingProduct(null)}
-      >
-        Cancel
-      </button>
-    </form>
-  </div>
-)}
+                  <textarea
+                    placeholder="Product Description"
+                    value={editingProduct.description || ''}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, description: e.target.value })
+                    }
+                  />
 
-{!productsLoading && !productsError && products.map((product) => (
-  <div className="admin-table-row" key={product._id}>
-    <strong>{product.name}</strong>
-    <span>{product.brand}</span>
-    <span>৳{product.price.toLocaleString('en-BD')}</span>
+                  <input
+                    type="text"
+                    placeholder="Image URL"
+                    value={editingProduct.image || ''}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, image: e.target.value })
+                    }
+                  />
 
-    <button
-      className="admin-action-button"
-      onClick={() => {
-        setEditingProduct({ ...product });
-        setShowAddProduct(false);
-      }}
-    >
-      Edit
-    </button>
-    <button
-      className="admin-action-button"
-      onClick={() => handleDeleteProduct(product._id)}
-      disabled={deletingProductId === product._id}
-    >
-      {deletingProductId === product._id ? "Deleting..." : "Delete"}
-    </button>
-  </div>
-))}
-  </section>
-)}
-      
-{activeTab === 'Orders' && (
-  <section className="admin-content-card">
-    <h2>Order Management</h2>
-    <p>Manage real customer orders.</p>
+                  <input
+                    type="number"
+                    placeholder="Stock Quantity"
+                    min="0"
+                    value={editingProduct.stock ?? 0}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, stock: e.target.value })
+                    }
+                  />
 
-    <button
-      className="admin-action-button"
-      onClick={fetchOrders}
-      disabled={ordersLoading}
-    >
-      {ordersLoading ? "Loading..." : "Refresh Orders"}
-    </button>
+                  <button
+                    type="submit"
+                    className="admin-action-button"
+                    disabled={updatingProduct}
+                  >
+                    {updatingProduct ? 'Updating...' : 'Update Product'}
+                  </button>
 
-    {ordersError && <p>{ordersError}</p>}
+                  <button
+                    type="button"
+                    className="admin-action-button"
+                    onClick={() => setEditingProduct(null)}
+                  >
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            )}
 
-    {ordersLoading && <p>Loading customer orders...</p>}
+            {!productsLoading && !productsError && products.map((product) => (
+              <div className="admin-table-row" key={product._id}>
+                <strong>{product.name}</strong>
+                <span>{product.brand}</span>
+                <span>৳{Number(product.price).toLocaleString('en-BD')}</span>
 
-    {!ordersLoading && !ordersError && orders.length === 0 && (
-      <p>No customer orders yet.</p>
-    )}
+                <button
+                  className="admin-action-button"
+                  onClick={() => {
+                    setEditingProduct({ ...product });
+                    setShowAddProduct(false);
+                  }}
+                >
+                  Edit
+                </button>
 
-    {!ordersLoading && orders.map((order) => (
-      <div className="admin-table-row" key={order._id}>
-        <div>
-          <strong>{order.customerName}</strong>
-          <p>{order.email}</p>
-          <p>{order.phone}</p>
-          <p>{order.address}</p>
-          <p>
-            Order: {new Date(order.createdAt).toLocaleString()}
-          </p>
+                <button
+                  className="admin-action-button"
+                  onClick={() => handleDeleteProduct(product._id)}
+                  disabled={deletingProductId === product._id}
+                >
+                  {deletingProductId === product._id ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            ))}
+          </section>
+        )}
 
-          {order.products.map((item, index) => (
-            <p key={index}>
-              {item.productId?.name || "Product"} × {item.quantity}
+        {/* ORDERS */}
+        {activeTab === 'Orders' && (
+          <section className="admin-content-card">
+            <h2>Order Management</h2>
+            <p>Manage real customer orders.</p>
+
+            <button
+              className="admin-action-button"
+              onClick={fetchOrders}
+              disabled={ordersLoading}
+            >
+              {ordersLoading ? 'Loading...' : 'Refresh Orders'}
+            </button>
+
+            {ordersError && <p>{ordersError}</p>}
+            {ordersLoading && <p>Loading customer orders...</p>}
+
+            {!ordersLoading && !ordersError && orders.length === 0 && (
+              <p>No customer orders yet.</p>
+            )}
+
+            {!ordersLoading && orders.map((order) => (
+              <div className="admin-table-row" key={order._id}>
+                <div>
+                  <strong>{order.customerName}</strong>
+                  <p>{order.email}</p>
+                  <p>{order.phone}</p>
+                  <p>{order.address}</p>
+                  <p>
+                    Order: {new Date(order.createdAt).toLocaleString()}
+                  </p>
+
+                  {order.products.map((item, index) => (
+                    <p key={index}>
+                      {item.productId?.name || 'Product'} × {item.quantity}
+                    </p>
+                  ))}
+                </div>
+
+                <span>
+                  ৳{Number(order.totalAmount).toLocaleString('en-BD')}
+                </span>
+
+                <select
+                  value={order.status}
+                  disabled={orderUpdatingId === order._id}
+                  onChange={(event) =>
+                    handleOrderStatusChange(order._id, event.target.value)
+                  }
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+
+                {orderUpdatingId === order._id && <span>Updating...</span>}
+              </div>
+            ))}
+          </section>
+        )}
+
+        {/* APPOINTMENTS */}
+        {activeTab === 'Appointments' && (
+          <section className="admin-content-card">
+            <h2>Appointment Management</h2>
+            <p>Review and manage customer appointment requests.</p>
+
+            <button
+              className="admin-action-button"
+              onClick={fetchAppointments}
+              disabled={appointmentsLoading}
+            >
+              {appointmentsLoading ? 'Loading...' : 'Refresh Appointments'}
+            </button>
+
+            {appointmentsError && <p>{appointmentsError}</p>}
+            {appointmentsLoading && <p>Loading appointment requests...</p>}
+
+            {!appointmentsLoading && !appointmentsError && appointments.length === 0 && (
+              <p>No appointment requests found.</p>
+            )}
+
+            {!appointmentsLoading && appointments.map((appointment) => (
+              <div className="admin-table-row" key={appointment._id}>
+                <div>
+                  <strong>{appointment.customerName}</strong>
+                  <p>Email: {appointment.email}</p>
+                  <p>Phone: {appointment.phone}</p>
+                  <p>Vehicle: {appointment.vehicleModel}</p>
+                  <p>Service: {appointment.service}</p>
+                  <p>Problem: {appointment.problemDescription || 'Not specified'}</p>
+                  <p>Preferred Date: {appointment.preferredStartDate}</p>
+                  <p>Duration: {appointment.durationDays || 'Not assigned'}</p>
+                  <p>End Date: {appointment.endDate || 'Not assigned'}</p>
+                  <p>
+                    Status: <strong>{appointment.status}</strong>
+                  </p>
+
+                  {appointment.adminNote && (
+                    <p>Admin Note: {appointment.adminNote}</p>
+                  )}
+
+                  {appointment.status === 'Pending' && (
+                    <div className="appointment-admin-actions">
+                      <label>Workshop Duration</label>
+
+                      <select
+                        value={appointmentDuration[appointment._id] || '2'}
+                        onChange={(e) =>
+                          setAppointmentDuration((previous) => ({
+                            ...previous,
+                            [appointment._id]: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="2">2 Working Days</option>
+                        <option value="3">3 Working Days</option>
+                        <option value="4">4 Working Days</option>
+                      </select>
+
+                      <textarea
+                        placeholder="Admin Note (optional)"
+                        value={appointmentNotes[appointment._id] || ''}
+                        onChange={(e) =>
+                          setAppointmentNotes((previous) => ({
+                            ...previous,
+                            [appointment._id]: e.target.value,
+                          }))
+                        }
+                      />
+
+                      <button
+                        className="admin-action-button"
+                        disabled={appointmentUpdatingId === appointment._id}
+                        onClick={() => handleApproveAppointment(appointment._id)}
+                      >
+                        {appointmentUpdatingId === appointment._id
+                          ? 'Processing...'
+                          : 'Approve'}
+                      </button>
+
+                      <button
+                        className="admin-action-button"
+                        disabled={appointmentUpdatingId === appointment._id}
+                        onClick={() => handleRejectAppointment(appointment._id)}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+
+                  {appointment.status === 'Approved' && (
+                    <button
+                      className="admin-action-button"
+                      disabled={appointmentUpdatingId === appointment._id}
+                      onClick={() => handleCompleteAppointment(appointment._id)}
+                    >
+                      {appointmentUpdatingId === appointment._id
+                        ? 'Processing...'
+                        : 'Mark as Completed'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </section>
+        )}
+
+        {/* ENQUIRIES */}
+        {activeTab === 'Enquiries' && (
+          <section className="admin-content-card">
+            <h2>Customer Enquiries</h2>
+            <p>
+              Review customer requests submitted through the MotoGT website.
             </p>
-          ))}
-        </div>
 
-        <span>
-          ৳{Number(order.totalAmount).toLocaleString("en-BD")}
-        </span>
+            <button
+              className="admin-action-button"
+              onClick={fetchEnquiries}
+              disabled={enquiriesLoading}
+            >
+              {enquiriesLoading ? 'Loading...' : 'Refresh Enquiries'}
+            </button>
 
-        <select
-          value={order.status}
-          disabled={orderUpdatingId === order._id}
-          onChange={(event) =>
-            handleOrderStatusChange(order._id, event.target.value)
-          }
-        >
-          <option value="Pending">Pending</option>
-          <option value="Processing">Processing</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+            {enquiriesError && (
+              <p className="enquiry-error">{enquiriesError}</p>
+            )}
 
-        {orderUpdatingId === order._id && <span>Updating...</span>}
-      </div>
-    ))}
-  </section>
-)}
+            {enquiriesLoading && (
+              <p>Loading customer enquiries...</p>
+            )}
 
-{activeTab === 'Appointments' && (
-  <section className="admin-content-card">
-    <h2>Appointment Management</h2>
-    <p>Review and manage customer appointment requests.</p>
+            {!enquiriesLoading && !enquiriesError && enquiries.length === 0 && (
+              <p>No customer enquiries yet.</p>
+            )}
 
-    <button
-      className="admin-action-button"
-      onClick={fetchAppointments}
-      disabled={appointmentsLoading}
-    >
-      {appointmentsLoading ? 'Loading...' : 'Refresh Appointments'}
-    </button>
+            {!enquiriesLoading && enquiries.map((enquiry) => (
+              <article className="enquiry-admin-card" key={enquiry._id}>
+                <div className="enquiry-admin-details">
+                  <div className="enquiry-admin-heading">
+                    <strong>{enquiry.fullName}</strong>
+                    <span className="admin-status">{enquiry.status}</span>
+                  </div>
 
-    {appointmentsError && <p>{appointmentsError}</p>}
+                  <p>Email: {enquiry.email}</p>
+                  <p>Phone: {enquiry.phone}</p>
+                  <p>Subject: {enquiry.subject}</p>
 
-    {appointmentsLoading && <p>Loading appointment requests...</p>}
+                  <div className="enquiry-admin-message">
+                    <span>Customer Message</span>
+                    <p>{enquiry.message}</p>
+                  </div>
 
-    {!appointmentsLoading && !appointmentsError && appointments.length === 0 && (
-      <p>No appointment requests found.</p>
-    )}
+                  <p className="enquiry-admin-date">
+                    Submitted: {new Date(enquiry.createdAt).toLocaleString()}
+                  </p>
+                </div>
 
-    {!appointmentsLoading && appointments.map((appointment) => (
-      <div className="admin-table-row" key={appointment._id}>
-        <div>
-          <strong>{appointment.customerName}</strong>
-          <p>Email: {appointment.email}</p>
-          <p>Phone: {appointment.phone}</p>
-          <p>Vehicle: {appointment.vehicleModel}</p>
-          <p>Service: {appointment.service}</p>
-          <p>Problem: {appointment.problemDescription || 'Not specified'}</p>
-          <p>
-            Preferred Date: {appointment.preferredStartDate}
-          </p>
-          <p>
-            Duration: {appointment.durationDays || 'Not assigned'}
-          </p>
-          <p>
-            End Date: {appointment.endDate || 'Not assigned'}
-          </p>
-          <p>
-            Status: <strong>{appointment.status}</strong>
-          </p>
-          {appointment.adminNote && (
-            <p>Admin Note: {appointment.adminNote}</p>
-          )}
+                <div className="enquiry-admin-status-control">
+                  <label htmlFor={`enquiry-status-${enquiry._id}`}>
+                    Update Status
+                  </label>
 
-{appointment.status === 'Pending' && (
-  <div className="appointment-admin-actions">
+                  <select
+                    id={`enquiry-status-${enquiry._id}`}
+                    value={enquiry.status}
+                    disabled={enquiryUpdatingId === enquiry._id}
+                    onChange={(event) =>
+                      handleEnquiryStatusChange(
+                        enquiry._id,
+                        event.target.value
+                      )
+                    }
+                  >
+                    <option value="New">New</option>
+                    <option value="Replied">Replied</option>
+                    <option value="Resolved">Resolved</option>
+                  </select>
 
-    <label>Workshop Duration</label>
-    <select
-      value={appointmentDuration[appointment._id] || '2'}
-      onChange={(e) =>
-        setAppointmentDuration((prev) => ({
-          ...prev,
-          [appointment._id]: e.target.value,
-        }))
-      }
-    >
-      <option value="2">2 Working Days</option>
-      <option value="3">3 Working Days</option>
-      <option value="4">4 Working Days</option>
-    </select>
-
-    <textarea
-      placeholder="Admin Note (optional)"
-      value={appointmentNotes[appointment._id] || ''}
-      onChange={(e) =>
-        setAppointmentNotes((prev) => ({
-          ...prev,
-          [appointment._id]: e.target.value,
-        }))
-      }
-    />
-
-    <button
-      className="admin-action-button"
-      disabled={appointmentUpdatingId === appointment._id}
-      onClick={() => handleApproveAppointment(appointment._id)}
-    >
-      {appointmentUpdatingId === appointment._id
-        ? 'Processing...'
-        : 'Approve'}
-    </button>
-
-    <button
-      className="admin-action-button"
-      disabled={appointmentUpdatingId === appointment._id}
-      onClick={() => handleRejectAppointment(appointment._id)}
-    >
-      Reject
-    </button>
-  </div>
-)}
-
-{appointment.status === 'Approved' && (
-  <button
-    className="admin-action-button"
-    disabled={appointmentUpdatingId === appointment._id}
-    onClick={() => handleCompleteAppointment(appointment._id)}
-  >
-    {appointmentUpdatingId === appointment._id
-      ? 'Processing...'
-      : 'Mark as Completed'}
-  </button>
-)}
-
-        </div>
-      </div>
-    ))}
-  </section>
-)}
-
-</main>
+                  {enquiryUpdatingId === enquiry._id && (
+                    <span>Updating...</span>
+                  )}
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
+      </main>
     </div>
   );
 }

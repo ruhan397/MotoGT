@@ -7,6 +7,8 @@ const {
   loginUser,
   loginAdmin,
   getMe,
+  refreshCustomerToken,
+  refreshAdminToken,
 } = require("../controllers/authController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -18,5 +20,8 @@ router.get("/me", protect, getMe);
 
 router.post("/admin/login", loginAdmin);
 router.get("/admin/me", protect, adminOnly, getMe);
+
+router.post("/refresh", refreshCustomerToken);
+router.post("/admin/refresh", refreshAdminToken);
 
 module.exports = router;
