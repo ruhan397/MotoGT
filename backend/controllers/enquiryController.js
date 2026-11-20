@@ -49,6 +49,7 @@ exports.createEnquiry = async (req, res) => {
 exports.getEnquiries = async (req, res) => {
   try {
     const enquiries = await Enquiry.find().sort({ createdAt: -1 });
+
     return res.status(200).json(enquiries);
   } catch (error) {
     console.error('Get Enquiries Error:', error.message);
@@ -91,6 +92,91 @@ exports.updateEnquiryStatus = async (req, res) => {
 
     return res.status(500).json({
       message: 'Could not update enquiry status.',
+    });
+  }
+};
+
+// Admin sends an email reply to a customer
+exports.sendEnquiryReply = async (req, res) => {
+  try {
+    const { replyMessage } = req.body || {};
+
+    if (!replyMessage || !replyMessage.trim()) {
+      return res.status(400).json({
+        message: 'Please write a reply before sending.',
+      });
+    }
+
+    const enquiry = await Enquiry.findById(req.params.id);
+
+    if (!enquiry) {
+      return res.status(404).json({
+        message: 'Enquiry not found.',
+      });
+    }
+
+    const {
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      EMAILJS_PUBLIC_KEY,
+    } = process.env;
+
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+      return res.status(500).json({
+        message: 'EmailJS configuration is incomplete.',
+      });
+    }
+
+    const emailResponse = await fetch(
+      'https://api.emailjs.com/api/v1.0/email/send',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          service_id: EMAILJS_SERVICE_ID,
+          template_id: EMAILJS_TEMPLATE_ID,
+          user_id: EMAILJS_PUBLIC_KEY,
+          template_params: {
+            to_email: enquiry.email,
+            customer_name: enquiry.fullName,
+            subject: enquiry.subject,
+            reply_message: replyMessage.trim(),
+          },
+        }),
+      }
+    );
+
+    if (!emailResponse.ok) {
+      const errorText = await emailResponse.text();
+
+      console.error('EmailJS Error:', errorText);
+
+      return res.status(502).json({
+        message: 'Email could not be sent. Please try again.',
+      });
+    }
+
+    enquiry.replies.push({
+      message: replyMessage.trim(),
+      sentTo: enquiry.email,
+      sentAt: new Date(),
+    });
+
+    enquiry.status = 'Replied';
+
+    await enquiry.save();
+
+    return res.status(200).json({
+      message: 'Reply sent successfully.',
+      enquiry,
+    });
+  } catch (error) {
+    console.error('Send Enquiry Reply Error:', error.message);
+
+    return res.status(500).json({
+      message: 'Could not send the reply. Please try again.',
     });
   }
 };

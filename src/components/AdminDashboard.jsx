@@ -56,7 +56,10 @@ function AdminDashboard() {
   const [enquiriesLoading, setEnquiriesLoading] = useState(false);
   const [enquiriesError, setEnquiriesError] = useState('');
   const [enquiryUpdatingId, setEnquiryUpdatingId] = useState(null);
-
+// Enquiry Reply states
+const [replyMessages, setReplyMessages] = useState({});
+const [replySendingId, setReplySendingId] = useState(null);
+const [replyFeedback, setReplyFeedback] = useState({});
   // Fetch Orders
   const fetchOrders = async () => {
     setOrdersLoading(true);
@@ -178,6 +181,80 @@ function AdminDashboard() {
       setEnquiriesError(error.message);
     } finally {
       setEnquiryUpdatingId(null);
+    }
+  };
+
+  // Send Email Reply to Customer
+  const handleSendEnquiryReply = async (enquiryId) => {
+    const replyMessage = replyMessages[enquiryId]?.trim();
+
+    if (!replyMessage) {
+      setReplyFeedback((previous) => ({
+        ...previous,
+        [enquiryId]: {
+          type: 'error',
+          message: 'Please write a reply first.',
+        },
+      }));
+      return;
+    }
+
+    setReplySendingId(enquiryId);
+
+    setReplyFeedback((previous) => ({
+      ...previous,
+      [enquiryId]: null,
+    }));
+
+    try {
+      const token = localStorage.getItem('motogtAdminToken');
+
+      const response = await apiFetch(
+        `/enquiries/${enquiryId}/reply`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ replyMessage }),
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not send reply.');
+      }
+
+      setEnquiries((previous) =>
+        previous.map((enquiry) =>
+          enquiry._id === enquiryId ? data.enquiry : enquiry
+        )
+      );
+
+      setReplyMessages((previous) => ({
+        ...previous,
+        [enquiryId]: '',
+      }));
+
+      setReplyFeedback((previous) => ({
+        ...previous,
+        [enquiryId]: {
+          type: 'success',
+          message: 'Reply sent successfully!',
+        },
+      }));
+    } catch (error) {
+      setReplyFeedback((previous) => ({
+        ...previous,
+        [enquiryId]: {
+          type: 'error',
+          message: error.message,
+        },
+      }));
+    } finally {
+      setReplySendingId(null);
     }
   };
 
@@ -1153,6 +1230,64 @@ function AdminDashboard() {
 
                   {enquiryUpdatingId === enquiry._id && (
                     <span>Updating...</span>
+                  )}
+                </div>
+                                {/* Email Reply Section */}
+                                <div className="enquiry-reply-section">
+                  <h3>Reply to Customer</h3>
+
+                  {/* Previous Replies */}
+                  {enquiry.replies?.length > 0 && (
+                    <div className="enquiry-reply-history">
+                      <h4>Previous Replies</h4>
+
+                      {enquiry.replies.map((reply, index) => (
+                        <div className="enquiry-reply-item" key={index}>
+                          <p>{reply.message}</p>
+                          <span>
+                            Sent to: {reply.sentTo}
+                          </span>
+                          <span>
+                            {new Date(reply.sentAt).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <textarea
+                    className="enquiry-reply-textarea"
+                    placeholder="Write your email reply here..."
+                    value={replyMessages[enquiry._id] || ''}
+                    onChange={(event) =>
+                      setReplyMessages((previous) => ({
+                        ...previous,
+                        [enquiry._id]: event.target.value,
+                      }))
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    className="admin-action-button enquiry-reply-button"
+                    disabled={replySendingId === enquiry._id}
+                    onClick={() => handleSendEnquiryReply(enquiry._id)}
+                  >
+                    {replySendingId === enquiry._id
+                      ? 'Sending...'
+                      : 'Send Reply'}
+                  </button>
+
+                  {replyFeedback[enquiry._id] && (
+                    <p
+                      className={
+                        replyFeedback[enquiry._id].type === 'success'
+                          ? 'enquiry-success'
+                          : 'enquiry-error'
+                      }
+                    >
+                      {replyFeedback[enquiry._id].message}
+                    </p>
                   )}
                 </div>
               </article>

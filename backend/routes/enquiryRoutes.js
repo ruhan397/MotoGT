@@ -6,6 +6,7 @@ const {
   createEnquiry,
   getEnquiries,
   updateEnquiryStatus,
+  sendEnquiryReply,
 } = require('../controllers/enquiryController');
 
 const { protect } = require('../middleware/authMiddleware');
@@ -17,5 +18,5 @@ router.post('/', createEnquiry);
 // Admin-only actions
 router.get('/', protect, adminOnly, getEnquiries);
 router.put('/:id/status', protect, adminOnly, updateEnquiryStatus);
-
+router.post('/:id/reply', protect, adminOnly, sendEnquiryReply);
 module.exports = router;

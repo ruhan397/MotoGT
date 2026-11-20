@@ -34,6 +34,25 @@ const enquirySchema = new mongoose.Schema(
       enum: ['New', 'Replied', 'Resolved'],
       default: 'New',
     },
+
+    // Admin Email Reply History
+    replies: [
+      {
+        message: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        sentTo: {
+          type: String,
+          required: true,
+        },
+        sentAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
