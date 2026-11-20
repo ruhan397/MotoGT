@@ -124,7 +124,6 @@ const createAppointment = async (req, res) => {
       preferredStartDate
     } = req.body;
     
-    console.log("APPOINTMENT FORM DATA:", req.body);
 
     if (!phone || !vehicleModel || !service || !preferredStartDate) {
       return res.status(400).json({
@@ -168,11 +167,6 @@ const createAppointment = async (req, res) => {
     }
 
     const settings = await getWorkshopSettings();
-    console.log('WORKSHOP SETTINGS:', {
-      maxVehicles: settings.maxVehicles,
-      dailyWorkCapacity: settings.dailyWorkCapacity,
-      approvalLock: settings.approvalLock
-    });
     const capacity = await checkCapacity(
       preferredStartDate,
       1,

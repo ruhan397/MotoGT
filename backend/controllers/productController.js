@@ -43,7 +43,6 @@ const searchProducts = async (req, res) => {
 
 // Get single product
 const getProductById = async (req, res) => {
-  console.log("⚠️ getProductById CALLED:", req.params.id);
   try {
     const product = await Product.findById(req.params.id);
 

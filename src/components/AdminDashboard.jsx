@@ -1,6 +1,6 @@
 import motoLogo from '../assets/MotoGT-logo-clean.png';
 import { apiFetch } from '../utils/api';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/AdminDashboard.css';
 import '../styles/admin/AdminSidebar.css';
 import '../styles/admin/AdminHeader.css';
@@ -40,7 +40,7 @@ function AdminDashboard() {
   const [productMessage, setProductMessage] = useState('');
 
   const [orders, setOrders] = useState([]);
-  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState('');
   const [orderUpdatingId, setOrderUpdatingId] = useState(null);
 
@@ -61,7 +61,7 @@ const [replyMessages, setReplyMessages] = useState({});
 const [replySendingId, setReplySendingId] = useState(null);
 const [replyFeedback, setReplyFeedback] = useState({});
   // Fetch Orders
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setOrdersLoading(true);
     setOrdersError('');
 
@@ -86,7 +86,7 @@ const [replyFeedback, setReplyFeedback] = useState({});
     } finally {
       setOrdersLoading(false);
     }
-  };
+  }, []);
 
   // Fetch Appointments
   const fetchAppointments = async () => {
@@ -117,7 +117,7 @@ const [replyFeedback, setReplyFeedback] = useState({});
   };
 
   // Fetch Customer Enquiries
-  const fetchEnquiries = async () => {
+  const fetchEnquiries = useCallback(async () => {
     setEnquiriesLoading(true);
     setEnquiriesError('');
 
@@ -142,7 +142,7 @@ const [replyFeedback, setReplyFeedback] = useState({});
     } finally {
       setEnquiriesLoading(false);
     }
-  };
+  }, []);
 
   // Update Enquiry Status
   const handleEnquiryStatusChange = async (enquiryId, status) => {
@@ -413,8 +413,9 @@ const [replyFeedback, setReplyFeedback] = useState({});
     };
 
     fetchProducts();
+    fetchOrders();
     fetchEnquiries();
-  }, [productsRetry]);
+  }, [productsRetry, fetchOrders, fetchEnquiries]);
 
   // Add Product
   const handleAddProduct = async (e) => {
@@ -707,7 +708,7 @@ const [replyFeedback, setReplyFeedback] = useState({});
                     <p className="admin-eyebrow">WORKSHOP OVERVIEW</p>
                     <h2>Business activity</h2>
                   </div>
-                  <span className="admin-live-dot">DEMO</span>
+                 
                 </div>
 
                 <div className="admin-activity-item">

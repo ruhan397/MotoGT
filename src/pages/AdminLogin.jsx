@@ -49,15 +49,8 @@ function AdminLogin() {
 if (!response.ok) {
   throw new Error(data.message || "Admin login failed.");
 }
-      console.log("Admin Login Check:", {
-        tokenReceived: Boolean(data.token),
-        userRole: data.user?.role,
-        response: data,
-      });
       if (!data.token || data.user?.role !== "admin") {
-        setMessage(
-          `Verification failed! Token: ${Boolean(data.token)}, Role: ${data.user?.role || "Missing"}`
-        );
+        setMessage("Admin verification failed. Please check your credentials.");
         return;
       }
 
