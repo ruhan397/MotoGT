@@ -1,0 +1,2765 @@
+========== APPOINTMENT ROUTES ==========
+
+const express = require('express');
+const router = express.Router();
+
+const {
+  createAppointment,
+  getMyAppointments,
+  getAvailableDates,
+  getAllAppointments,
+  approveAppointment,
+  rejectAppointment,
+  completeAppointment,
+  updateWorkshopSettings,
+  getWorkshopSettingsForAdmin
+} = require('../controllers/appointmentController');
+
+const { protect } = require('../middleware/authMiddleware');
+const { adminOnly } = require('../middleware/adminMiddleware');
+
+// Customer Routes
+router.post('/', protect, createAppointment);
+router.get('/my', protect, getMyAppointments);
+router.get('/available-dates', protect, getAvailableDates);
+
+// Admin Routes
+router.get('/admin/all', protect, adminOnly, getAllAppointments);
+router.get('/admin/settings', protect, adminOnly, getWorkshopSettingsForAdmin);
+router.put('/admin/settings', protect, adminOnly, updateWorkshopSettings);
+
+router.put('/admin/:id/approve', protect, adminOnly, approveAppointment);
+router.put('/admin/:id/reject', protect, adminOnly, rejectAppointment);
+router.put('/admin/:id/complete', protect, adminOnly, completeAppointment);
+
+module.exports = router;
+========== APPOINTMENT CONTROLLER ==========
+
+const Appointment = require('../models/Appointment');
+const WorkshopSettings = require('../models/WorkshopSettings');
+const User = require('../models/User');
+
+// Friday is the weekly workshop holiday
+const isFriday = (dateString) => {
+  const date = new Date(`${dateString}T12:00:00`);
+  return date.getDay() === 5;
+};
+
+// Get or create workshop settings
+const getWorkshopSettings = async () => {
+  let settings = await WorkshopSettings.findOne();
+
+  if (!settings) {
+    settings = await WorkshopSettings.create({
+      maxVehicles: 5,
+      dailyWorkCapacity: 2,
+      approvalLock: 0
+    });
+  }
+
+  return settings;
+};
+
+// Format date as YYYY-MM-DD
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+// Add one calendar day
+const addCalendarDay = (dateString) => {
+  const date = new Date(`${dateString}T12:00:00`);
+  date.setDate(date.getDate() + 1);
+  return formatDate(date);
+};
+
+// Return working dates, including the starting date.
+// Fridays are skipped and are not counted as workdays.
+const getWorkingDates = (startDate, durationDays) => {
+  const workingDates = [];
+  let currentDate = startDate;
+
+  while (workingDates.length < durationDays) {
+    if (!isFriday(currentDate)) {
+      workingDates.push(currentDate);
+    }
+
+    currentDate = addCalendarDay(currentDate);
+  }
+
+  return workingDates;
+};
+
+// Add working days and return the final working date
+const addWorkingDays = (startDate, durationDays) => {
+  const dates = getWorkingDates(startDate, durationDays);
+  return dates[dates.length - 1];
+};
+
+// Check workshop capacity on every working day
+const checkCapacity = async (
+  startDate,
+  durationDays,
+  settings,
+  excludeId = null
+) => {
+  if (isFriday(startDate)) {
+    return {
+      available: false,
+      message: 'MotoGT Workshop is closed on Fridays.'
+    };
+  }
+
+  const workingDates = getWorkingDates(startDate, durationDays);
+
+  for (const currentDate of workingDates) {
+    const dateFilter = {
+      status: 'Approved',
+      preferredStartDate: { $lte: currentDate },
+      endDate: { $gte: currentDate }
+    };
+
+    if (excludeId) {
+      dateFilter._id = { $ne: excludeId };
+    }
+
+    const activeAppointments = await Appointment.find(dateFilter);
+
+    const vehicleCount = activeAppointments.length;
+    const activeWorkCount = activeAppointments.length;
+
+    if (vehicleCount >= settings.maxVehicles) {
+      return {
+        available: false,
+        message: `${currentDate}: Workshop vehicle capacity is full.`
+      };
+    }
+
+    if (activeWorkCount >= settings.dailyWorkCapacity) {
+      return {
+        available: false,
+        message: `${currentDate}: Daily work capacity is full.`
+      };
+    }
+  }
+
+  return { available: true };
+};
+
+// Customer: Create appointment request
+const createAppointment = async (req, res) => {
+  try {
+    const {
+      phone,
+      vehicleModel,
+      service,
+      problemDescription,
+      preferredStartDate
+    } = req.body;
+    
+
+    if (!phone || !vehicleModel || !service || !preferredStartDate) {
+      return res.status(400).json({
+        message: 'Please complete all required fields.'
+      });
+    }
+
+    const user = await User.findById(req.user.id).select(
+      'fullName email phone'
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'Customer account not found. Please login again.'
+      });
+    }
+
+    const selectedDate = new Date(`${preferredStartDate}T12:00:00`);
+
+    if (
+      Number.isNaN(selectedDate.getTime()) ||
+      formatDate(selectedDate) !== preferredStartDate
+    ) {
+      return res.status(400).json({
+        message: 'Please select a valid appointment date.'
+      });
+    }
+
+    const today = formatDate(new Date());
+
+    if (preferredStartDate < today) {
+      return res.status(400).json({
+        message: 'Past dates cannot be selected.'
+      });
+    }
+
+    if (isFriday(preferredStartDate)) {
+      return res.status(400).json({
+        message: 'MotoGT Workshop is closed on Fridays. Please select another date.'
+      });
+    }
+
+    const settings = await getWorkshopSettings();
+    const capacity = await checkCapacity(
+      preferredStartDate,
+      1,
+      settings
+    );
+
+    if (!capacity.available) {
+      return res.status(409).json({
+        message: capacity.message
+      });
+    }
+
+    const appointment = await Appointment.create({
+      userId: user._id,
+      customerName: user.fullName,
+      email: user.email,
+      phone: phone.trim(),
+      vehicleModel: vehicleModel.trim(),
+      service,
+      problemDescription: problemDescription || '',
+      preferredStartDate,
+      status: 'Pending'
+    });
+
+    return res.status(201).json({
+      message: 'Appointment request submitted successfully.',
+      appointment
+    });
+
+  } catch (error) {
+    console.error('Create Appointment Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to submit appointment request.'
+    });
+  }
+};
+
+// Customer: View own appointments
+const getMyAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+      userId: req.user.id
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json(appointments);
+
+  } catch (error) {
+    console.error('Get My Appointments Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to fetch your appointments.'
+    });
+  }
+};
+
+// Customer: Get available start dates
+const getAvailableDates = async (req, res) => {
+  try {
+    const settings = await getWorkshopSettings();
+    const today = new Date();
+    const availableDates = [];
+
+    for (let i = 0; i < 60; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const dateString = formatDate(date);
+
+      // Skip Fridays
+      if (isFriday(dateString)) {
+        continue;
+      }
+
+      const result = await checkCapacity(
+        dateString,
+        1,
+        settings
+      );
+
+      if (result.available) {
+        availableDates.push(dateString);
+      }
+    }
+
+    return res.status(200).json(availableDates);
+
+  } catch (error) {
+    console.error('Get Available Dates Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to fetch available dates.'
+    });
+  }
+};
+
+// Admin: View all appointments
+const getAllAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find()
+      .populate('userId', 'fullName email phone')
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json(appointments);
+
+  } catch (error) {
+    console.error('Get All Appointments Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to fetch appointments.'
+    });
+  }
+};
+
+// Admin: Approve appointment and reserve capacity
+const approveAppointment = async (req, res) => {
+  let lockAcquired = false;
+  let settings = null;
+
+  try {
+    const { durationDays, adminNote } = req.body;
+
+    if (![2, 3, 4].includes(Number(durationDays))) {
+      return res.status(400).json({
+        message: 'Duration must be 2, 3, or 4 working days.'
+      });
+    }
+
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({
+        message: 'Appointment not found.'
+      });
+    }
+
+    if (appointment.status !== 'Pending') {
+      return res.status(400).json({
+        message: 'Only pending appointments can be approved.'
+      });
+    }
+
+    if (isFriday(appointment.preferredStartDate)) {
+      return res.status(400).json({
+        message: 'Appointments cannot start on Friday.'
+      });
+    }
+
+    settings = await getWorkshopSettings();
+
+    const lock = await WorkshopSettings.findOneAndUpdate(
+      {
+        _id: settings._id,
+        approvalLock: 0
+      },
+      {
+        $set: { approvalLock: 1 }
+      },
+      { new: true }
+    );
+
+    if (!lock) {
+      return res.status(409).json({
+        message: 'Another approval is in progress. Please try again.'
+      });
+    }
+
+    lockAcquired = true;
+
+    const currentAppointment = await Appointment.findOne({
+      _id: appointment._id,
+      status: 'Pending'
+    });
+
+    if (!currentAppointment) {
+      return res.status(409).json({
+        message: 'This appointment has already been processed.'
+      });
+    }
+
+    const capacity = await checkCapacity(
+      currentAppointment.preferredStartDate,
+      Number(durationDays),
+      settings
+    );
+
+    if (!capacity.available) {
+      return res.status(409).json({
+        message: capacity.message
+      });
+    }
+
+    currentAppointment.durationDays = Number(durationDays);
+
+    currentAppointment.endDate = addWorkingDays(
+      currentAppointment.preferredStartDate,
+      Number(durationDays)
+    );
+
+    currentAppointment.status = 'Approved';
+    currentAppointment.adminNote = adminNote || '';
+
+    await currentAppointment.save();
+
+    return res.status(200).json({
+      message: 'Appointment approved and workshop capacity reserved.',
+      appointment: currentAppointment
+    });
+
+  } catch (error) {
+    console.error('Approve Appointment Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to approve appointment.'
+    });
+
+  } finally {
+    if (lockAcquired && settings) {
+      await WorkshopSettings.updateOne(
+        {
+          _id: settings._id,
+          approvalLock: 1
+        },
+        {
+          $set: { approvalLock: 0 }
+        }
+      );
+    }
+  }
+};
+
+// Admin: Reject appointment
+const rejectAppointment = async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({
+        message: 'Appointment not found.'
+      });
+    }
+
+    if (appointment.status !== 'Pending') {
+      return res.status(400).json({
+        message: 'Only pending appointments can be rejected.'
+      });
+    }
+
+    appointment.status = 'Rejected';
+    appointment.adminNote = req.body.adminNote || '';
+
+    await appointment.save();
+
+    return res.status(200).json({
+      message: 'Appointment rejected.',
+      appointment
+    });
+
+  } catch (error) {
+    console.error('Reject Appointment Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to reject appointment.'
+    });
+  }
+};
+
+// Admin: Complete appointment and release capacity
+const completeAppointment = async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({
+        message: 'Appointment not found.'
+      });
+    }
+
+    if (appointment.status !== 'Approved') {
+      return res.status(400).json({
+        message: 'Only approved appointments can be completed.'
+      });
+    }
+
+    appointment.status = 'Completed';
+
+    await appointment.save();
+
+    return res.status(200).json({
+      message: 'Appointment completed. Workshop capacity released.',
+      appointment
+    });
+
+  } catch (error) {
+    console.error('Complete Appointment Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to complete appointment.'
+    });
+  }
+};
+
+// Admin: Update workshop capacity settings
+const updateWorkshopSettings = async (req, res) => {
+  try {
+    const { maxVehicles, dailyWorkCapacity } = req.body;
+
+    if (
+      !Number.isInteger(Number(maxVehicles)) ||
+      !Number.isInteger(Number(dailyWorkCapacity)) ||
+      Number(maxVehicles) < 1 ||
+      Number(dailyWorkCapacity) < 1 ||
+      Number(dailyWorkCapacity) > Number(maxVehicles)
+    ) {
+      return res.status(400).json({
+        message: 'Please provide valid workshop capacity values.'
+      });
+    }
+
+    const settings = await getWorkshopSettings();
+
+    const updatedSettings = await WorkshopSettings.findByIdAndUpdate(
+      settings._id,
+      {
+        $set: {
+          maxVehicles: Number(maxVehicles),
+          dailyWorkCapacity: Number(dailyWorkCapacity)
+        }
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+
+    return res.status(200).json({
+      message: 'Workshop settings updated successfully.',
+      settings: updatedSettings
+    });
+
+  } catch (error) {
+    console.error('Update Workshop Settings Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to update workshop settings.'
+    });
+  }
+};
+
+// Admin: View workshop settings
+const getWorkshopSettingsForAdmin = async (req, res) => {
+  try {
+    const settings = await getWorkshopSettings();
+
+    return res.status(200).json(settings);
+
+  } catch (error) {
+    console.error('Get Workshop Settings Error:', error);
+
+    return res.status(500).json({
+      message: 'Unable to fetch workshop settings.'
+    });
+  }
+};
+
+module.exports = {
+  createAppointment,
+  getMyAppointments,
+  getAvailableDates,
+  getAllAppointments,
+  approveAppointment,
+  rejectAppointment,
+  completeAppointment,
+  updateWorkshopSettings,
+  getWorkshopSettingsForAdmin
+};========== APPOINTMENT MODEL ==========
+
+const mongoose = require('mongoose');
+
+const appointmentSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+
+    customerName: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    email: {
+      type: String,
+      required: true
+    },
+
+    phone: {
+      type: String,
+      required: true
+    },
+
+    vehicleModel: {
+      type: String,
+      required: true
+    },
+
+    service: {
+      type: String,
+      required: true
+    },
+
+    problemDescription: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+
+    preferredStartDate: {
+      type: String,
+      required: true
+    },
+
+    durationDays: {
+      type: Number,
+      enum: [2, 3, 4],
+      default: null
+    },
+
+    endDate: {
+      type: String,
+      default: null
+    },
+
+    status: {
+      type: String,
+      enum: [
+        'Pending',
+        'Approved',
+        'Rejected',
+        'Completed',
+        'Cancelled'
+      ],
+      default: 'Pending'
+    },
+
+    adminNote: {
+      type: String,
+      default: ''
+    }
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Appointment', appointmentSchema);
+========== USER MODEL ==========
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema(
+  {
+    fullName: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ["customer", "admin"],
+      default: "customer",
+    },
+    membership: {
+        isActive: {
+          type: Boolean,
+          default: true,
+        },
+        level: {
+          type: String,
+          enum: ["standard", "silver", "gold", "vip"],
+          default: "standard",
+        },
+        discountPercentage: {
+          type: Number,
+          default: 5,
+        },
+        totalSpent: {
+          type: Number,
+          default: 0,
+        },
+      },
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("User", userSchema);========== AUTH MIDDLEWARE ==========
+const jwt = require("jsonwebtoken");
+
+const protect = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Not authorized. Please login.",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      message: "Invalid or expired token.",
+    });
+  }
+};
+
+module.exports = { protect };========== DENTPAINT FRONTEND ==========
+
+import { useEffect, useState } from "react";
+import "../styles/DentPaint.css";
+import paintImage from "../assets/DPAINT2.jpeg";
+import { apiFetch } from "../utils/api";
+
+const services = [
+  {
+    number: "01",
+    name: "Dent Repair",
+    description:
+      "Restore your car's original body shape with professional dent repair.",
+    features: [
+      "Minor Dent Repair",
+      "Panel Dent Repair",
+      "Body Shape Restoration",
+    ],
+  },
+  {
+    number: "02",
+    name: "Scratch Removal",
+    description:
+      "Improve your car's appearance by treating visible paint scratches.",
+    features: [
+      "Surface Scratch Treatment",
+      "Paint Correction",
+      "Polishing & Finishing",
+    ],
+  },
+  {
+    number: "03",
+    name: "Body Painting",
+    description:
+      "Refresh individual panels or transform your vehicle with a complete paint job.",
+    features: [
+      "Single Panel Painting",
+      "Multiple Panel Painting",
+      "Full Body Painting",
+    ],
+  },
+];
+
+function DentPaint() {
+  const [activeTab, setActiveTab] = useState("services");
+
+  const [formData, setFormData] = useState({
+    phone: "",
+    vehicleModel: "",
+    service: "",
+    preferredStartDate: "",
+    problemDescription: "",
+  });
+
+  const [availableDates, setAvailableDates] = useState([]);
+  const [loadingDates, setLoadingDates] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+
+  const token = localStorage.getItem("motogtToken");
+
+  useEffect(() => {
+    const loadAvailableDates = async () => {
+      if (!token) {
+        setLoadingDates(false);
+        return;
+      }
+
+      try {
+        const response = await apiFetch("appointments/available-dates", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Unable to load available dates."
+          );
+        }
+
+        const dates = Array.isArray(data)
+          ? data
+          : data.availableDates || data.dates || [];
+
+        setAvailableDates(
+          dates
+            .map((item) =>
+              typeof item === "string" ? item : item.date
+            )
+            .filter(Boolean)
+        );
+      } catch (error) {
+        setMessage(error.message || "Unable to load available dates.");
+        setMessageType("error");
+      } finally {
+        setLoadingDates(false);
+      }
+    };
+
+    loadAvailableDates();
+  }, [token]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    setMessage("");
+    setMessageType("");
+
+    if (!token) {
+      setMessage("Please log in to book an appointment.");
+      setMessageType("error");
+      return;
+    }
+
+    if (!availableDates.includes(formData.preferredStartDate)) {
+      setMessage("Please select an available appointment date.");
+      setMessageType("error");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      const response = await apiFetch("appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Unable to submit your appointment request."
+        );
+      }
+
+      setMessage(
+        "Your appointment request has been submitted successfully. Your request is now Pending and will be reviewed by the MotoGT team."
+      );
+      setMessageType("success");
+
+      setFormData({
+        phone: "",
+        vehicleModel: "",
+        service: "",
+        preferredStartDate: "",
+        problemDescription: "",
+      });
+    } catch (error) {
+      setMessage(
+        error.message || "Something went wrong. Please try again."
+      );
+      setMessageType("error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <main className="dent-paint-page">
+      <section className="dp-hero">
+        <div className="dp-hero-content">
+          <p className="dp-eyebrow">MOTOGT BODYWORK SERVICES</p>
+          <h1>
+            Restore the look.
+            <br />
+            <em>Refine every detail.</em>
+          </h1>
+          <p className="dp-hero-description">
+            From minor dents to complete paintwork, bring back the
+            appearance your car deserves with MotoGT.
+          </p>
+          <a href="#dp-services" className="dp-button">
+            Explore Services ↗
+          </a>
+        </div>
+
+        <div className="dp-hero-image">
+          <img src={paintImage} alt="MotoGT dent and paint service" />
+        </div>
+      </section>
+
+      {/* Dent & Paint Information Tabs */}
+      <section className="dp-information" id="dp-services">
+        <div
+          className="dp-tabs"
+          role="tablist"
+          aria-label="Dent and Paint information"
+        >
+          <button
+            type="button"
+            className={activeTab === "services" ? "dp-tab active" : "dp-tab"}
+            onClick={() => setActiveTab("services")}
+            role="tab"
+            aria-selected={activeTab === "services"}
+          >
+            What We Offer
+          </button>
+
+          <button
+            type="button"
+            className={activeTab === "finishes" ? "dp-tab active" : "dp-tab"}
+            onClick={() => setActiveTab("finishes")}
+            role="tab"
+            aria-selected={activeTab === "finishes"}
+          >
+            Paint & Finish
+          </button>
+
+          <button
+            type="button"
+            className={activeTab === "process" ? "dp-tab active" : "dp-tab"}
+            onClick={() => setActiveTab("process")}
+            role="tab"
+            aria-selected={activeTab === "process"}
+          >
+            Our Work Process
+          </button>
+
+        </div>
+
+        {/* What We Offer */}
+        {activeTab === "services" && (
+          <section className="dp-services">
+            <div className="dp-section-heading">
+              <p className="dp-eyebrow">WHAT WE OFFER</p>
+              <h2>
+                Care for every
+                <em> detail.</em>
+              </h2>
+              <p>
+                Professional bodywork solutions designed to bring
+                your vehicle back to its best.
+              </p>
+            </div>
+
+            <div className="dp-service-banners">
+              {services.map((service) => (
+                <article className="dp-service-banner" key={service.number}>
+                  <div className="dp-banner-dot"></div>
+
+                  <div className="dp-banner-main">
+                    <h3>{service.name}</h3>
+                    <p>{service.description}</p>
+                  </div>
+
+                  <div className="dp-banner-details">
+                    {service.features.map((feature) => (
+                      <div className="dp-banner-feature" key={feature}>
+                        <span>✦</span>
+                        {feature}
+                      </div>
+                    ))}
+
+                    <span className="dp-price">
+                      Custom quote after inspection
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Paint & Finish Options */}
+        {activeTab === "finishes" && (
+          <section className="dp-finishes">
+            <div className="dp-section-heading">
+              <p className="dp-eyebrow">MAKE IT YOUR FINISH</p>
+              <h2>
+                Choose your
+                <em> finish.</em>
+              </h2>
+              <p>
+                Explore different paint finishes to give your
+                vehicle the look and character you want.
+              </p>
+            </div>
+
+            <div className="dp-finish-grid">
+              <article className="dp-finish-card">
+                <span className="dp-finish-number">01</span>
+                <div className="dp-finish-swatch dp-gloss"></div>
+                <h3>Gloss Finish</h3>
+                <p>A smooth, reflective surface with a classic polished look.</p>
+              </article>
+
+              <article className="dp-finish-card">
+                <span className="dp-finish-number">02</span>
+                <div className="dp-finish-swatch dp-matte"></div>
+                <h3>Matte Finish</h3>
+                <p>A subtle, non-glossy appearance for a modern style.</p>
+              </article>
+
+              <article className="dp-finish-card">
+                <span className="dp-finish-number">03</span>
+                <div className="dp-finish-swatch dp-metallic"></div>
+                <h3>Metallic Finish</h3>
+                <p>A refined finish with a distinctive metallic shimmer.</p>
+              </article>
+
+              <article className="dp-finish-card">
+                <span className="dp-finish-number">04</span>
+                <div className="dp-finish-swatch dp-pearl"></div>
+                <h3>Pearl Finish</h3>
+                <p>A premium finish with a soft, changing reflective effect.</p>
+              </article>
+            </div>
+          </section>
+        )}
+
+        {/* Our Work Process */}
+        {activeTab === "process" && (
+          <section className="dp-process">
+            <div className="dp-section-heading">
+              <p className="dp-eyebrow">HOW WE WORK</p>
+              <h2>
+                From inspection
+                <em> to perfection.</em>
+              </h2>
+              <p>
+                Every detail matters. Our process ensures
+                professional care from start to finish.
+              </p>
+            </div>
+
+            <div className="dp-process-grid">
+              <article className="dp-process-card">
+                <span className="dp-process-number">01</span>
+                <div className="dp-process-icon">⌕</div>
+                <h3>Vehicle Inspection</h3>
+                <p>
+                  We carefully inspect your vehicle to identify
+                  the damage and understand the work required.
+                </p>
+              </article>
+
+              <article className="dp-process-card">
+                <span className="dp-process-number">02</span>
+                <div className="dp-process-icon">✦</div>
+                <h3>Repair & Painting</h3>
+                <p>
+                  Our service process focuses on restoring
+                  your vehicle with careful repair and finishing.
+                </p>
+              </article>
+
+              <article className="dp-process-card">
+                <span className="dp-process-number">03</span>
+                <div className="dp-process-icon">✓</div>
+                <h3>Quality Check</h3>
+                <p>
+                  We review the completed work before preparing
+                  your vehicle for delivery.
+                </p>
+              </article>
+            </div>
+          </section>
+        )}
+
+        
+      </section>
+
+      {/* Appointment Booking */}
+      <section className="dp-booking" id="dp-booking">
+        <div className="dp-booking-heading">
+          <p className="dp-eyebrow">LET'S GET STARTED</p>
+          <h2>
+            Book your
+            <em> appointment.</em>
+          </h2>
+          <p>
+            Tell us about your vehicle and the service you need.
+          </p>
+        </div>
+
+        <form className="dp-booking-form" onSubmit={handleSubmit}>
+          <p className="dp-form-note">
+            Your name and email will be taken from your MotoGT account.
+          </p>
+
+          <div className="dp-form-grid">
+            <label>
+              Phone Number
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Your phone number"
+                required
+              />
+            </label>
+
+            <label>
+              Vehicle Model
+              <input
+                type="text"
+                name="vehicleModel"
+                value={formData.vehicleModel}
+                onChange={handleChange}
+                placeholder="e.g. Toyota Axio"
+                required
+              />
+            </label>
+
+            <label>
+              Required Service
+              <select
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  Select a service
+                </option>
+                <option value="Dent Repair">Dent Repair</option>
+                <option value="Scratch Removal">Scratch Removal</option>
+                <option value="Body Painting">Body Painting</option>
+              </select>
+            </label>
+
+            <label>
+              Preferred Date
+              <select
+                name="preferredStartDate"
+                value={formData.preferredStartDate}
+                onChange={handleChange}
+                required
+                disabled={loadingDates || availableDates.length === 0}
+              >
+                <option value="">
+                  {loadingDates
+                    ? "Loading available dates..."
+                    : availableDates.length === 0
+                      ? "No dates currently available"
+                      : "Select an available date"}
+                </option>
+
+                {availableDates.map((date) => (
+                  <option value={date} key={date}>
+                    {new Date(`${date}T00:00:00`).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      }
+                    )}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="dp-full-width">
+              Describe the Problem
+              <textarea
+                name="problemDescription"
+                rows="4"
+                value={formData.problemDescription}
+                onChange={handleChange}
+                placeholder="Tell us about your vehicle and the work required..."
+              />
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            className="dp-button"
+            disabled={submitting || loadingDates || availableDates.length === 0}
+          >
+            {submitting
+              ? "Submitting Request..."
+              : "Submit Appointment Request ↗"}
+          </button>
+
+          {message && (
+            <p
+              className="dp-preview-message"
+              role="status"
+              style={{
+                color: messageType === "success" ? "#4caf80" : "#d97777",
+              }}
+            >
+              {message}
+            </p>
+          )}
+
+          <p className="dp-form-note">
+            Your appointment will remain Pending until reviewed by the MotoGT admin.
+            Final approval depends on workshop capacity and the required work duration.
+          </p>
+        </form>
+      </section>
+    </main>
+  );
+}
+
+export default DentPaint;
+========== ORDER CONTROLLER ==========
+
+const Order = require('../models/Order');
+const User = require('../models/User');
+const Product = require('../models/Product');
+
+// Recalculate membership from successfully completed orders
+const syncMembership = async (userId) => {
+  if (!userId) return;
+
+  const result = await Order.aggregate([
+    {
+      $match: {
+        userId,
+        status: { $in: ['Completed', 'Delivered'] }
+      }
+    },
+    {
+      $group: {
+        _id: '$userId',
+        totalSpent: { $sum: '$totalAmount' }
+      }
+    }
+  ]);
+
+  const totalSpent = Number(result[0]?.totalSpent || 0);
+  const user = await User.findById(userId);
+
+  if (!user) return;
+
+  if (!user.membership) {
+    user.membership = {
+      isActive: true,
+      level: 'standard',
+      discountPercentage: 5,
+      totalSpent: 0
+    };
+  }
+
+  user.membership.totalSpent = totalSpent;
+
+  if (totalSpent >= 50000) {
+    user.membership.level = 'vip';
+    user.membership.discountPercentage = 20;
+  } else if (totalSpent >= 25000) {
+    user.membership.level = 'gold';
+    user.membership.discountPercentage = 15;
+  } else if (totalSpent >= 10000) {
+    user.membership.level = 'silver';
+    user.membership.discountPercentage = 10;
+  } else {
+    user.membership.level = 'standard';
+    user.membership.discountPercentage = 5;
+  }
+
+  await user.save();
+};
+
+// Admin: Get all orders
+const getOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate('products.productId')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Get single order
+const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate('products.productId');
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Customer: Get only their own orders
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({
+      userId: req.user.id
+    })
+      .populate('products.productId')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Customer: Create order
+const createOrder = async (req, res) => {
+  const reservedProducts = [];
+
+  try {
+    const { products, address, paymentMethod = 'COD' } = req.body;
+
+    const allowedPaymentMethods = [
+      'COD',
+      'bKash',
+      'Nagad',
+      'Card'
+    ];
+
+    if (!allowedPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        message: 'Invalid payment method'
+      });
+    }
+
+    if (!address?.trim() || !Array.isArray(products) || !products.length) {
+      return res.status(400).json({
+        message: 'Delivery address and products are required'
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'Customer not found'
+      });
+    }
+
+    const quantities = new Map();
+
+    for (const item of products) {
+      const id = String(item.productId || '');
+      const quantity = Number(item.quantity);
+
+      if (!id || !Number.isInteger(quantity) || quantity < 1) {
+        return res.status(400).json({
+          message: 'Invalid product or quantity'
+        });
+      }
+
+      quantities.set(id, (quantities.get(id) || 0) + quantity);
+    }
+
+    let subtotal = 0;
+    const orderProducts = [];
+
+    for (const [productId, quantity] of quantities) {
+      const product = await Product.findOneAndUpdate(
+        {
+          _id: productId,
+          stock: { $gte: quantity }
+        },
+        {
+          $inc: { stock: -quantity }
+        },
+        { new: true }
+      );
+
+      if (!product) {
+        throw new Error(
+          `Product unavailable or insufficient stock: ${productId}`
+        );
+      }
+
+      reservedProducts.push({
+        productId: product._id,
+        quantity
+      });
+
+      subtotal += product.price * quantity;
+
+      orderProducts.push({
+        productId: product._id,
+        quantity
+      });
+    }
+
+    const discountPercentage = user.membership?.isActive
+      ? (user.membership.discountPercentage || 5)
+      : 0;
+
+    if (
+      ![5, 10, 15, 20].includes(discountPercentage) &&
+      discountPercentage !== 0
+    ) {
+      throw new Error('Invalid membership discount');
+    }
+
+    const discountAmount = Number(
+      (subtotal * discountPercentage / 100).toFixed(2)
+    );
+
+    const totalAmount = Number(
+      (subtotal - discountAmount).toFixed(2)
+    );
+
+    const order = await Order.create({
+      userId: user._id,
+      customerName: user.fullName,
+      email: user.email,
+      phone: user.phone,
+      address: address.trim(),
+      products: orderProducts,
+      subtotal,
+      discountPercentage,
+      discountAmount,
+      totalAmount,
+      paymentMethod,
+      paymentStatus: 'Pending',
+      status: 'Pending'
+    });
+
+    res.status(201).json({
+      message: 'Order created successfully',
+      order
+    });
+
+  } catch (error) {
+    for (const item of reservedProducts) {
+      await Product.updateOne(
+        { _id: item.productId },
+        { $inc: { stock: item.quantity } }
+      ).catch(() => {});
+    }
+
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Customer: Confirm a demo online payment
+const confirmDemoPayment = async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      userId: req.user.id
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        message: 'Order not found'
+      });
+    }
+
+    if (order.paymentMethod === 'COD') {
+      return res.status(400).json({
+        message: 'Cash on Delivery does not require online payment'
+      });
+    }
+
+    if (order.paymentStatus !== 'Pending') {
+      return res.status(400).json({
+        message: 'This payment has already been processed'
+      });
+    }
+
+    // Demo simulation only. No real money is transferred.
+    order.paymentStatus = 'Paid';
+    await order.save();
+
+    res.status(200).json({
+      message: 'Demo payment successful',
+      order
+    });
+
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Admin: Update order status and recalculate membership
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      'Pending',
+      'Processing',
+      'Completed',
+      'Delivered',
+      'Cancelled'
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: 'Invalid order status'
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        message: 'Order not found'
+      });
+    }
+
+    // Restore stock only when an order is cancelled for the first time
+if (status === 'Cancelled' && order.status !== 'Cancelled') {
+  for (const item of order.products) {
+    await Product.updateOne(
+      { _id: item.productId },
+      { $inc: { stock: item.quantity } }
+    );
+  }
+}
+
+// Prevent cancelled orders from being reactivated
+if (order.status === 'Cancelled' && status !== 'Cancelled') {
+  return res.status(400).json({
+    message: 'Cancelled orders cannot be reactivated'
+  });
+}
+
+order.status = status;
+await order.save();
+
+await syncMembership(order.userId);
+
+    res.status(200).json({
+      message: 'Order status updated successfully',
+      order
+    });
+
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+// Admin: Delete order and restore stock if not already cancelled
+const deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        message: 'Order not found'
+      });
+    }
+
+    // Restore stock only if it was not restored during cancellation
+    if (order.status !== 'Cancelled') {
+      for (const item of order.products) {
+        await Product.updateOne(
+          { _id: item.productId },
+          { $inc: { stock: item.quantity } }
+        );
+      }
+    }
+
+    await Order.findByIdAndDelete(req.params.id);
+
+    await syncMembership(order.userId);
+
+    res.status(200).json({
+      message: 'Order deleted successfully'
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  getOrders,
+  getOrderById,
+  getMyOrders,
+  createOrder,
+  confirmDemoPayment,
+  updateOrderStatus,
+  deleteOrder
+};
+========== ACCESSORIES FRONTEND ==========
+import { useEffect, useState } from "react";
+import { apiFetch } from "../utils/api";
+import bkashLogo from "../assets/bKash-Logo.png";
+import nagadLogo from "../assets/Nagad Icon.png";
+import "../styles/Accessories.css";
+
+function Accessories() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [activeCategory, setActiveCategory] = useState("All Products");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
+
+  const [cart, setCart] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [address, setAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [confirmingPayment, setConfirmingPayment] = useState(false);
+
+  const [pendingPaymentOrderId, setPendingPaymentOrderId] = useState("");
+  const [pendingPaymentMethod, setPendingPaymentMethod] = useState("");
+
+  const [orderMessage, setOrderMessage] = useState("");
+  const [orderError, setOrderError] = useState("");
+
+  const [membership, setMembership] = useState(null);
+  const [membershipLoading, setMembershipLoading] = useState(false);
+
+  // Load products
+  const loadProducts = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await apiFetch("/products");
+
+      if (!response.ok) {
+        throw new Error("Could not load products.");
+      }
+
+      const data = await response.json();
+      setProducts(data);
+    } catch (err) {
+      setError(err.message || "Unable to load products.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  // Search products directly from MongoDB
+  useEffect(() => {
+    let isActive = true;
+
+    const searchTimer = setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchError("");
+
+      try {
+        const params = new URLSearchParams({
+          q: searchQuery.trim(),
+          category:
+            activeCategory === "All Products"
+              ? ""
+              : activeCategory,
+        });
+
+        const response = await apiFetch(
+          `/products/search?${params.toString()}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Could not search products.");
+        }
+
+        const data = await response.json();
+
+        if (isActive) {
+          setSearchResults(data);
+        }
+      } catch (err) {
+        if (isActive) {
+          setSearchResults([]);
+          setSearchError(
+            err.message || "Unable to search products."
+          );
+        }
+      } finally {
+        if (isActive) {
+          setSearchLoading(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      isActive = false;
+      clearTimeout(searchTimer);
+    };
+  }, [searchQuery, activeCategory]);
+
+  // Load customer membership
+  useEffect(() => {
+    const loadMembership = async () => {
+      const token = localStorage.getItem("motogtToken");
+      const savedUser = localStorage.getItem("motogtUser");
+
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          setMembership(user.membership || null);
+        } catch {
+          setMembership(null);
+        }
+      }
+
+      if (!token) return;
+
+      setMembershipLoading(true);
+
+      try {
+        const response = await apiFetch("/auth/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Could not load membership.");
+        }
+
+        const data = await response.json();
+
+        if (data.user?.membership) {
+          setMembership(data.user.membership);
+
+          const previousUser = savedUser
+            ? JSON.parse(savedUser)
+            : {};
+
+          localStorage.setItem(
+            "motogtUser",
+            JSON.stringify({
+              ...previousUser,
+              ...data.user,
+            })
+          );
+        }
+      } catch (err) {
+        console.error("Membership Error:", err.message);
+      } finally {
+        setMembershipLoading(false);
+      }
+    };
+
+    loadMembership();
+  }, []);
+
+  // Dynamic categories from database products
+  const categories = [
+    "All Products",
+    ...Array.from(
+      new Set(
+        products
+          .map((product) => product.category)
+          .filter(Boolean)
+      )
+    ).sort(),
+  ];
+
+  // Products returned directly from MongoDB search
+  const filteredProducts = searchResults;
+  const totalProducts = filteredProducts.length;
+
+  // Add product to cart
+  const addToCart = (product) => {
+    if (Number(product.stock) < 1) {
+      setOrderError("This product is currently out of stock.");
+      return;
+    }
+
+    setOrderError("");
+    setOrderMessage("");
+
+    setCart((current) => {
+      const existing = current.find(
+        (item) => item.product._id === product._id
+      );
+
+      if (existing) {
+        if (existing.quantity >= Number(product.stock)) {
+          setOrderError(
+            "You cannot add more than the available stock."
+          );
+          return current;
+        }
+
+        return current.map((item) =>
+          item.product._id === product._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...current, { product, quantity: 1 }];
+    });
+
+    setCartOpen(true);
+  };
+
+  // Change cart quantity
+  const changeQuantity = (productId, change) => {
+    setCart((current) =>
+      current.map((item) => {
+        if (item.product._id !== productId) return item;
+
+        const nextQuantity = item.quantity + change;
+
+        if (nextQuantity < 1) return item;
+
+        if (nextQuantity > Number(item.product.stock)) {
+          setOrderError(
+            "Quantity cannot exceed available stock."
+          );
+          return item;
+        }
+
+        return { ...item, quantity: nextQuantity };
+      })
+    );
+  };
+
+  // Remove product from cart
+  const removeFromCart = (productId) => {
+    setCart((current) =>
+      current.filter(
+        (item) => item.product._id !== productId
+      )
+    );
+  };
+
+  const cartCount = cart.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
+  const subtotal = cart.reduce(
+    (sum, item) =>
+      sum + Number(item.product.price) * item.quantity,
+    0
+  );
+
+  // Membership discount calculation
+  const discountPercentage = membership?.isActive
+    ? Number(membership.discountPercentage || 0)
+    : 0;
+
+  const discountAmount =
+    (subtotal * discountPercentage) / 100;
+
+  const finalTotal = subtotal - discountAmount;
+
+  // Place order
+  const placeOrder = async (event) => {
+    event.preventDefault();
+
+    setOrderError("");
+    setOrderMessage("");
+
+    const token = localStorage.getItem("motogtToken");
+
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    if (!cart.length || !address.trim()) {
+      setOrderError(
+        "Please add products and enter your delivery address."
+      );
+      return;
+    }
+
+    if (pendingPaymentOrderId) {
+      setOrderError(
+        "Please complete your previous demo payment first."
+      );
+      return;
+    }
+
+    setPlacingOrder(true);
+
+    try {
+      const response = await apiFetch("/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          address: address.trim(),
+          paymentMethod,
+          products: cart.map((item) => ({
+            productId: item.product._id,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Could not place your order."
+        );
+      }
+
+      const orderId = data.order?._id;
+
+      if (!orderId) {
+        throw new Error(
+          "Order was created, but its ID was not returned."
+        );
+      }
+
+      // COD order
+      if (paymentMethod === "COD") {
+        setOrderMessage(
+          `Order placed successfully! Order ID: ${orderId}. Payment: Cash on Delivery. Payment Status: Pending. Order Status: Pending.`
+        );
+      } else {
+        // Online demo payment remains Pending until confirmation
+        setPendingPaymentOrderId(orderId);
+        setPendingPaymentMethod(paymentMethod);
+
+        setOrderMessage(
+          `Order created successfully! Order ID: ${orderId}. Your ${paymentMethod} demo payment is waiting for confirmation.`
+        );
+      }
+
+      setCart([]);
+      setAddress("");
+    } catch (err) {
+      setOrderError(
+        err.message ||
+          "Something went wrong. Please try again."
+      );
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
+
+  // Confirm online demo payment
+  const confirmDemoPayment = async () => {
+    const token = localStorage.getItem("motogtToken");
+
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    if (!pendingPaymentOrderId) {
+      setOrderError("No pending demo payment was found.");
+      return;
+    }
+
+    setConfirmingPayment(true);
+    setOrderError("");
+
+    try {
+      const response = await apiFetch(
+        `/orders/${pendingPaymentOrderId}/demo-payment`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Demo payment could not be confirmed."
+        );
+      }
+
+      setOrderMessage(
+        `Demo payment successful! Order ID: ${pendingPaymentOrderId}. Payment Method: ${pendingPaymentMethod}. Payment Status: Paid.`
+      );
+
+      setPendingPaymentOrderId("");
+      setPendingPaymentMethod("");
+    } catch (err) {
+      setOrderError(
+        err.message ||
+          "Payment confirmation failed. Please try again."
+      );
+    } finally {
+      setConfirmingPayment(false);
+    }
+  };
+
+  const paymentOptions = [
+    {
+      value: "COD",
+      name: "Cash on Delivery",
+      detail: "Pay when your order arrives",
+      type: "cod",
+    },
+    {
+      value: "bKash",
+      name: "bKash",
+      detail: "Mobile financial service",
+      logo: bkashLogo,
+      type: "bkash",
+    },
+    {
+      value: "Nagad",
+      name: "Nagad",
+      detail: "Mobile financial service",
+      logo: nagadLogo,
+      type: "nagad",
+    },
+    {
+      value: "Card",
+      name: "Debit / Credit Card",
+      detail: "Visa and Mastercard",
+      type: "card",
+    },
+  ];
+
+  // Render the supplied local payment logos and the existing COD/Card marks
+  const renderPaymentMark = (option) => {
+    if (option.type === "cod") {
+      return (
+        <svg
+          className="cod-icon"
+          viewBox="0 0 48 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M4.5 12.5H28V32H4.5V12.5Z"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M28 20H36L43.5 27.5V32H28V20Z"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinejoin="round"
+          />
+          <circle
+            cx="13.5"
+            cy="34"
+            r="4.2"
+            fill="#24231F"
+            stroke="currentColor"
+            strokeWidth="2.6"
+          />
+          <circle
+            cx="36"
+            cy="34"
+            r="4.2"
+            fill="#24231F"
+            stroke="currentColor"
+            strokeWidth="2.6"
+          />
+          <path
+            d="M10 18H22M10 23H19"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+        </svg>
+      );
+    }
+
+    if (option.type === "bkash" || option.type === "nagad") {
+      return (
+        <img
+          className="official-payment-logo"
+          src={option.logo}
+          alt={`${option.name} logo`}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
+        />
+      );
+    }
+
+    return (
+      <span
+        className="payment-card-brands"
+        aria-label="Visa and Mastercard"
+      >
+        <span className="visa-mark">VISA</span>
+
+        <span className="mastercard-mark" aria-hidden="true">
+          <span className="mastercard-circle mastercard-red" />
+          <span className="mastercard-circle mastercard-orange" />
+        </span>
+      </span>
+    );
+  };
+
+  return (
+    <section className="accessories-page">
+      <div className="accessories-heading">
+        <p className="eyebrow">MOTOGT COLLECTION</p>
+
+        <h1>Car Accessories</h1>
+
+        <p>
+          Explore our collection of premium car accessories.
+        </p>
+
+        <button
+          className="accessories-cart-toggle"
+          onClick={() => setCartOpen(true)}
+        >
+          <span>My Cart</span>
+
+          {cartCount > 0 && (
+            <span className="cart-count-badge">
+              {cartCount}
+            </span>
+          )}
+
+          <span className="cart-toggle-arrow">⌄</span>
+        </button>
+      </div>
+
+      {/* Search */}
+      {!loading && !error && (
+        <div className="accessories-search-wrap">
+          <label
+            className="accessories-search"
+            htmlFor="accessories-search-input"
+          >
+            <span
+              className="accessories-search-icon"
+              aria-hidden="true"
+            >
+              ⌕
+            </span>
+
+            <input
+              id="accessories-search-input"
+              type="search"
+              value={searchQuery}
+              onChange={(event) =>
+                setSearchQuery(event.target.value)
+              }
+              placeholder="Search accessories..."
+              autoComplete="off"
+            />
+
+            {searchQuery && (
+              <button
+                type="button"
+                className="accessories-search-clear"
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </label>
+
+          <p className="accessories-search-count">
+            {searchLoading
+              ? "Searching products..."
+              : searchError
+                ? searchError
+                : searchQuery.trim()
+                  ? `${totalProducts} matching product${
+                      totalProducts === 1 ? "" : "s"
+                    }`
+                  : `${totalProducts} products available`}
+          </p>
+        </div>
+      )}
+
+      {/* Category filters */}
+      {!loading && !error && (
+        <div className="accessories-category-filter">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={
+                activeCategory === category ? "active" : ""
+              }
+              onClick={() => setActiveCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Loading */}
+      {loading && <p>Loading products...</p>}
+
+      {/* Error */}
+      {error && (
+        <div>
+          <p>{error}</p>
+
+          <button onClick={loadProducts}>
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {/* Empty products */}
+      {!loading &&
+        !error &&
+        !searchLoading &&
+        !searchError &&
+        totalProducts === 0 && (
+          <p className="accessories-empty">
+            {searchQuery.trim()
+              ? "No products found. Try a different search."
+              : "No products found in this category."}
+          </p>
+        )}
+
+      {/* All products grid */}
+      {!loading &&
+        !error &&
+        !searchLoading &&
+        totalProducts > 0 && (
+          <div className="accessories-product-grid">
+            {filteredProducts.map((product) => (
+              <article
+                className="accessories-product-card"
+                key={product._id}
+              >
+                <div className="accessories-product-image">
+                  {product.image ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="product-image-placeholder">
+                      MOTOGT
+                    </div>
+                  )}
+                </div>
+
+                <div className="accessories-product-info">
+                  <h3>{product.name}</h3>
+
+                  <p className="product-brand">
+                    {product.brand}
+                  </p>
+
+                  <div className="product-card-bottom">
+                    <strong>
+                      ৳
+                      {Number(product.price).toLocaleString(
+                        "en-BD"
+                      )}
+                    </strong>
+
+                    <span
+                      className={
+                        Number(product.stock) > 0
+                          ? "product-stock available"
+                          : "product-stock unavailable"
+                      }
+                    >
+                      {Number(product.stock) > 0
+                        ? "In Stock"
+                        : "Out of Stock"}
+                    </span>
+                  </div>
+
+                  <button
+                    className="accessories-add-button"
+                    onClick={() => addToCart(product)}
+                    disabled={Number(product.stock) < 1}
+                  >
+                    {Number(product.stock) < 1
+                      ? "Out of Stock"
+                      : "Add to Cart"}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+      {/* Cart error */}
+      {orderError && !cartOpen && (
+        <p className="accessories-order-error">
+          {orderError}
+        </p>
+      )}
+
+      {/* Order message */}
+      {orderMessage && !cartOpen && (
+        <p className="accessories-order-success">
+          {orderMessage}
+        </p>
+      )}
+
+      {/* Cart panel */}
+      {cartOpen && (
+        <div
+          className="accessories-cart-backdrop"
+          onClick={() => setCartOpen(false)}
+        >
+          <aside
+            className="accessories-cart-panel"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="accessories-cart-header">
+              <h2>Your Cart</h2>
+
+              <button
+                type="button"
+                onClick={() => setCartOpen(false)}
+                aria-label="Close cart"
+              >
+                ×
+              </button>
+            </div>
+
+            {cart.length === 0 ? (
+              <p className="accessories-cart-empty">
+                Your cart is empty.
+              </p>
+            ) : (
+              <>
+                <div className="accessories-cart-items">
+                  {cart.map(({ product, quantity }) => (
+                    <div
+                      className="accessories-cart-item"
+                      key={product._id}
+                    >
+                      {product.image && (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                        />
+                      )}
+
+                      <div className="accessories-cart-item-info">
+                        <strong>{product.name}</strong>
+
+                        <span>
+                          ৳
+                          {Number(
+                            product.price
+                          ).toLocaleString("en-BD")}
+                        </span>
+
+                        {product.description && (
+                          <p className="accessories-cart-description">
+                            {product.description}
+                          </p>
+                        )}
+
+                        <div className="accessories-quantity-control">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              changeQuantity(product._id, -1)
+                            }
+                          >
+                            −
+                          </button>
+
+                          <span>{quantity}</span>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              changeQuantity(product._id, 1)
+                            }
+                          >
+                            +
+                          </button>
+
+                          <button
+                            type="button"
+                            className="accessories-remove-button"
+                            onClick={() =>
+                              removeFromCart(product._id)
+                            }
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Cart subtotal */}
+                <div className="accessories-cart-total">
+                  <span>Subtotal</span>
+
+                  <strong>
+                    ৳
+                    {subtotal.toLocaleString("en-BD", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
+
+                {/* Membership discount */}
+                <div className="accessories-cart-total">
+                  <span>
+                    Membership Discount
+                    {membershipLoading
+                      ? " (Loading...)"
+                      : ` (${discountPercentage}%)`}
+                  </span>
+
+                  <strong>
+                    - ৳
+                    {discountAmount.toLocaleString("en-BD", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
+
+                {/* Final total */}
+                <div className="accessories-cart-total">
+                  <strong>Final Total</strong>
+
+                  <strong>
+                    ৳
+                    {finalTotal.toLocaleString("en-BD", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
+
+                {/* Checkout */}
+                <form
+                  className="accessories-checkout-form"
+                  onSubmit={placeOrder}
+                >
+                  <label htmlFor="delivery-address">
+                    Delivery Address
+                  </label>
+
+                  <textarea
+                    id="delivery-address"
+                    value={address}
+                    onChange={(event) =>
+                      setAddress(event.target.value)
+                    }
+                    placeholder="Enter your full delivery address"
+                    required
+                    rows={3}
+                  />
+
+                  <label className="accessories-payment-label">
+                    Payment Method
+                  </label>
+
+                  <div className="accessories-payment-options">
+                    {paymentOptions.map((option) => (
+                      <button
+                        type="button"
+                        key={option.value}
+                        className={`accessories-payment-option ${
+                          paymentMethod === option.value
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          setPaymentMethod(option.value)
+                        }
+                        disabled={placingOrder}
+                        aria-pressed={
+                          paymentMethod === option.value
+                        }
+                      >
+                        <span
+                          className={`payment-option-logo ${option.type}-logo`}
+                        >
+                          {renderPaymentMark(option)}
+                        </span>
+
+                        <span className="payment-option-copy">
+                          <strong>{option.name}</strong>
+                          <small>{option.detail}</small>
+                        </span>
+
+                        <span className="payment-option-check">
+                          {paymentMethod === option.value ? "✓" : ""}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {orderError && (
+                    <p className="accessories-order-error">
+                      {orderError}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={
+                      placingOrder ||
+                      cart.length === 0 ||
+                      Boolean(pendingPaymentOrderId)
+                    }
+                  >
+                    {placingOrder
+                      ? "Placing Order..."
+                      : "Place Order"}
+                  </button>
+                </form>
+              </>
+            )}
+
+            {/* Demo payment confirmation */}
+            {pendingPaymentOrderId && (
+              <div className="accessories-demo-payment">
+                <h3>Demo Payment Confirmation</h3>
+
+                <p>
+                  Order ID: <strong>{pendingPaymentOrderId}</strong>
+                </p>
+
+                <p>
+                  Payment Method:{" "}
+                  <strong>{pendingPaymentMethod}</strong>
+                </p>
+
+                <p>
+                  Payment Status: <strong>Pending</strong>
+                </p>
+
+                <p>
+                  This is a simulated payment. Press the button
+                  below to confirm a successful demo transaction.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={confirmDemoPayment}
+                  disabled={confirmingPayment}
+                >
+                  {confirmingPayment
+                    ? "Confirming Payment..."
+                    : "Confirm Demo Payment"}
+                </button>
+              </div>
+            )}
+
+            {orderMessage && (
+              <p className="accessories-order-success">
+                {orderMessage}
+              </p>
+            )}
+          </aside>
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default Accessories;========== MEMBERSHIP USER ROUTES ==========
+
+const express = require("express");
+const router = express.Router();
+
+const { protect } = require("../middleware/authMiddleware");
+const User = require("../models/User");
+
+// Get logged-in customer's profile and membership
+router.get("/profile", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Customer not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Profile loaded successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+module.exports = router;
+========== LOGIN FRONTEND ==========
+import { useState } from "react";
+import logo from "../assets/MotoGT-logo-clean.png";
+import { apiFetch } from "../utils/api";
+import "../styles/Auth.css";
+
+function Login() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setLoading(true);
+
+    try {
+      const response = await apiFetch("/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed.");
+      }
+
+      localStorage.setItem("motogtToken", data.token);
+      localStorage.setItem("motogtUser", JSON.stringify(data.user));
+
+      setMessage("Login successful!");
+      window.location.href = "/";
+    } catch (error) {
+      setMessage(error.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className="auth-section">
+      <div className="auth-card">
+        <img src={logo} alt="MotoGT Logo" className="auth-logo" />
+
+        <p className="auth-label">WELCOME BACK</p>
+
+        <h1>Login to Your <span>Account.</span></h1>
+
+        <p className="auth-description">
+          Sign in to continue your journey with us.
+        </p>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label>Email Address</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          {message && <p>{message}</p>}
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="auth-switch">
+          Don't have an account?{" "}
+          <a href="/register">Create Account</a>
+        </p>
+
+        <p className="guest-option">
+          Or <a href="/">Continue as Guest</a>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+export default Login;

@@ -2,6 +2,11 @@
 const express = require('express');
 const router = express.Router();
 
+router.use((req, res, next) => {
+  res.setHeader("X-MotoGT-Appointment-Router", "loaded");
+  next();
+});
+
 const {
   createAppointment,
   getMyAppointments,
@@ -14,13 +19,12 @@ const {
   getWorkshopSettingsForAdmin
 } = require('../controllers/appointmentController');
 
-const { protect } = require('../middleware/authMiddleware');
+const { protect, optionalProtect } = require('../middleware/authMiddleware');
 const { adminOnly } = require('../middleware/adminMiddleware');
-
 // Customer Routes
-router.post('/', protect, createAppointment);
+router.post('/', optionalProtect, createAppointment);
 router.get('/my', protect, getMyAppointments);
-router.get('/available-dates', protect, getAvailableDates);
+router.get('/available-dates', getAvailableDates);
 
 // Admin Routes
 router.get('/admin/all', protect, adminOnly, getAllAppointments);

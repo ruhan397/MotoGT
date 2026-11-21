@@ -20,15 +20,14 @@
   
   .about-hero {
     display: block;
-    width: 20%;
+    width: min(100% - 40px, 280px);
     height: 280px;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    margin: 0 auto;
     box-sizing: border-box;
   
     background-image: url("../assets/GTM.jpeg");
-    background-position: center center;
-    background-size: 100% 100%;
+    background-position: center;
+    background-size: contain;
     background-repeat: no-repeat;
   }
   
@@ -339,3 +338,15 @@
   .about-section-heading h2 span {
     color: #FF0000;
   }
+
+  /* Reduce gap between About hero image and text */
+
+.about-hero-content {
+  padding-top: 30px;
+}
+
+@media (max-width: 600px) {
+  .about-hero-content {
+    padding-top: 25px;
+  }
+}

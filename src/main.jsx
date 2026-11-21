@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import AdminPreview from './AdminPreview.jsx'
 import AdminLogin from './pages/AdminLogin.jsx'
+import './styles/MobileResponsive.css'
 
 const currentPath = window.location.pathname
 

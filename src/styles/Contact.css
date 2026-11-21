@@ -571,6 +571,7 @@ left: 125%;
 
 .contact-form-heading .eyebrow {
   margin-bottom: 12px;
+  transform: translateX(3.5px);
 }
 
 
@@ -690,4 +691,267 @@ margin: 1px 0 !important;
   .contact-submit-button {
     width: 100%;
   }
+}
+
+/* MotoGT Premium Contact Popup */
+
+.contact-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  animation: contactOverlayFade 250ms ease;
+}
+
+.contact-popup {
+  position: relative;
+  width: min(100%, 430px);
+  box-sizing: border-box;
+  padding: 42px 34px 32px;
+  text-align: left;
+  color: #f4f0e8;
+  background: linear-gradient(145deg, #1b1c18, #0c0d0b);
+  border: 1px solid rgba(198, 167, 106, 0.55);
+  border-radius: 10px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.65);
+  animation: contactPopupEnter 300ms ease;
+}
+
+.contact-popup-close {
+  position: absolute;
+  top: 13px;
+  right: 17px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(198, 167, 106, 0.3);
+  border-radius: 50%;
+  background: transparent;
+  color: #C6A76A;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 250ms ease, color 250ms ease;
+}
+
+.contact-popup-close:hover {
+  background: #C6A76A;
+  color: #111210;
+}
+
+.contact-popup .eyebrow {
+  margin: 0 0 17px -7px;
+  color: #C6A76A;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+}
+
+.contact-popup h2 {
+  margin: 0 0 14px !important;
+  color: #f4f0e8;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(27px, 5vw, 34px) !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0 !important;
+  transform: none !important;
+}
+
+.contact-popup-description {
+  margin: 0 0 25px;
+  color: #aaa79f;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.contact-popup-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 27px;
+  border-top: 1px solid rgba(198, 167, 106, 0.2);
+}
+
+.contact-popup-info > div {
+  padding: 17px 0;
+  border-bottom: 1px solid rgba(198, 167, 106, 0.2);
+}
+
+.contact-popup-info span {
+  color: #C6A76A;
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.contact-popup-info p {
+  margin: 7px 0 0;
+  color: #d0cec8;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+}
+
+.contact-popup-close-button {
+  width: 100%;
+  padding: 13px 20px;
+  border: 1px solid #C6A76A;
+  border-radius: 4px;
+  background: #C6A76A;
+  color: #111210;
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 250ms ease, color 250ms ease;
+}
+
+.contact-popup-close-button:hover {
+  background: transparent;
+  color: #C6A76A;
+}
+
+@keyframes contactOverlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes contactPopupEnter {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile Popup */
+@media (max-width: 480px) {
+  .contact-popup-overlay {
+    padding: 18px;
+  }
+
+  .contact-popup {
+    padding: 40px 23px 25px;
+  }
+
+  .contact-popup-description {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-popup-overlay,
+  .contact-popup {
+    animation: none;
+  }
+}
+
+/* Match Homepage Enquiry Form with Dent & Paint Booking Form */
+
+.contact-form-wrapper {
+  width: min(100%, 800px);
+  box-sizing: border-box;
+  padding: 35px;
+  background: #191916;
+  border: 1px solid rgba(198, 167, 106, 0.55);
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-form-wrapper:focus-within {
+  border-color: rgba(198, 167, 106, 0.75);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.contact-form-grid {
+  gap: 23px;
+}
+
+.contact-enquiry-form {
+  gap: 23px;
+}
+
+.contact-enquiry-form input,
+.contact-enquiry-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: #10100e;
+  color: #f4f0e8;
+  border: 1px solid rgba(198, 167, 106, 0.30);
+  border-radius: 7px;
+  padding: 14px 15px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.contact-enquiry-form input:focus,
+.contact-enquiry-form textarea:focus {
+  border-color: #d9b875;
+  box-shadow: 0 0 0 3px rgba(198, 167, 106, 0.20);
+  outline: none;
+}
+
+.contact-enquiry-form input::placeholder,
+.contact-enquiry-form textarea::placeholder {
+  color: #89877f;
+}
+
+.contact-enquiry-form textarea {
+  min-height: 130px;
+}
+
+.contact-submit-button {
+  background: linear-gradient(135deg, #D9B875, #B89555);
+  color: #111210;
+  border: 1px solid #E3C98F;
+  border-radius: 30px;
+  padding: 13px 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  transition: all 0.25s ease;
+}
+
+.contact-submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #E3C98F, #C6A76A);
+  box-shadow: 0 0 18px rgba(198, 167, 106, 0.45);
+  transform: scale(1.04);
+}
+
+.contact-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .contact-form-wrapper {
+    padding: 22px;
+  }
+
+  .contact-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-submit-button {
+    width: 100%;
+  }
+}
+.contact-submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #E3C98F, #C6A76A) !important;
+  color: #111210 !important;
+  border-color: #E3C98F !important;
+  box-shadow: 0 0 18px rgba(198, 167, 106, 0.45);
+  transform: scale(1.04);
 }

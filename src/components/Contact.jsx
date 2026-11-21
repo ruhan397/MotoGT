@@ -14,6 +14,7 @@ function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [formMessage, setFormMessage] = useState('');
   const [formError, setFormError] = useState(false);
+  const [showContactPopup, setShowContactPopup] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -98,15 +99,64 @@ function Contact() {
         Contact MotoGT to ask about accessories or dent and paint work.
       </p>
 
-      <a
-        className="primary-btn nav-cta"
-        href="https://wa.me/"
-        target="_blank"
-        rel="noreferrer"
+      <button
+  type="button"
+  className="primary-btn nav-cta"
+  onClick={() => setShowContactPopup(true)}
+>
+  Get in Touch ⟫
+</button>
+{showContactPopup && (
+  <div
+    className="contact-popup-overlay"
+    onClick={() => setShowContactPopup(false)}
+  >
+    <div
+      className="contact-popup"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="contact-popup-title"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        className="contact-popup-close"
+        onClick={() => setShowContactPopup(false)}
+        aria-label="Close popup"
       >
-        Get in Touch ⟫
-      </a>
+        ×
+      </button>
 
+      <p className="eyebrow">MOTOGT CUSTOMER SUPPORT</p>
+
+  
+
+      <p className="contact-popup-description">
+        Have questions about our services? We're here to help.
+      </p>
+
+      <div className="contact-popup-info">
+        <div>
+          <span>PHONE</span>
+          <p>Contact details coming soon</p>
+        </div>
+
+        <div>
+          <span>EMAIL</span>
+          <p>Contact details coming soon</p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        className="contact-popup-close-button"
+        onClick={() => setShowContactPopup(false)}
+      >
+        CLOSE
+      </button>
+    </div>
+  </div>
+)}
       <div className="contact-form-wrapper">
         <div className="contact-form-heading">
           <p className="eyebrow">SEND AN ENQUIRY</p>

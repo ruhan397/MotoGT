@@ -31,6 +31,10 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/users", userRoutes);
+app.use((req, res, next) => {
+  console.log("[GLOBAL CHECK]", req.method, req.originalUrl);
+  next();
+});
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 

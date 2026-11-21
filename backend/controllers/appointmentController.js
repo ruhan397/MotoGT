@@ -113,32 +113,63 @@ const checkCapacity = async (
   return { available: true };
 };
 
-// Customer: Create appointment request
+// Customer: Create appointment request (logged-in or guest)
 const createAppointment = async (req, res) => {
   try {
     const {
+      customerName: guestName,
+      email: guestEmail,
       phone,
       vehicleModel,
       service,
       problemDescription,
       preferredStartDate
     } = req.body;
-    
 
-    if (!phone || !vehicleModel || !service || !preferredStartDate) {
+    if (
+      !phone?.trim() ||
+      !vehicleModel?.trim() ||
+      !service ||
+      !preferredStartDate
+    ) {
       return res.status(400).json({
         message: 'Please complete all required fields.'
       });
     }
 
-    const user = await User.findById(req.user.id).select(
-      'fullName email phone'
-    );
+    let user = null;
+    let customerName = guestName;
+    let email = guestEmail;
 
-    if (!user) {
-      return res.status(404).json({
-        message: 'Customer account not found. Please login again.'
-      });
+    // Logged-in customer
+    if (req.user?.id) {
+      user = await User.findById(req.user.id).select(
+        'fullName email phone'
+      );
+
+      if (!user) {
+        return res.status(404).json({
+          message: 'Customer account not found. Please login again.'
+        });
+      }
+
+      customerName = user.fullName;
+      email = user.email;
+    } else {
+      // Guest customer
+      if (!customerName?.trim() || !email?.trim()) {
+        return res.status(400).json({
+          message: 'Please provide your name and email address.'
+        });
+      }
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailPattern.test(email.trim())) {
+        return res.status(400).json({
+          message: 'Please provide a valid email address.'
+        });
+      }
     }
 
     const selectedDate = new Date(`${preferredStartDate}T12:00:00`);
@@ -167,6 +198,7 @@ const createAppointment = async (req, res) => {
     }
 
     const settings = await getWorkshopSettings();
+
     const capacity = await checkCapacity(
       preferredStartDate,
       1,
@@ -180,9 +212,9 @@ const createAppointment = async (req, res) => {
     }
 
     const appointment = await Appointment.create({
-      userId: user._id,
-      customerName: user.fullName,
-      email: user.email,
+      ...(user ? { userId: user._id } : {}),
+      customerName: customerName.trim(),
+      email: email.trim().toLowerCase(),
       phone: phone.trim(),
       vehicleModel: vehicleModel.trim(),
       service,

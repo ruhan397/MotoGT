@@ -44,6 +44,8 @@ function DentPaint() {
   const [activeTab, setActiveTab] = useState("services");
 
   const [formData, setFormData] = useState({
+    customerName: "",
+    email: "",
     phone: "",
     vehicleModel: "",
     service: "",
@@ -59,19 +61,11 @@ function DentPaint() {
 
   const token = localStorage.getItem("motogtToken");
 
+  // Load available dates for both guests and logged-in customers
   useEffect(() => {
     const loadAvailableDates = async () => {
-      if (!token) {
-        setLoadingDates(false);
-        return;
-      }
-
       try {
-        const response = await apiFetch("appointments/available-dates", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await apiFetch("appointments/available-dates");
 
         const data = await response.json();
 
@@ -101,7 +95,7 @@ function DentPaint() {
     };
 
     loadAvailableDates();
-  }, [token]);
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -118,12 +112,6 @@ function DentPaint() {
     setMessage("");
     setMessageType("");
 
-    if (!token) {
-      setMessage("Please log in to book an appointment.");
-      setMessageType("error");
-      return;
-    }
-
     if (!availableDates.includes(formData.preferredStartDate)) {
       setMessage("Please select an available appointment date.");
       setMessageType("error");
@@ -137,7 +125,7 @@ function DentPaint() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(formData),
       });
@@ -156,6 +144,8 @@ function DentPaint() {
       setMessageType("success");
 
       setFormData({
+        customerName: "",
+        email: "",
         phone: "",
         vehicleModel: "",
         service: "",
@@ -232,7 +222,6 @@ function DentPaint() {
           >
             Our Work Process
           </button>
-
         </div>
 
         {/* What We Offer */}
@@ -373,8 +362,6 @@ function DentPaint() {
             </div>
           </section>
         )}
-
-        
       </section>
 
       {/* Appointment Booking */}
@@ -392,10 +379,40 @@ function DentPaint() {
 
         <form className="dp-booking-form" onSubmit={handleSubmit}>
           <p className="dp-form-note">
-            Your name and email will be taken from your MotoGT account.
+            {token
+              ? "Your name and email will be taken from your MotoGT account."
+              : "Please provide your name and email so our team can contact you."}
           </p>
 
           <div className="dp-form-grid">
+            {!token && (
+              <>
+                <label>
+                  Full Name
+                  <input
+                    type="text"
+                    name="customerName"
+                    value={formData.customerName}
+                    onChange={handleChange}
+                    placeholder="Your full name"
+                    required
+                  />
+                </label>
+
+                <label>
+                  Email Address
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Your email address"
+                    required
+                  />
+                </label>
+              </>
+            )}
+
             <label>
               Phone Number
               <input
